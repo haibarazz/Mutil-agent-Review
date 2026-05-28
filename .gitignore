@@ -1,0 +1,139 @@
+# =========
+# Local secrets
+# =========
+.env
+.env.*
+!.env.example
+.envrc
+*.pem
+*.key
+*.p12
+*.pfx
+*.secret
+secrets/
+
+# =========
+# Python
+# =========
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# =========
+# Project runtime data
+# =========
+data/
+runs/
+artifacts/
+outputs/
+uploads/
+tmp/
+temp/
+logs/
+*.log
+*.jsonl
+*.sqlite
+*.sqlite3
+*.db
+
+# =========
+# Local agent/tool state
+# =========
+.spec-workflow/
+.cozeproj/reduction
+
+# =========
+# Node / frontend
+# =========
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+.next/
+.vite/
+
+# =========
+# Generated caches
+# =========
+.cache/
+.parcel-cache/
+.turbo/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# =========
+# Large or private user documents
+# =========
+*.pdf
+*.doc
+*.docx
+*.tex
+*.csv
+*.xlsx
+*.xls
+*.ppt
+*.pptx
+
+# =========
+# Archives and binary artifacts
+# =========
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+*.rar
+*.7z
+*.iso
+*.dmg
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+
+# =========
+# ML/model artifacts
+# =========
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+*.pkl
+*.pickle
+
+# =========
+# Video/media exports
+# =========
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.mkv
+*.webm
+*.m4v
+*.mpeg
+*.mpg
+*.3gp
+*.f4v
+*.rmvb
+*.vob

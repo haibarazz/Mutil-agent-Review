@@ -1,0 +1,102 @@
+# 多供应商 LLM 路由配置
+#
+# 设计原则:
+# - prompts/*.md 只写节点想用的 model id。
+# - 这里登记 model id 属于哪个 provider，以及真实上游模型名。
+# - .env 只保存 base_url/api_key 等敏感或环境相关信息。
+
+mode: router
+default_model: doubao-seed-2-0-lite-260215
+
+providers:
+  doubao:
+    type: openai_compatible
+    base_url_env: LLM_DOUBAO_BASE_URL
+    api_key_env: LLM_DOUBAO_API_KEY
+
+  deepseek:
+    type: openai_compatible
+    base_url_env: LLM_DEEPSEEK_BASE_URL
+    api_key_env: LLM_DEEPSEEK_API_KEY
+
+  kimi:
+    type: openai_compatible
+    base_url_env: LLM_KIMI_BASE_URL
+    api_key_env: LLM_KIMI_API_KEY
+
+  glm:
+    type: openai_compatible
+    base_url_env: LLM_GLM_BASE_URL
+    api_key_env: LLM_GLM_API_KEY
+
+models:
+  doubao-seed-2-0-lite-260215:
+    provider: doubao
+    provider_model_id: doubao-seed-2-0-lite-260215
+
+  doubao-seed-2-0-pro-260215:
+    provider: doubao
+    provider_model_id: doubao-seed-2-0-pro-260215
+
+  deepseek-v3-2-251201:
+    provider: deepseek
+    provider_model_id: deepseek-v3-2-251201
+
+  kimi-k2-5-260127:
+    provider: kimi
+    provider_model_id: kimi-k2-5-260127
+
+  glm-4-7-251222:
+    provider: glm
+    provider_model_id: glm-4-7-251222
+
+prompts:
+  content_check:
+    temperature: 0
+    top_p: 0.9
+    max_tokens: 256
+
+  journal_req_collector:
+    temperature: 0.2
+    top_p: 0.95
+    max_tokens: 2000
+
+  field_analyst:
+    temperature: 0.2
+    top_p: 0.95
+    max_tokens: 2000
+
+  se_check:
+    temperature: 0.3
+    top_p: 0.95
+    max_tokens: 2000
+
+  ae_check:
+    temperature: 0.3
+    top_p: 0.95
+    max_tokens: 3000
+
+  reviewer1:
+    temperature: 0.6
+    top_p: 0.95
+    max_tokens: 4000
+
+  reviewer2:
+    temperature: 0.6
+    top_p: 0.95
+    max_tokens: 4000
+
+  reviewer3:
+    temperature: 0.6
+    top_p: 0.95
+    max_tokens: 4000
+
+  devils_advocate:
+    temperature: 0.7
+    top_p: 0.95
+    max_tokens: 6000
+
+  ae_final:
+    temperature: 0.3
+    top_p: 0.95
+    max_tokens: 5000
