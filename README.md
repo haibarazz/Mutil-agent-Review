@@ -32,8 +32,8 @@ python -m src.cli review paper.md --mode QUICK_REVIEW --venue-domain CS --venue-
 
 The default `LLM_PROVIDER=mock` makes the workflow runnable without API keys.
 Switch to `router` after filling provider credentials in `.env`. The router
-uses `configs/llm.yaml` to map prompt model ids to Doubao, DeepSeek, Kimi, GLM,
-or other OpenAI-compatible providers.
+uses `configs/llm.yaml` to map prompt model ids to SiliconFlow, OpenRouter,
+DeepSeek official, or other OpenAI-compatible providers.
 
 ## Important Paths
 

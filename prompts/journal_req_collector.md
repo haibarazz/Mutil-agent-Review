@@ -1,6 +1,6 @@
 ---
 name: "journal_req_collector"
-model: "doubao-seed-2-0-lite-260215"
+model: "sf/deepseek-v4-flash"
 ---
 
 # System Prompt

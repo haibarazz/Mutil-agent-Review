@@ -1,6 +1,6 @@
 ---
 name: "se_check"
-model: "doubao-seed-2-0-pro-260215"
+model: "sf/deepseek-v4-pro"
 ---
 
 # System Prompt

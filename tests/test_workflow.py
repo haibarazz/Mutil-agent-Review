@@ -1,3 +1,4 @@
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -5,9 +6,14 @@ from pathlib import Path
 from src.services.review_service import ReviewSubmissionError
 from src.services.review_service import build_workflow
 from src.core.models import ReviewMode, ReviewRequest, VenueCollection, VenueDomain
+from src.graphs.runtime import get_review_nodes
 
 
 class WorkflowTests(unittest.TestCase):
+    def setUp(self) -> None:
+        os.environ["LLM_PROVIDER"] = "mock"
+        get_review_nodes.cache_clear()
+
     def test_quick_review_writes_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             paper = Path(tmp) / "paper.md"

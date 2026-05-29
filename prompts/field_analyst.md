@@ -1,6 +1,6 @@
 ---
 name: "field_analyst"
-model: "doubao-seed-2-0-pro-260215"
+model: "sf/deepseek-v4-pro"
 ---
 
 # System Prompt

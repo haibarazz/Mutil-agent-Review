@@ -6,49 +6,56 @@
 # - .env 只保存 base_url/api_key 等敏感或环境相关信息。
 
 mode: router
-default_model: doubao-seed-2-0-lite-260215
+default_model: sf/deepseek-v4-pro
 
 providers:
-  doubao:
+  siliconflow:
     type: openai_compatible
-    base_url_env: LLM_DOUBAO_BASE_URL
-    api_key_env: LLM_DOUBAO_API_KEY
+    base_url_env: LLM_SILICONFLOW_BASE_URL
+    api_key_env: LLM_SILICONFLOW_API_KEY
 
-  deepseek:
+  deepseek_official:
     type: openai_compatible
     base_url_env: LLM_DEEPSEEK_BASE_URL
     api_key_env: LLM_DEEPSEEK_API_KEY
 
-  kimi:
+  openrouter:
     type: openai_compatible
-    base_url_env: LLM_KIMI_BASE_URL
-    api_key_env: LLM_KIMI_API_KEY
-
-  glm:
-    type: openai_compatible
-    base_url_env: LLM_GLM_BASE_URL
-    api_key_env: LLM_GLM_API_KEY
+    base_url_env: LLM_OPENOUTER_BASE_URL
+    api_key_env: LLM_OPENOUTER_API_KEY
 
 models:
-  doubao-seed-2-0-lite-260215:
-    provider: doubao
-    provider_model_id: doubao-seed-2-0-lite-260215
+  sf/deepseek-v4-pro:
+    provider: siliconflow
+    provider_model_id: deepseek-ai/DeepSeek-V4-Pro
 
-  doubao-seed-2-0-pro-260215:
-    provider: doubao
-    provider_model_id: doubao-seed-2-0-pro-260215
+  sf/deepseek-v4-flash:
+    provider: siliconflow
+    provider_model_id: deepseek-ai/DeepSeek-V4-Flash
 
-  deepseek-v3-2-251201:
-    provider: deepseek
-    provider_model_id: deepseek-v3-2-251201
+  sf/deepseek-v3.2-pro:
+    provider: siliconflow
+    provider_model_id: Pro/deepseek-ai/DeepSeek-V3.2
 
-  kimi-k2-5-260127:
-    provider: kimi
-    provider_model_id: kimi-k2-5-260127
+  sf/kimi-k2.6:
+    provider: siliconflow
+    provider_model_id: Pro/moonshotai/Kimi-K2.6
 
-  glm-4-7-251222:
-    provider: glm
-    provider_model_id: glm-4-7-251222
+  sf/glm-5.1:
+    provider: siliconflow
+    provider_model_id: Pro/zai-org/GLM-5.1
+
+  deepseek/deepseek-v4-pro:
+    provider: deepseek_official
+    provider_model_id: deepseek-v4-pro
+
+  deepseek/deepseek-v4-flash:
+    provider: deepseek_official
+    provider_model_id: deepseek-v4-flash
+
+  openrouter/deepseek-v4-pro:
+    provider: openrouter
+    provider_model_id: deepseek/deepseek-v4-pro
 
 prompts:
   content_check:

@@ -1,6 +1,6 @@
 ---
 name: "ae_final"
-model: "kimi-k2-5-260127"
+model: "deepseek/deepseek-v4-pro"
 ---
 
 # System Prompt

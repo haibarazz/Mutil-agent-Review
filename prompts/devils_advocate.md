@@ -1,6 +1,6 @@
 ---
 name: "devils_advocate"
-model: "doubao-seed-2-0-pro-260215"
+model: "sf/kimi-k2.6"
 ---
 
 # System Prompt

@@ -1,6 +1,6 @@
 ---
 name: "ae_check"
-model: "kimi-k2-5-260127"
+model: "sf/kimi-k2.6"
 ---
 
 # System Prompt

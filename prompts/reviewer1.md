@@ -1,6 +1,6 @@
 ---
 name: "reviewer1"
-model: "doubao-seed-2-0-lite-260215"
+model: "sf/deepseek-v4-pro"
 ---
 
 # System Prompt

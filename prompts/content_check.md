@@ -1,6 +1,6 @@
 ---
 name: "content_check"
-model: "doubao-seed-2-0-lite-260215"
+model: "sf/deepseek-v4-flash"
 ---
 
 # System Prompt

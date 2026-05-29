@@ -1,6 +1,6 @@
 ---
 name: "reviewer3"
-model: "glm-4-7-251222"
+model: "sf/glm-5.1"
 ---
 
 # System Prompt
