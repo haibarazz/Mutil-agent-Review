@@ -1,27 +1,22 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import Any
 
-from src.core.models import ParsedPaper, ReviewMode, ReviewRequest, ReviewerReport, VenueProfile
+from src.core.models import ParsedPaper, ReviewComment, ReviewerReport, VenueProfile
 from src.core.models import FinalDecision, ReviewFinding
+from src.core.output_schemas import validate_ae_final_output, validate_reviewer_output
 from src.core.prompts import PromptRepository
-from src.ports import DocumentParser, LLMClient, SearchClient
-
-
-DEFAULT_JOURNAL_REQUIREMENTS = """## 通用学术期刊审稿标准
-
-1. 原创性与创新性：论文应提出新的研究问题、新的方法或有意义的新发现。
-2. 方法论严谨性：研究方法应合理、可重复，实验设计严谨。
-3. 文献综述：应充分覆盖相关领域文献，清晰定位研究贡献。
-4. 结果与分析：实验结果应充分支持结论，数据分析严谨。
-5. 写作质量：论文应逻辑清晰、表达准确、结构完整。
-6. 伦理合规：研究应符合学术伦理规范。
-"""
+from src.ports import DocumentParser, JsonValidator, LLMClient, SearchClient
 
 
 class ReviewNodes:
+    """集中放置各个 LangGraph 节点背后的业务逻辑。
+
+    graph.py 里的 node 函数很薄，只负责从 GlobalState 取数据、调用这里、
+    再把结果写回 GlobalState。这样节点编排和具体业务实现不会混在一起。
+    """
+
     def __init__(
         self,
         *,
@@ -35,8 +30,13 @@ class ReviewNodes:
         self.parser = parser
         self.prompts = prompts
 
-    def content_check(self, paper: ParsedPaper) -> dict[str, Any]:
-        result = self._complete_json("content_check", {"content_preview": paper.full_text[:2000]})
+    def content_check(self, paper: ParsedPaper, *, output_language: str = "zh") -> dict[str, Any]:
+        """内容审查：判断解析出来的文本是否像一篇学术论文。"""
+        result = self._complete_json(
+            "content_check",
+            {"content_preview": paper.full_text[:2000]},
+            output_language=output_language,
+        )
         is_paper = bool(result.get("is_paper", True))
         reason = str(result.get("reason", ""))
         return {
@@ -45,40 +45,18 @@ class ReviewNodes:
             "raw_result": result,
         }
 
-    def journal_requirements(self, request: ReviewRequest, paper: ParsedPaper) -> dict[str, Any]:
-        raw_text = ""
-        source = "default"
-        if request.journal_requirements_path:
-            raw_text = self.parser.parse(Path(request.journal_requirements_path)).full_text
-            source = "uploaded_file"
-        elif request.journal_name:
-            search_results = self.search.search(f"{request.journal_name} author guidelines submission requirements")
-            raw_text = "\n\n".join(
-                f"{item.title}\n{item.url}\n{item.snippet}" for item in search_results
-            )
-            source = "search" if raw_text else "default"
-
-        if raw_text:
-            prompt, user_prompt = self.prompts.render(
-                "journal_req_collector",
-                {"journal_name": request.journal_name or request.venue_code or "未指定", "raw_text": raw_text[:6000]},
-            )
-            requirements = self.llm.complete_text(
-                system_prompt=prompt.system_prompt,
-                user_prompt=user_prompt,
-                prompt_name="journal_req_collector",
-                model=prompt.model or None,
-                temperature=prompt.temperature,
-            )
-        else:
-            requirements = DEFAULT_JOURNAL_REQUIREMENTS
-
-        return {"journal_requirements": requirements, "source": source}
-
-    def field_analyst(self, paper: ParsedPaper, journal_requirements: str) -> dict[str, Any]:
+    def field_analyst(
+        self,
+        paper: ParsedPaper,
+        journal_requirements: str,
+        *,
+        output_language: str = "zh",
+    ) -> dict[str, Any]:
+        """领域分析：识别论文领域，并为后续审稿人生成分工配置。"""
         result = self._complete_json(
             "field_analyst",
             {"paper_content": paper.full_text, "journal_requirements": journal_requirements},
+            output_language=output_language,
         )
         return {
             "field_info": result.get("field_info", {}),
@@ -93,7 +71,9 @@ class ReviewNodes:
         journal_requirements: str,
         venue_profile: VenueProfile | None,
         field_info: dict[str, Any],
+        output_language: str = "zh",
     ) -> dict[str, Any]:
+        """SE 初筛：从主编视角判断论文是否应该直接桌拒。"""
         result = self._complete_json(
             "se_check",
             {
@@ -103,8 +83,10 @@ class ReviewNodes:
                 "submission_type": "Research Article",
                 "field_info": field_info,
             },
+            output_language=output_language,
         )
         decision = str(result.get("decision", "PASS"))
+        # 这里把 LLM 的自由输出收敛成 graph.py 能稳定路由的两个枚举值。
         return {
             "se_decision": "DESK_REJECT" if decision == "DESK_REJECT" else "PASS",
             "se_summary": result.get("summary", ""),
@@ -124,7 +106,9 @@ class ReviewNodes:
         se_result: dict[str, Any],
         field_info: dict[str, Any],
         reviewer_config: dict[str, Any],
+        output_language: str = "zh",
     ) -> dict[str, Any]:
+        """AE 筛选：决定是否送外审，并产出外审关注点和论文 rubric。"""
         result = self._complete_json(
             "ae_check",
             {
@@ -137,8 +121,10 @@ class ReviewNodes:
                 "field_info": field_info,
                 "reviewer_config": reviewer_config,
             },
+            output_language=output_language,
         )
         decision = str(result.get("decision", "SEND_FOR_REVIEW"))
+        # 这里同样把 AE 决策收敛为 graph.py 的稳定路由值。
         return {
             "ae_decision": "DESK_REJECT" if decision == "DESK_REJECT" else "SEND_FOR_REVIEW",
             "ae_assessment": result.get("ae_assessment", ""),
@@ -161,9 +147,12 @@ class ReviewNodes:
         venue_profile: VenueProfile | None,
         reviewer_config: dict[str, Any],
         ae_result: dict[str, Any],
+        output_language: str = "zh",
     ) -> ReviewerReport:
+        """普通审稿人：Reviewer1/2/3 共用这一套调用逻辑，只换 prompt 和角色。"""
         related_papers = ""
         if prompt_name == "reviewer2":
+            # Reviewer2 负责领域贡献，因此额外拿相关论文搜索结果作为参考。
             related_papers = self._related_papers_text(paper.title)
 
         result = self._complete_json(
@@ -180,6 +169,7 @@ class ReviewNodes:
                 "reviewer_persona": self._persona(reviewer_config, legacy_reviewer_key, role),
                 "related_papers": related_papers,
             },
+            output_language=output_language,
         )
         return self._report_from_result(reviewer_key, role, result)
 
@@ -190,7 +180,9 @@ class ReviewNodes:
         journal_requirements: str,
         venue_profile: VenueProfile | None,
         ae_result: dict[str, Any],
+        output_language: str = "zh",
     ) -> ReviewerReport:
+        """反方辩护人：专门从最强反对意见出发，挑战论文核心主张。"""
         result = self._complete_json(
             "devils_advocate",
             {
@@ -201,6 +193,7 @@ class ReviewNodes:
                 "review_focus_points": ae_result.get("review_focus_points", []),
                 "paper_rubric": ae_result.get("paper_rubric", {}),
             },
+            output_language=output_language,
         )
         return self._report_from_result("devils_advocate", "Devil's Advocate", result)
 
@@ -212,7 +205,10 @@ class ReviewNodes:
         venue_profile: VenueProfile | None,
         ae_result: dict[str, Any],
         reviewer_reports: list[ReviewerReport],
+        output_language: str = "zh",
     ) -> dict[str, Any]:
+        """AE 终审：汇总三位审稿人和反方辩护人，生成最终编辑决定。"""
+        # 转成按 reviewer_key 索引，方便 prompt 模板明确引用每一路审稿结果。
         report_by_key = {report.reviewer_key: report.raw_result for report in reviewer_reports}
         result = self._complete_json(
             "ae_final",
@@ -227,6 +223,7 @@ class ReviewNodes:
                 "da_result": self._json(report_by_key.get("devils_advocate", {})),
                 "paper_rubric": self._json(ae_result.get("paper_rubric", {})),
             },
+            output_language=output_language,
         )
         return {
             "final_decision": self._final_decision(result.get("final_decision", "MAJOR_REVISION")).value,
@@ -238,17 +235,53 @@ class ReviewNodes:
             "raw_result": result,
         }
 
-    def _complete_json(self, prompt_name: str, context: dict[str, Any]) -> dict[str, Any]:
+    def _complete_json(
+        self,
+        prompt_name: str,
+        context: dict[str, Any],
+        *,
+        output_language: str = "zh",
+    ) -> dict[str, Any]:
+        """统一的 JSON 型 LLM 调用入口：渲染 prompt，再交给 LLMRouter/Mock。"""
+        context = dict(context)
+        context["output_language"] = self._normalize_language(output_language)
+        context["language_instruction"] = self._language_instruction(context["output_language"])
         prompt, user_prompt = self.prompts.render(prompt_name, context)
+        user_prompt = f"{user_prompt}\n\n【输出语言要求】\n{context['language_instruction']}"
         return self.llm.complete_json(
             system_prompt=prompt.system_prompt,
             user_prompt=user_prompt,
             prompt_name=prompt_name,
             model=prompt.model or None,
             temperature=prompt.temperature,
+            validator=self._validator_for_prompt(prompt_name),
+        )
+
+    def _validator_for_prompt(self, prompt_name: str) -> JsonValidator | None:
+        if prompt_name in {"reviewer1", "reviewer2", "reviewer3", "devils_advocate"}:
+            return validate_reviewer_output
+        if prompt_name == "ae_final":
+            return validate_ae_final_output
+        return None
+
+    def _normalize_language(self, value: str) -> str:
+        return "en" if str(value).lower() in {"en", "english"} else "zh"
+
+    def _language_instruction(self, output_language: str) -> str:
+        if output_language == "en":
+            return (
+                "Use English for all natural-language values in the JSON. "
+                "Keep paper titles, method names, model names, venue names, metrics, formulas, and citations in their original form. "
+                "If any previous instruction conflicts with this language requirement, follow this language requirement."
+            )
+        return (
+            "JSON 中所有自然语言字段必须使用中文。"
+            "论文标题、方法名、模型名、venue 名称、指标名、公式和引用可以保留原文。"
+            "如果前文提示词与本语言要求冲突，以本语言要求为准。"
         )
 
     def _related_papers_text(self, query: str) -> str:
+        """把搜索结果压成 prompt 可读文本；当前 search 可能还是 NullSearchClient。"""
         results = self.search.search(query, limit=8)
         if not results:
             return "未搜索到相关论文。"
@@ -258,6 +291,7 @@ class ReviewNodes:
         return "\n\n".join(lines)
 
     def _persona(self, reviewer_config: dict[str, Any], key: str, default: str) -> str:
+        """从 field_analyst 的动态配置里提取审稿人人设。"""
         persona = reviewer_config.get(key, "")
         if isinstance(persona, str) and persona.strip():
             return persona.strip()
@@ -268,26 +302,65 @@ class ReviewNodes:
         return default
 
     def _report_from_result(self, reviewer_key: str, role: str, result: dict[str, Any]) -> ReviewerReport:
+        """把不同审稿 prompt 返回的 JSON 统一转换成 ReviewerReport。"""
         strengths = result.get("strengths", result.get("strengths_conceded", []))
+        scores = self._dict(result.get("scores"))
+        major_comments = [self._comment(item, default_severity="major") for item in self._as_list(result.get("major_comments"))]
+        minor_comments = [self._comment(item, default_severity="minor") for item in self._as_list(result.get("minor_comments"))]
+        weaknesses = result.get("weaknesses") or [*major_comments, *minor_comments]
         return ReviewerReport(
             reviewer_key=reviewer_key,
             role=role,
             summary=str(result.get("summary", "")),
             strengths=[str(item) for item in strengths],
-            weaknesses=[self._finding(item) for item in result.get("weaknesses", [])],
-            rating=int(result.get("rating", 5)),
+            weaknesses=[self._finding(item) for item in self._as_list(weaknesses)],
+            rating=self._int(result.get("rating", scores.get("rating", 5)), default=5),
+            overall_assessment=str(result.get("overall_assessment", "")),
+            major_comments=major_comments,
+            minor_comments=minor_comments,
+            questions_for_authors=[str(item) for item in self._as_list(result.get("questions_for_authors"))],
+            scores=scores,
+            ethics_and_limitations=str(result.get("ethics_and_limitations", "")),
             rating_justification=str(result.get("rating_justification", "")),
-            recommendation=str(result.get("recommendation", "MAJOR_REVISION")),
-            evidence_citations=[str(item) for item in result.get("evidence_citations", [])],
-            strategic_advice=dict(result.get("strategic_advice", {})),
+            recommendation=str(result.get("recommendation", scores.get("recommendation", "MAJOR_REVISION"))),
+            evidence_citations=[str(item) for item in self._as_list(result.get("evidence_citations"))],
+            strategic_advice=self._dict(result.get("strategic_advice")),
             raw_result=result,
         )
 
+    def _comment(self, item: Any, *, default_severity: str) -> ReviewComment:
+        """把 prompt 的结构化 comment 收敛成统一对象，兼容字符串 fallback。"""
+        if isinstance(item, ReviewComment):
+            return item
+        if isinstance(item, dict):
+            return ReviewComment(
+                title=str(item.get("title", "Untitled comment")),
+                comment=str(item.get("comment", item.get("issue", ""))),
+                evidence=str(item.get("evidence", item.get("location", "missing evidence"))),
+                severity=str(item.get("severity", default_severity)),
+                suggested_fix=str(item.get("suggested_fix", item.get("fix", ""))),
+            )
+        text = str(item)
+        return ReviewComment(
+            title=text[:80] or "Untitled comment",
+            comment=text,
+            evidence="missing evidence",
+            severity=default_severity,
+            suggested_fix="请根据该问题补充具体修改方案。",
+        )
+
     def _finding(self, item: Any) -> ReviewFinding:
+        """把 weakness 条目统一成 ReviewFinding，兼容 dict 和字符串两种格式。"""
+        if isinstance(item, ReviewComment):
+            return ReviewFinding(
+                location=item.evidence or "unknown",
+                issue=f"{item.title}: {item.comment}".strip(": "),
+                severity=item.severity or "medium",
+            )
         if isinstance(item, dict):
             return ReviewFinding(
-                location=str(item.get("location", "unknown")),
-                issue=str(item.get("issue", item.get("weakness", ""))),
+                location=str(item.get("location", item.get("evidence", "unknown"))),
+                issue=str(item.get("issue", item.get("weakness", item.get("comment", "")))),
                 severity=str(item.get("severity", "medium")),
             )
         text = str(item)
@@ -298,16 +371,37 @@ class ReviewNodes:
         return ReviewFinding(location=location, issue=text, severity="medium")
 
     def _final_decision(self, value: Any) -> FinalDecision:
+        """把 LLM 输出的最终决策收敛到系统支持的 FinalDecision 枚举。"""
         try:
             return FinalDecision(str(value))
         except ValueError:
             return FinalDecision.MAJOR_REVISION
 
     def _json(self, value: Any) -> str:
+        """把结构化对象转成可读 JSON 字符串，方便塞进下游 prompt。"""
         return json.dumps(value, ensure_ascii=False, indent=2)
+
+    def _as_list(self, value: Any) -> list[Any]:
+        if value is None:
+            return []
+        if isinstance(value, list):
+            return value
+        if isinstance(value, tuple):
+            return list(value)
+        return [value]
+
+    def _dict(self, value: Any) -> dict[str, Any]:
+        return value if isinstance(value, dict) else {}
+
+    def _int(self, value: Any, *, default: int) -> int:
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return default
 
 
 def default_quick_review_ae_result() -> dict[str, Any]:
+    """快速审稿没有真实 AE 筛选，所以给外审阶段一个默认 AE 上下文。"""
     return {
         "ae_decision": "SEND_FOR_REVIEW",
         "ae_assessment": "快速审稿模式跳过SE/AE筛选，直接进入外审。",

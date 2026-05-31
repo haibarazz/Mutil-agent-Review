@@ -12,6 +12,7 @@ def ae_check_node(state: GlobalState) -> GlobalState:
         se_result=state.get("se_result", {}),
         field_info=state.get("field_info", {}),
         reviewer_config=state.get("reviewer_config", {}),
+        output_language=state.get("output_language", "zh"),
     )
     return {
         "ae_result": result,

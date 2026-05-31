@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Springer 官方 Aims and Scope。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JAMS
 - 全名：Journal of the Academy of Marketing Science
@@ -13,11 +15,11 @@
 - 官方 Aims and Scope：https://www.springer.com/journal/11747/aims-and-scope
 - 投稿指南：https://www.springer.com/journal/11747/submission-guidelines
 
-## 一句话定位
+### 一句话定位
 
 JAMS 致力于研究和改进 marketing，是连接学术研究与实践的重要期刊，发表营销实质领域中基于研究的文章。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JAMS 的定位强调“study and improvement of marketing”以及 scholarly research 与 practice 之间的连接。它不是只偏消费者心理或只偏方法的期刊，而是要求论文在营销科学和/或营销实践上有推进。
 
@@ -30,7 +32,7 @@ JAMS 的定位强调“study and improvement of marketing”以及 scholarly res
 - 学术上扎实、以文献为基础、概念上严谨的研究。
 - 经验型论文必须展示方法严谨性。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JAMS 官方给出了较直接的最低标准。智能体判断时，应把这些作为 desk-check：
 
@@ -41,7 +43,7 @@ JAMS 官方给出了较直接的最低标准。智能体判断时，应把这些
 - **Methodological rigor**：经验型论文需要方法严谨性证据。
 - **Science and/or practice contribution**：贡献可以推进营销科学，也可以推进营销实践，最好两者兼具。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JAMS 的论文通常满足：
 
@@ -60,7 +62,9 @@ JAMS 官方给出了较直接的最低标准。智能体判断时，应把这些
 - 概念松散、理论边界不清，或经验设计无法支撑结论。
 - 管理启示和营销科学贡献都不明确。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 JAMS 时，可以把下面内容加入系统提示词：
 
@@ -78,7 +82,7 @@ JAMS 官方给出了较直接的最低标准。智能体判断时，应把这些
 如果论文只有场景或方法，没有 substantive marketing issue 和新 insight，必须指出与 JAMS fit 不足。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的 substantive marketing issue 是什么？
 - 你的 fundamentally new insight 是什么？
@@ -87,7 +91,7 @@ JAMS 官方给出了较直接的最低标准。智能体判断时，应把这些
 - 如果是经验论文，你如何证明 methodological rigor？
 - 你的结果如何帮助营销实践或营销理论进步？
 
-## 来源
+### 来源
 
 - Springer JAMS journal page：https://link.springer.com/journal/11747
 - Springer JAMS Aims and Scope：https://www.springer.com/journal/11747/aims-and-scope

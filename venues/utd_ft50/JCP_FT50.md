@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Society for Consumer Psychology 官方 JCP 页面与 Wiley journal entry。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JCP
 - 全名：Journal of Consumer Psychology
@@ -13,11 +15,11 @@
 - Wiley 期刊页：https://myscp.onlinelibrary.wiley.com/journal/15327663
 - 投稿入口：https://myscp.onlinelibrary.wiley.com/journal/15327663
 
-## 一句话定位
+### 一句话定位
 
 JCP 是 Society for Consumer Psychology 的官方期刊，发表理论和实证上都能推进消费者判断、消费者行为及其底层心理过程理解的研究。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JCP 的核心不是广义营销策略，而是 consumer psychology。它关注消费者现象在个体内和人际层面的心理机制，强调 judgment、decision processes、attitudes、information processing、affect、cognition、motivation 等心理过程。
 
@@ -33,7 +35,7 @@ JCP 的核心不是广义营销策略，而是 consumer psychology。它关注�
 - 文化差异、个体差异与消费者行为。
 - 理论或综述文章：整合既有研究并对消费者行为或决策过程底层机制提出新 insight。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JCP 官方说，多数文章可能报告新的 empirical findings，通常来自实验室或田野实验，但也欢迎调查、相关研究和其他方法范式，只要能拓展当前关于消费者判断和行为的知识。
 
@@ -45,7 +47,7 @@ JCP 官方说，多数文章可能报告新的 empirical findings，通常来自
 - **Review / integrative contribution**：整合已有文献并提出关于消费者行为和决策过程的新 insight。
 - **Phenomenon-mechanism contribution**：围绕重要消费现象识别其心理机制和边界条件。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JCP 的论文通常满足：
 
@@ -63,7 +65,9 @@ JCP 官方说，多数文章可能报告新的 empirical findings，通常来自
 - 只有问卷相关关系，没有清晰理论机制或消费者判断贡献。
 - 只是社会/文化描述，未连接到消费者心理过程。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 JCP 时，可以把下面内容加入系统提示词：
 
@@ -81,7 +85,7 @@ JCP 官方说，多数文章可能报告新的 empirical findings，通常来自
 如果论文只是营销策略、预测建模或一般心理学研究，必须要求作者强化 consumer psychology 机制和理论贡献。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文解释的 underlying psychological process 是什么？
 - 你的核心因变量是消费者判断、选择、态度、反应，还是消费体验？
@@ -90,7 +94,7 @@ JCP 官方说，多数文章可能报告新的 empirical findings，通常来自
 - 研究中的消费情境是否不可替代？
 - 你的实验、调查或相关研究如何拓展现有消费者判断和行为知识？
 
-## 来源
+### 来源
 
 - SCP Journal of Consumer Psychology page：https://myscp.org/journals/jcp/
 - Wiley JCP journal page：https://myscp.onlinelibrary.wiley.com/journal/15327663

@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 INFORMS 官方 journal page 与 M&SOM Editorial Statement。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：MSOM / M&SOM
 - 全名：Manufacturing & Service Operations Management
@@ -14,11 +16,11 @@
 - 官方 Editorial Statement：https://pubsonline.informs.org/page/msom/editorial-statement
 - 投稿指南：https://pubsonline.informs.org/page/msom/submission-guidelines
 
-## 一句话定位
+### 一句话定位
 
 M&SOM 是运营管理领域的顶级期刊，目标是发表对运营管理有高影响的问题导向研究。它把 OM 定义得很宽，不只包括传统制造、服务和供应链，也包括平台、收入管理、环境与健康、社会影响、运营创新、数据分析和 AI 赋能运营。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 M&SOM 官方 Editorial Statement 明确说，期刊会继续欢迎传统 OM 领域，同时主动拥抱新方向。对智能体来说，可以把它理解为：**只要论文核心问题是“运营系统如何设计、运行、改进、治理或产生社会/经济价值”，就可能进入 M&SOM 的范围。**
 
@@ -31,7 +33,7 @@ M&SOM 官方 Editorial Statement 明确说，期刊会继续欢迎传统 OM 领�
 - **Operational Innovation**：把 innovation 理解为创造社会和经济价值的新方式，强调运营思维如何带来 transformational innovation，而不只是 incremental improvement。主题包括知识发现和传播流程、AI/ML 真实问题求解流程、新商业模式、创新管理方式。
 - **Services, Platforms and Revenue Management**：服务系统、平台管理和收入管理的设计、绩效及关键驱动因素。主题包括等待时间与容量管理、定价与收入管理、服务合同、数字平台扩张、市场平台、电子/移动商务、流程设计与数字化、服务质量、客户/员工体验、people operations、服务创新、众包、服务全球化、可持续/伦理服务问题。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 M&SOM 不限定单一方法，官方明确鼓励多样化的 methodological 和 empirical approaches。智能体判断时，应把重点放在“问题是否属于 OM，贡献是否能影响 OM 实践或 OM 学科”，而不是只看方法标签。
 
@@ -45,7 +47,7 @@ M&SOM 不限定单一方法，官方明确鼓励多样化的 methodological 和 
 - **Strategic / tactical / operational level**：战略层、战术层、运营执行层都可以，但必须和 OM 问题相关。
 - **Practice-based contribution**：真实组织或行业问题驱动，能够产生实践影响，并且具有 archival quality。
 
-## 官方强调的录用标准
+### 官方强调的录用标准
 
 M&SOM 的 Editorial Statement 把接收标准写得比较直接。智能体可以把下面五点转成 desk-reject 风险检查：
 
@@ -55,7 +57,7 @@ M&SOM 的 Editorial Statement 把接收标准写得比较直接。智能体可�
 - 假设、方法或分析深度是否执行不足。
 - 写作结构、逻辑流、过渡、符号、语法、排版是否影响理解。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 M&SOM 的论文通常满足：
 
@@ -73,7 +75,9 @@ M&SOM 的 Editorial Statement 把接收标准写得比较直接。智能体可�
 - 研究问题是单一场景的工程实现，无法一般化到 OM 理论或实践。
 - 写作没有清楚说明问题的重要性、原创性、对 OM 的贡献和实践影响。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 M&SOM 时，可以把下面内容加入系统提示词：
 
@@ -91,7 +95,7 @@ M&SOM 的 Editorial Statement 把接收标准写得比较直接。智能体可�
 如果论文只是通用 AI/ML/优化算法、通用管理问题或普通实证关系，必须指出其与 M&SOM fit 不足，并建议重写为明确的 OM decision problem。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的核心运营决策是什么？例如容量、库存、排程、平台治理、价格、服务质量、供应链协调、AI 决策流程等。
 - 你的研究问题为什么是 OM 问题，而不是一般管理/信息系统/营销/算法问题？
@@ -101,14 +105,14 @@ M&SOM 的 Editorial Statement 把接收标准写得比较直接。智能体可�
 - 如果没有真实数据，你的方法如何仍然连接 OM practice？
 - 如果使用真实数据，你是否只是用标准工具检验假设，还是提出了新的 data-driven decision-making 知识？
 
-## 特殊类别
+### 特殊类别
 
 - **OM Forum**：观点、历史、状态和未来方向，通常偏 thought leadership，多为邀请或先提 proposal。
 - **Data Set papers**：1-4 页，描述对 OM 研究有用的数据集，不做数据分析。
 - **Survey papers**：权威研究综述，需先联系 Editor-in-Chief 提短 proposal。
 - **OM Practice papers**：报告 OM 研究在真实问题中的创新实施，或严谨记录当前实践并说明模型方法如何成功或失败；按 regular manuscript 审稿标准处理。
 
-## 来源
+### 来源
 
 - INFORMS M&SOM journal page：https://pubsonline.informs.org/journal/msom
 - INFORMS M&SOM Editorial Statement：https://pubsonline.informs.org/page/msom/editorial-statement

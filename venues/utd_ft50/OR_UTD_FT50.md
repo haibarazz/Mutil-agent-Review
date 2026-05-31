@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 INFORMS 官方 Editorial Statement。此文件用于用户选择 Operations Research 后，智能体判断论文是否属于 OR 顶刊范围。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：OR / OPRE
 - 全名：Operations Research
@@ -14,11 +16,11 @@
 - Area Editors' Statements：https://pubsonline.informs.org/page/opre/editorial-statement/area-editors-statements
 - 投稿指南：https://pubsonline.informs.org/page/opre/submission-guidelines
 
-## 一句话定位
+### 一句话定位
 
 Operations Research 是 INFORMS 社群的旗舰 OR 期刊，核心使命是发表推进 OR 领域前沿知识的创新和高影响研究，尤其关注如何用分析方法改善决策。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 OR 比 M&SOM 更方法和理论导向，也更强调 methodological rigor。但它并不是纯数学期刊；官方强调 OR 传统上受到实践影响，创新和影响既可以来自方法卓越，也可以来自方法对实践产生影响。
 
@@ -41,7 +43,7 @@ OR 比 M&SOM 更方法和理论导向，也更强调 methodological rigor。但�
 
 智能体可以把 OR 的主题边界理解为：**只要论文以严谨 analytical method 推进复杂决策问题的建模、求解、分析、计算或实践应用，就可能属于 OR；但必须证明创新性和影响力。**
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 OR 强调：
 
@@ -51,7 +53,7 @@ OR 强调：
 - 经验严谨：也可以依赖数据、软件、计算和实证验证，但需要同样严谨。
 - 面向 INFORMS 社群正在增长的方向：ML/data science、market/platform/revenue management、societal impact、energy/environment 等。
 
-## 主题 fit 判断规则
+### 主题 fit 判断规则
 
 适合 OR 的论文通常满足：
 
@@ -69,7 +71,9 @@ OR 强调：
 - 只用通用机器学习做预测，无法说明对 OR decision-making 的贡献。
 - 数学证明、计算实验或数据验证无法支撑论文主张。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 Operations Research。
@@ -85,7 +89,7 @@ OR 强调：
 如果论文只是管理实证、普通 AI 预测或工程系统实现，必须指出 OR fit 不足，并建议重构为分析决策问题。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的核心 decision problem 是什么？
 - 论文的 OR 方法贡献是什么：模型、算法、证明、仿真、计算、软件、数据还是实际部署？
@@ -94,7 +98,7 @@ OR 强调：
 - 你的数学证明、计算实验或实证验证是否足以支持主张？
 - 如果是应用研究，实践影响在哪里，方法创新在哪里？
 
-## 来源
+### 来源
 
 - INFORMS Operations Research journal page：https://pubsonline.informs.org/journal/opre
 - INFORMS Operations Research Editorial Statement：https://pubsonline.informs.org/page/opre/editorial-statement

@@ -3,7 +3,8 @@
 
 核心概念:
 - 期刊配置以 Markdown 文件形式存储在 venues/ 目录下
-- 每个期刊有独特的 "profile" (profile = 对 AI 审稿人的指示/要求)
+- 每个期刊文件固定拆成 Journal Requirements 和 Venue Profile 两段
+- Journal Requirements 面向官方投稿要求，Venue Profile 面向智能体审稿判断
 - 不同集合的期刊有不同的命名后缀 (_CCFA, _UTD_FT50, _UTD, _FT50)
 
 Venues 目录结构:
@@ -36,12 +37,11 @@ class VenueRepository:
     """
 
     def __init__(self, venues_dir: Path, legacy_reference_dir: Path | None = None) -> None:
-        """
-        初始化期刊仓库
+        """初始化期刊仓库。
 
         Args:
             venues_dir: 期刊配置文件的根目录 (包含 ccfa/, utd_ft50/ 子目录)
-            legacy_reference_dir: (可选) 遗留参考实现目录
+            legacy_reference_dir: 兼容旧调用签名；活跃加载不再读取 reference 目录
         """
         self.venues_dir = venues_dir
         self.legacy_reference_dir = legacy_reference_dir
@@ -77,11 +77,13 @@ class VenueRepository:
             if not path.exists():
                 continue
             text = path.read_text(encoding="utf-8")
+            journal_requirements_text, profile_text = self._extract_sections(text)
             return VenueProfile(
                 code=code,
                 name=code,
                 source_path=str(path),
-                profile_text=self._extract_agent_profile(text),
+                journal_requirements_text=journal_requirements_text,
+                profile_text=profile_text,
             )
         return None
 
@@ -89,15 +91,9 @@ class VenueRepository:
         """
         获取所有有效的 profile 目录
 
-        目录优先级:
-        1. venues/ccfa/ - CCFA 系列
-        2. venues/utd_ft50/ - UTD/FT50 系列
-        3. legacy/CCFA/ - 遗留 CCFA (如存在)
-        4. legacy/ut d/ - 遗留 UTD (如存在)
+        当前只读取活跃的 venues/ 目录，reference/ 里的旧实现只作为人工参考。
         """
         dirs = [self.venues_dir / "ccfa", self.venues_dir / "utd_ft50"]
-        if self.legacy_reference_dir:
-            dirs.extend([self.legacy_reference_dir / "CCFA", self.legacy_reference_dir / "ut d"])
         return [path for path in dirs if path.exists()]
 
     def _candidate_paths(self, code: str) -> list[Path]:
@@ -122,15 +118,6 @@ class VenueRepository:
             self.venues_dir / "utd_ft50" / f"{code}_UTD.md",
             self.venues_dir / "utd_ft50" / f"{code}_FT50.md",
         ]
-        if self.legacy_reference_dir:
-            candidates.extend(
-                [
-                    self.legacy_reference_dir / "CCFA" / f"{code}_CCFA.md",
-                    self.legacy_reference_dir / "ut d" / f"{code}_UTD_FT50.md",
-                    self.legacy_reference_dir / "ut d" / f"{code}_UTD.md",
-                    self.legacy_reference_dir / "ut d" / f"{code}_FT50.md",
-                ]
-            )
         return candidates
 
     def _code_from_path(self, path: Path) -> str:
@@ -148,30 +135,39 @@ class VenueRepository:
             code = code.removesuffix(suffix)
         return code
 
-    def _extract_agent_profile(self, text: str) -> str:
+    def _extract_sections(self, text: str) -> tuple[str, str]:
+        """从标准化 venue 文件中读取官方要求和智能体画像。
+
+        venue 文件现在是 journal requirements 的唯一来源；如果旧文件还没迁移，
+        这里保留一个中文标题 fallback，方便迁移期间不让流程直接断掉。
         """
-        从 Markdown 文件内容中提取智能体提示词片段
+        requirements = self._section_after_marker(
+            text=text,
+            marker="## Journal Requirements",
+            stop_marker="## Venue Profile",
+        )
+        profile = self._section_after_marker(text=text, marker="## Venue Profile")
 
-        查找 "## 智能体提示词片段" 标记，
-        提取该标记之后、下一个 ## 标题之前的内容。
+        if not requirements:
+            requirements = self._section_before_marker(text, "## 智能体提示词片段")
+        if not profile:
+            profile = self._section_after_marker(text=text, marker="## 智能体提示词片段")
 
-        Args:
-            text: Markdown 文件的完整文本内容
+        return self._clean_section(requirements, limit=8000), self._clean_section(profile, limit=8000)
 
-        Returns:
-            str: 提取的提示词片段 (已清理格式，最多 4000 字符)
-        """
-        marker = "## 智能体提示词片段"
+    def _section_after_marker(self, *, text: str, marker: str, stop_marker: str | None = None) -> str:
         index = text.find(marker)
-        # 未找到标记则截取前 3000 字符
         if index == -1:
-            return text[:3000].strip()
+            return ""
         start = index + len(marker)
-        # 查找下一个 ## 标题位置
-        next_header = text.find("\n## ", start)
-        if next_header == -1:
-            profile = text[start:]
-        else:
-            profile = text[start:next_header]
-        # 清理代码块标记
-        return profile.replace("```text", "").replace("```", "").strip()[:4000]
+        if stop_marker:
+            stop = text.find(stop_marker, start)
+            return text[start:stop] if stop != -1 else text[start:]
+        return text[start:]
+
+    def _section_before_marker(self, text: str, marker: str) -> str:
+        index = text.find(marker)
+        return text[:index] if index != -1 else text
+
+    def _clean_section(self, text: str, *, limit: int) -> str:
+        return text.replace("```text", "").replace("```", "").strip()[:limit]

@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Society for Financial Studies 官方 RFS Aims and Scope。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：RFS
 - 全名：Review of Financial Studies
@@ -13,11 +15,11 @@
 - 官方 Aims and Scope：https://sfs.org/review-of-financial-studies/aims-and-scope/
 - 投稿指南：https://academic.oup.com/rfs/pages/General_Instructions
 
-## 一句话定位
+### 一句话定位
 
 RFS 是推广和广泛传播 financial economics 重大新研究的重要论坛，平衡理论和经验贡献，主要发表标准是质量和对金融领域的重要性，而不是技术难度。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 RFS 的官方定位强调 significant new research in financial economics，且 finance 被广义理解为包括 finance 与 economics 的交界。
 
@@ -30,7 +32,7 @@ RFS 的官方定位强调 significant new research in financial economics，且 
 - Finance-economics interface，例如宏观金融、劳动与金融、产业组织与金融。
 - 理论与经验贡献均可。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 RFS 的核心标准是 quality and importance to the field of finance。智能体判断时，不应把技术复杂度等同于贡献。
 
@@ -42,7 +44,7 @@ RFS 的核心标准是 quality and importance to the field of finance。智能�
 - **Broad-field contribution**：对金融领域具有重要性。
 - **Significant new research**：必须有显著新贡献。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 RFS 的论文通常满足：
 
@@ -60,7 +62,9 @@ RFS 的核心标准是 quality and importance to the field of finance。智能�
 - 只是经济学、会计或管理问题，金融接口弱。
 - 小幅增量不足以称为 significant new research。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 RFS 时，可以把下面内容加入系统提示词：
 
@@ -76,7 +80,7 @@ RFS 的核心标准是 quality and importance to the field of finance。智能�
 5. 是否避免把技术难度误当成金融贡献。
 ```
 
-## 来源
+### 来源
 
 - SFS RFS Aims and Scope：https://sfs.org/review-of-financial-studies/aims-and-scope/
 - OUP RFS page：https://academic.oup.com/rfs

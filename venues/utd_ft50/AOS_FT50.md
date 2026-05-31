@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Elsevier / ScienceDirect 的 Accounting, Organizations and Society 官方页面与 Guide for Authors。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：AOS
 - 全名：Accounting, Organizations and Society
@@ -12,11 +14,11 @@
 - 官方主页：https://www.sciencedirect.com/journal/accounting-organizations-and-society
 - 投稿指南：https://www.sciencedirect.com/journal/accounting-organizations-and-society/publish/guide-for-authors
 
-## 一句话定位
+### 一句话定位
 
 AOS 是研究 accounting 的 behavioral、organizational 和 social aspects 的顶级期刊。它关注会计与人的行为、组织/制度结构和更广泛社会政治环境之间的关系，而不只是会计数字本身。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 AOS 官方定位强调 accounting 与 human behavior、organizational and institutional structures、socio-political environment 的关系。对智能体来说，AOS 特别适合研究 **会计实践如何嵌入组织、制度、权力、责任、伦理、公共治理和社会变迁**。
 
@@ -34,7 +36,7 @@ AOS 官方定位强调 accounting 与 human behavior、organizational and instit
 - **Sustainability, environmental, and social reporting**：ESG、环境会计、社会报告、可持续问责。
 - **Historical studies**：会计实践和制度的历史研究。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 AOS 官方欢迎 diverse methodologies 和来自 social sciences 的理论发展。智能体不应把 AOS 当成传统 archival accounting 期刊，而应重点检查理论深度、组织/社会嵌入性和解释力。
 
@@ -46,7 +48,7 @@ AOS 官方欢迎 diverse methodologies 和来自 social sciences 的理论发展
 - **Critical / sociological / institutional theory**：权力、制度、职业、组织、社会理论。
 - **Archival or mixed-methods research**：只要能解释组织和社会中的 accounting processes，也可能适合。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 AOS 的论文通常满足：
 
@@ -63,7 +65,9 @@ AOS 官方欢迎 diverse methodologies 和来自 social sciences 的理论发展
 - 只是规范性地说应加强问责，但没有理论或证据。
 - 研究对象是组织行为或社会治理，但会计/控制/问责不核心。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 Accounting, Organizations and Society (AOS)。
@@ -77,7 +81,7 @@ AOS 官方欢迎 diverse methodologies 和来自 social sciences 的理论发展
 5. 贡献是否挑战或扩展我们对 accounting roles and effects 的理解。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的研究解释了 accounting 的哪一种组织或社会作用？
 - 会计实践如何塑造人的行为、组织结构、制度过程或社会责任？
@@ -85,7 +89,7 @@ AOS 官方欢迎 diverse methodologies 和来自 social sciences 的理论发展
 - 你的证据能否展示过程和情境，而不只是变量之间的平均效应？
 - 如果去掉 accounting/control/accountability，论文还成立吗？如果成立，可能不够 AOS。
 
-## 来源
+### 来源
 
 - ScienceDirect AOS journal page：https://www.sciencedirect.com/journal/accounting-organizations-and-society
 - ScienceDirect AOS Guide for Authors：https://www.sciencedirect.com/journal/accounting-organizations-and-society/publish/guide-for-authors

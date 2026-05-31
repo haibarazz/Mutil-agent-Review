@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Review of Finance 官方 Aims and Scope。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：RoF / ROF
 - 全名：Review of Finance
@@ -13,11 +15,11 @@
 - 官方 Aims and Scope：https://revfin.org/aims-and-scope/
 - 投稿指南：https://academic.oup.com/rof/pages/General_Instructions
 
-## 一句话定位
+### 一句话定位
 
 Review of Finance 是 European Finance Association 的官方期刊，目标是发表金融经济学中最好的研究，核心标准是 quality 和 innovation，并愿意接收非标准但有高价值的贡献。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 RoF 官方明确说，它希望发表 very best research in financial economics，不受方法、作者身份、地理位置、结果是否支持既有研究或是否有争议的限制。它尤其欢迎 right-tail submissions。
 
@@ -32,7 +34,7 @@ RoF 官方明确说，它希望发表 very best research in financial economics�
 - Non-result papers，即不显著结果，只要本身是实质贡献。
 - Descriptive papers on important topics，在重要问题上即使无法因果识别也可考虑，但需避免不当因果声称。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 RoF 的核心是 quality and innovation，同时愿意承担一定风险。
 
@@ -46,7 +48,7 @@ RoF 的核心是 quality and innovation，同时愿意承担一定风险。
 - **Non-result / registered-report style contribution**：重要问题上的不显著结果或预注册式提案。
 - **Descriptive important-topic contribution**：重要主题的描述性研究，清楚说明不能作因果声称。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 RoF 的论文通常满足：
 
@@ -65,7 +67,9 @@ RoF 的核心是 quality and innovation，同时愿意承担一定风险。
 - 因果识别很干净但问题不重要。
 - 结果不显著但没有实质贡献。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 RoF 时，可以把下面内容加入系统提示词：
 
@@ -83,7 +87,7 @@ RoF 的核心是 quality and innovation，同时愿意承担一定风险。
 如果论文只是复制、局部制度描述或方法炫技，必须指出 RoF fit 不足。
 ```
 
-## 来源
+### 来源
 
 - Review of Finance Aims and Scope：https://revfin.org/aims-and-scope/
 - OUP Review of Finance page：https://academic.oup.com/rof

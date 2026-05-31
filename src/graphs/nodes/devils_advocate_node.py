@@ -10,6 +10,7 @@ def devils_advocate_node(state: GlobalState) -> GlobalState:
         journal_requirements=state["journal_requirements"],
         venue_profile=state.get("venue_profile"),
         ae_result=state.get("ae_result", {}),
+        output_language=state.get("output_language", "zh"),
     )
     return {
         "reviewer_reports": [report],

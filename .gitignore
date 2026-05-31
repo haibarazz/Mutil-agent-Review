@@ -27,6 +27,7 @@ ENV/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+*.tsbuildinfo
 .coverage
 coverage.xml
 htmlcov/
@@ -53,6 +54,9 @@ logs/
 # =========
 .spec-workflow/
 .cozeproj/reduction
+to_my_self.md
+mutil agent review  front2/
+mutil agent review froont/
 
 # =========
 # Node / frontend

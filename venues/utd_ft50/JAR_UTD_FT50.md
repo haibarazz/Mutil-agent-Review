@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Wiley 的 Journal of Accounting Research 官方页面。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JAR
 - 全名：Journal of Accounting Research
@@ -12,11 +14,11 @@
 - 官方主页：https://onlinelibrary.wiley.com/journal/1475679x
 - 作者信息入口：https://onlinelibrary.wiley.com/journal/1475679x
 
-## 一句话定位
+### 一句话定位
 
 JAR 发表会计各领域原创研究，也接纳与会计密切相关的 finance、economics、statistics、psychology、sociology 等主题；它强调围绕组织、市场、政府、监管和标准中的 information and measurement 问题开展研究。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JAR 官方 scope 把 accounting research 定义为围绕 **information and measurement** 的问题。对智能体来说，JAR 的核心不是“会计标签”，而是论文是否解释了信息、计量、报告、披露、审计、税务或治理如何影响组织和市场。
 
@@ -31,7 +33,7 @@ JAR 官方 scope 把 accounting research 定义为围绕 **information and measu
 - **Law, regulation, and standards**：会计准则、披露规则、监管制度、法律环境。
 - **Accounting profession**：会计职业、审计事务所、专业判断和制度安排。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JAR 官方明确列出常见方法：analytical、empirical archival、experimental、field study。智能体判断时应看方法是否服务于信息/计量问题，而不是只看方法标签。
 
@@ -43,7 +45,7 @@ JAR 官方明确列出常见方法：analytical、empirical archival、experimen
 - **Field study**：组织或制度现场中的会计信息使用与计量实践。
 - **Interdisciplinary research**：与金融、经济、统计、心理、社会学等交叉，但问题必须回到会计信息和计量。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JAR 的论文通常满足：
 
@@ -60,7 +62,9 @@ JAR 官方明确列出常见方法：analytical、empirical archival、experimen
 - 方法很复杂但没有解释会计现象。
 - 只是单一政策背景介绍，缺少可一般化的会计知识。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 Journal of Accounting Research (JAR)。
@@ -74,7 +78,7 @@ JAR 官方明确列出常见方法：analytical、empirical archival、experimen
 5. 贡献是否足够原创，而不是已有会计文献的场景替换。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文中的 information 或 measurement 问题是什么？
 - 这个问题发生在组织、市场、监管、政府还是标准制定场景？
@@ -82,6 +86,6 @@ JAR 官方明确列出常见方法：analytical、empirical archival、experimen
 - 论文是否能和 JAR 常见的 reporting、disclosure、audit、tax、governance、capital markets 文献对话？
 - 如果把会计信息换成一般企业信息，论文贡献是否还成立？
 
-## 来源
+### 来源
 
 - Wiley Journal of Accounting Research journal page：https://onlinelibrary.wiley.com/journal/1475679x

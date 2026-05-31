@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Elsevier / ScienceDirect 的 Journal of Accounting and Economics 官方页面与 Guide for Authors。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JAE
 - 全名：Journal of Accounting and Economics
@@ -12,11 +14,11 @@
 - 官方主页：https://www.sciencedirect.com/journal/journal-of-accounting-and-economics
 - 投稿指南：https://www.sciencedirect.com/journal/journal-of-accounting-and-economics/publish/guide-for-authors
 
-## 一句话定位
+### 一句话定位
 
 JAE 的核心定位是用经济学理论和经济分析解释会计现象。它尤其适合研究会计信息如何在资本市场、企业契约、代理关系、披露监管、准则制定和会计职业中发挥作用。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JAE 官方 scope 明确鼓励把 economic theory 应用于 accounting phenomena。对智能体来说，JAE 不是“所有会计主题都可以”的一般会计期刊，而是偏向 **会计问题的经济学解释、经济后果和制度机制**。
 
@@ -30,7 +32,7 @@ JAE 官方 scope 明确鼓励把 economic theory 应用于 accounting phenomena�
 - **Regulation of the accounting profession**：审计、会计职业、监管制度与市场结构。
 - **Theory of the accounting firm**：会计师事务所、审计市场、职业组织和专业服务经济学。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JAE 的关键词是 economic analyses of accounting problems。智能体判断时，应优先寻找清楚的经济机制，而不是单纯会计场景。
 
@@ -42,7 +44,7 @@ JAE 的关键词是 economic analyses of accounting problems。智能体判断�
 - **Contracting / agency research**：说明会计信息如何缓解或重塑代理问题。
 - **Regulatory / standard-setting research**：评估准则或监管制度的激励与后果。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JAE 的论文通常满足：
 
@@ -59,7 +61,9 @@ JAE 的关键词是 economic analyses of accounting problems。智能体判断�
 - 只展示技术预测性能，没有会计经济学解释。
 - 政策评估没有明确说明会计制度中的激励、信息或资源配置机制。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 Journal of Accounting and Economics (JAE)。
@@ -73,7 +77,7 @@ JAE 的关键词是 economic analyses of accounting problems。智能体判断�
 5. 结论是否解释经济主体行为、市场结果、契约安排或监管后果。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的 accounting phenomenon 是什么？
 - 你用什么经济理论或经济机制解释它？
@@ -81,7 +85,7 @@ JAE 的关键词是 economic analyses of accounting problems。智能体判断�
 - 你的论文能回答准则制定者、监管者、投资者、企业或审计市场的什么经济问题？
 - 如果去掉会计制度变量，你的论文还成立吗？如果成立，可能就不够 JAE。
 
-## 来源
+### 来源
 
 - ScienceDirect JAE journal page：https://www.sciencedirect.com/journal/journal-of-accounting-and-economics
 - ScienceDirect JAE Guide for Authors：https://www.sciencedirect.com/journal/journal-of-accounting-and-economics/publish/guide-for-authors

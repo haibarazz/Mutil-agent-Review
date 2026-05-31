@@ -5,7 +5,10 @@ from src.graphs.state import GlobalState
 
 
 def content_check_node(state: GlobalState) -> GlobalState:
-    result = get_review_nodes().content_check(state["parsed_paper"])
+    result = get_review_nodes().content_check(
+        state["parsed_paper"],
+        output_language=state.get("output_language", "zh"),
+    )
     return {
         "content_check": result,
         "intent": result["intent"],

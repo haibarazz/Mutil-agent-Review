@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 MIT Sloan Management Review 官方 Author Guidelines 与 Contact 页面。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：MIT SMR / SMR
 - 全名：MIT Sloan Management Review
@@ -13,17 +15,17 @@
 - Author Guidelines：https://sloanreview.mit.edu/authors/
 - Contact / Editorial Inquiries：https://sloanreview.mit.edu/contact/
 
-## 当前投稿状态
+### 当前投稿状态
 
 MIT SMR 官方 Author Guidelines 在 2026-05-22 更新：MIT Sloan School of Management 将在 2026 年晚些时候停止出版 MIT Sloan Management Review；文章开发 pipeline 已满，因此当前不再接受 submissions。
 
 对智能体来说，SMR 现在仍可作为“文章风格和管理洞见定位”的参考，但不应把它当作当前可正常投稿的目标刊物，除非用户明确说明是在做历史分析、资料库建设或已有编辑关系下的内部处理。
 
-## 一句话定位
+### 一句话定位
 
 MIT SMR 面向公司和领导者，提供 practical insights 和 big-picture thinking，帮助他们在复杂环境中创造长期价值并服务 stakeholder。它尤其关注技术如何影响战略、运营和劳动力，以及创新、DEI、可持续和不确定时代的领导力。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 MIT SMR 官方 “What We Do” 和 “What We Want” 把刊物定位为把最佳研究和 evidence-based insights 翻译成领导者可用的 practical wisdom。对智能体来说，SMR 的 fit 是 **管理研究/分析能否转化为 potent、useful、directly applicable 的新管理洞见**。
 
@@ -36,7 +38,7 @@ MIT SMR 官方 “What We Do” 和 “What We Want” 把刊物定位为把最�
 - **Operations and workforce transformation**：数字技术、组织设计、流程、员工技能和工作方式变化。
 - **Evidence-based management**：把研究结果、数据分析、案例和实践经验转成管理者可执行建议。
 
-## 官方偏好的文章类型与贡献方式
+### 官方偏好的文章类型与贡献方式
 
 MIT SMR 官方偏好短 essay、opinion piece、full-length article、research highlight 等形式，并说明当时偏好 1,000-2,500 字的短文和研究亮点。核心标准包括：
 
@@ -45,7 +47,7 @@ MIT SMR 官方偏好短 essay、opinion piece、full-length article、research h
 - **Strong case**：要用充分、直接的证据支撑论证，最好有原创研究。
 - **Author expertise**：作者需要在主题上有深度经验和可信度，可以是学者、实践者或分析师。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 SMR 风格的文章通常满足：
 
@@ -64,7 +66,9 @@ MIT SMR 官方偏好短 essay、opinion piece、full-length article、research h
 - 只服务于产品宣传或咨询销售。
 - 当前作为投稿目标，因为官方已暂停接受 submissions。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标刊物是 MIT Sloan Management Review (MIT SMR)。
@@ -73,7 +77,7 @@ MIT SMR 官方偏好短 essay、opinion piece、full-length article、research h
 如果用户仍选择 SMR 作为风格目标，请按其官方定位评估文章：文章应为 business leaders 提供 practical insights 和 big-picture thinking，尤其关注 strategic leadership、digital innovation 和 sustainable business。内容需要 fresh thinking、direct relevance to managers、strong case 和 author expertise。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你是要真的投稿 SMR，还是把 SMR 当成管理文章风格参考？
 - 你的 insight 属于战略领导、数字创新还是可持续商业？
@@ -82,7 +86,7 @@ MIT SMR 官方偏好短 essay、opinion piece、full-length article、research h
 - 你有什么原创研究、案例或经验来支撑论证？
 - 文章能否压缩成 1,000-2,500 字的管理者可读版本？
 
-## 来源
+### 来源
 
 - MIT SMR Author Guidelines：https://sloanreview.mit.edu/authors/
 - MIT SMR Contact / Editorial Inquiries：https://sloanreview.mit.edu/contact/

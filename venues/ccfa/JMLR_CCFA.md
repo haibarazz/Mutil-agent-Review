@@ -2,7 +2,9 @@
 
 > CCF-A 智能体 venue 画像版，更新日期：2026-05-25。资料来源为 CCF 第七版《中国计算机学会推荐国际学术会议和期刊目录》正式版、CCF 官方目录入口和结构化整理源。此文件用于“用户选择 CS/CCF-A venue 后，智能体判断主题 fit、贡献类型和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JMLR
 - 全名：Journal of Machine Learning Research
@@ -13,11 +15,11 @@
 - 出版方 / 主办方：MIT Press
 - CCF 官方目录入口：https://www.ccf.org.cn/Academic_Evaluation/By_category/
 
-## 一句话定位
+### 一句话定位
 
 JMLR 是 CCF 推荐目录中 **人工智能** 领域的 A 类期刊。人工智能方向的顶级 venue，适合机器学习、人工智能、计算机视觉、自然语言处理、表示学习和智能系统研究。
 
-## 官方目录定位：适合什么主题
+### 官方目录定位：适合什么主题
 
 CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**。对智能体来说，最重要的 fit 判断是：论文是否真正推进该 CCF 专业领域的核心问题，而不是只借用该领域作为应用背景。
 
@@ -30,7 +32,7 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - 强化学习、生成模型和表示学习
 - AI 系统评测、可靠性、公平性和安全性
 
-## CCF-A 投稿/选刊判断要点
+### CCF-A 投稿/选刊判断要点
 
 - A 类表示 CCF 推荐目录中该专业领域的最高推荐等级之一，但 CCF 官方也说明目录是推荐建议，不建议简单作为学术评价依据。
 - 主题必须与该 venue 所在 CCF 专业领域高度一致。
@@ -39,7 +41,7 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - 如果是理论类论文，应有清晰模型、定理、证明和相对已有结果的实质推进。
 - 如果是 AI/数据类论文，应有强基线、消融、误差分析、数据/任务合理性和泛化讨论。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JMLR 的论文通常满足：
 
@@ -57,7 +59,7 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - 论文贡献主要是产品实现、工程堆叠或业务报告，而不是可发表研究。
 
 
-## 官方要求抓取（官方源，2026-05-25）
+### 官方要求抓取（官方源，2026-05-25）
 
 官方来源：
 
@@ -65,22 +67,24 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 
 来源类型：官方 Aims & Scope / About / Author 页面
 
-### 官方定位与主题范围
+#### 官方定位与主题范围
 
 - JMLR 官方定位为 machine learning 领域开放期刊，发表机器学习各方向研究。
 - 适合 ML theory、algorithms、statistical learning、deep learning、RL、probabilistic methods、optimization、applications with ML insight。
 
-### 官方投稿与评审要求
+#### 官方投稿与评审要求
 
 - 论文应对 ML 社区有原创、完整、可复现贡献，通常需要严谨理论或充分实验。
 - JMLR 期刊稿件通常要求比会议论文更完整的论证和实验扩展。
 
-### 给智能体的硬约束
+#### 给智能体的硬约束
 
 - JMLR fit 要求 machine learning contribution。
 - 仅使用 ML 工具解决领域应用、没有 ML 方法或理解贡献时 fit 弱。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标 venue 是 Journal of Machine Learning Research (JMLR)，CCF-A，类型为期刊，所属 CCF 专业领域为：人工智能 / Artificial Intelligence。
@@ -90,7 +94,7 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 如果论文只是把通用方法套到一个场景，或者主题与 人工智能 关系弱，请明确指出 fit 不足，并建议如何重写为该领域核心问题。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文最核心的 CS 问题是什么？它为什么属于 **人工智能**？
 - 你的贡献是理论、算法、系统、实证、数据集、benchmark，还是多种结合？
@@ -98,7 +102,7 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - 你的 strongest baselines、ablation、scalability 或 proof obligations 是否足够？
 - 如果审稿人认为这是相邻领域论文，你如何解释它适合 JMLR？
 
-## 来源
+### 来源
 
 - CCF 官方目录入口：https://www.ccf.org.cn/Academic_Evaluation/By_category/
 - CCF 第七版正式目录 PDF：CCF 官方页面中的“第七版中国计算机学会推荐国际学术会议和期刊目录（正式版）”

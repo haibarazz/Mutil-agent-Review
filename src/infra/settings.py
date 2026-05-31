@@ -37,6 +37,9 @@ class Settings:
 
     # ========== 应用环境 ==========
     app_env: str                    # 应用环境: dev / prod / test
+    api_cors_origins: tuple[str, ...] # 允许访问 FastAPI 的前端来源
+    supported_upload_extensions: tuple[str, ...] # 前端和后端共同支持的稿件扩展名
+    max_upload_bytes: int           # 浏览器上传稿件大小上限
 
     # ========== LLM 配置 ==========
     llm_provider: str               # LLM 提供商: mock / openai_compatible
@@ -68,6 +71,16 @@ class Settings:
     def runs_dir(self) -> Path:
         """审稿运行记录存放目录 (自动创建于 data/runs)"""
         return self.data_dir / "runs"
+
+    @property
+    def uploads_dir(self) -> Path:
+        """浏览器上传稿件的本地暂存目录 (自动创建于 data/uploads)"""
+        return self.data_dir / "uploads"
+
+    @property
+    def jobs_dir(self) -> Path:
+        """前端异步审稿任务状态目录 (自动创建于 data/jobs)"""
+        return self.data_dir / "jobs"
 
 
 def load_settings() -> Settings:
@@ -119,6 +132,14 @@ def load_settings() -> Settings:
     return Settings(
         project_root=project_root,
         app_env=os.getenv("APP_ENV", "dev"),
+        api_cors_origins=_env_csv(
+            "APP_CORS_ORIGINS",
+            "http://127.0.0.1:5173,http://localhost:5173",
+        ),
+        supported_upload_extensions=_normalize_extensions(
+            _env_csv("APP_SUPPORTED_UPLOAD_EXTENSIONS", ".pdf,.md,.tex")
+        ),
+        max_upload_bytes=_env_int("APP_MAX_UPLOAD_BYTES", 80 * 1024 * 1024),
         data_dir=data_dir,
         llm_provider=os.getenv("LLM_PROVIDER", "mock"),           # 默认 mock 模式
         llm_base_url=os.getenv("LLM_BASE_URL", ""),
@@ -169,3 +190,24 @@ def _env_float(key: str, default: float) -> float:
     """
     value = os.getenv(key)
     return float(value) if value else default
+
+
+def _env_csv(key: str, default: str) -> tuple[str, ...]:
+    """
+    从环境变量读取逗号分隔列表
+
+    用于 CORS origins 这类部署期配置；会自动去掉空项和多余空格。
+    """
+    value = os.getenv(key, default)
+    return tuple(item.strip() for item in value.split(",") if item.strip())
+
+
+def _normalize_extensions(values: tuple[str, ...]) -> tuple[str, ...]:
+    """把 pdf / .PDF 这类配置统一收敛为小写 .pdf。"""
+    normalized: list[str] = []
+    for value in values:
+        extension = value.lower()
+        if not extension.startswith("."):
+            extension = f".{extension}"
+        normalized.append(extension)
+    return tuple(dict.fromkeys(normalized))

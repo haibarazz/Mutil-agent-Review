@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 University of Chicago Press 的 JPE 官方页面与 Instructions for Authors。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JPE
 - 全名：Journal of Political Economy
@@ -12,11 +14,11 @@
 - 官方主页：https://www.journals.uchicago.edu/toc/jpe/current
 - 投稿指南：https://www.journals.uchicago.edu/journals/jpe/instruct
 
-## 一句话定位
+### 一句话定位
 
 JPE 是历史悠久的顶级经济学期刊，定位是发表 economic theory and practice 中重要且必要的学术贡献；它偏好 highly selective 的 analytical、interpretive 和 empirical studies。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JPE 官方介绍强调 significant and essential scholarship in economic theory and practice，并列出多个经济学领域。对智能体来说，JPE 不是只收“political economy”，而是综合经济学顶刊，但特别重视深层理论机制、解释力和经济学意义。
 
@@ -31,7 +33,7 @@ JPE 官方介绍强调 significant and essential scholarship in economic theory 
 - **Industrial organization**：市场结构、竞争、定价、平台、监管。
 - **Social economics and political economy**：社会互动、文化、制度、政治过程与经济结果。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JPE 官方用 analytical、interpretive、empirical studies 描述文章类型。智能体应特别注意“解释力”：JPE 论文通常要说明一个重要经济现象背后的机制，而不只是给出一个估计结果。
 
@@ -43,7 +45,7 @@ JPE 官方用 analytical、interpretive、empirical studies 描述文章类型�
 - **Theory-guided empirical work**：实证结果需要与理论机制紧密连接。
 - **Broad field contribution**：文章应能对一个主要经济学领域产生影响。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JPE 的论文通常满足：
 
@@ -60,7 +62,9 @@ JPE 官方用 analytical、interpretive、empirical studies 描述文章类型�
 - 纯方法论文没有明显经济学贡献。
 - 只有管理/商业场景，经济学问题不够核心。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 Journal of Political Economy (JPE)。
@@ -74,7 +78,7 @@ JPE 官方用 analytical、interpretive、empirical studies 描述文章类型�
 5. 写作是否把经济学意义讲清楚。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文解释了什么重要经济现象？
 - 你的 analytical、interpretive 或 empirical contribution 分别是什么？
@@ -82,7 +86,7 @@ JPE 官方用 analytical、interpretive、empirical studies 描述文章类型�
 - 你的结果能否改变该领域对某个机制、制度或政策的理解？
 - 为什么这不是一篇只适合 field journal 的局部研究？
 
-## 来源
+### 来源
 
 - University of Chicago Press JPE journal page：https://www.journals.uchicago.edu/toc/jpe/current
 - University of Chicago Press JPE Instructions for Authors：https://www.journals.uchicago.edu/journals/jpe/instruct

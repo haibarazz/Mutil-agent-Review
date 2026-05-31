@@ -10,6 +10,7 @@ def se_check_node(state: GlobalState) -> GlobalState:
         journal_requirements=state["journal_requirements"],
         venue_profile=state.get("venue_profile"),
         field_info=state.get("field_info", {}),
+        output_language=state.get("output_language", "zh"),
     )
     return {
         "se_result": result,

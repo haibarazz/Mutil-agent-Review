@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 JOM 编辑团队站点的 Aims and Scope，并保留 Wiley 官方主页作为出版入口。此文件用于用户选择 JOM 后，智能体判断论文是否符合经验型 OM 顶刊的内容定位。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JOM / JOMOps
 - 全名：Journal of Operations Management
@@ -13,11 +15,11 @@
 - JOM 编辑团队站点：https://sites.google.com/view/journalofoperationsmanagement/home
 - 投稿 / 作者指南：见 JOM 编辑团队站点 Submissions / Author Guidelines
 
-## 一句话定位
+### 一句话定位
 
 JOM 是经验型运营管理顶刊，强调高质量、原创、严谨的 OM/SCM 研究；论文必须把 operations 放在研究问题的核心，而不是只把制造、服务或供应链当作经验场景。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JOM 的 distinctive emphasis 是 management of operations，包括：
 
@@ -30,7 +32,7 @@ JOM 的 distinctive emphasis 是 management of operations，包括：
 
 JOM 编辑团队特别强调：无论主题和情境是什么，operations 必须是 research question 的核心，而不能只是背景。例如，在制造工厂研究领导力，只有当研究问题清楚连接到运营管理时才在范围内；制造场景本身不是充分条件。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JOM 首先是 academic journal，主要读者是 OM scholars。它鼓励能吸引 practitioner attention 的研究，但不发表 primary audience 只是 practitioner 的稿件；academic relevance 是必要条件。
 
@@ -55,7 +57,7 @@ JOM 偏好：
 - meta-analysis
 - conceptual/theoretical studies with clear practice implications
 
-## 主题 fit 判断规则
+### 主题 fit 判断规则
 
 适合 JOM 的论文通常满足：
 
@@ -74,7 +76,9 @@ JOM 偏好：
 - 只做常规变量关系，无法说明对 OM/SCM 理论或实践的贡献。
 - Practical implication 只是结尾补写，没有在研究一开始就内嵌到问题动机中。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 Journal of Operations Management (JOM)。
@@ -90,7 +94,7 @@ JOM 偏好：
 如果论文只是普通组织/领导/战略/信息系统研究发生在制造或供应链场景，必须指出 JOM fit 不足，并要求把 operations mechanism 变成核心。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的 operations research question 是什么？
 - 如果去掉制造/服务/供应链场景，这篇论文还剩下什么 OM 贡献？
@@ -99,7 +103,7 @@ JOM 偏好：
 - 你的经验情境如何支持更一般的 OM/SCM 理论？
 - 你的方法为什么适合这个研究问题？
 
-## 来源
+### 来源
 
 - Wiley JOM journal page：https://onlinelibrary.wiley.com/journal/18731317
 - JOM editor-maintained site：https://sites.google.com/view/journalofoperationsmanagement/home

@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any, Protocol
+
+
+JsonValidator = Callable[..., dict[str, Any]]
 
 
 class LLMClient(Protocol):
@@ -27,5 +31,6 @@ class LLMClient(Protocol):
         temperature: float = 0.2,
         top_p: float | None = None,
         max_tokens: int | None = None,
+        validator: JsonValidator | None = None,
     ) -> dict[str, Any]:
         """Return a JSON-compatible object from an LLM call."""

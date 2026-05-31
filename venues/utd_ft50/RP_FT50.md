@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Elsevier / ScienceDirect 官方 Aims & Scope。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：RP
 - 全名：Research Policy
@@ -13,11 +15,11 @@
 - 投稿指南：https://www.sciencedirect.com/journal/research-policy/publish/guide-for-authors
 - 投稿系统：https://www.editorialmanager.com/RESPOL/default.aspx
 
-## 一句话定位
+### 一句话定位
 
 Research Policy 是 innovation studies 领域的 leading journal，发表关于 science、technology、innovation 与经济、社会、政治、组织过程之间互动的理论和经验研究，所有论文都应产生 policy 或 management 含义。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 RP 官方副标题式定位是 policy, management and economic studies of science, technology and innovation。它关注 innovation、technology 或 research 与经济、社会、政治、组织过程之间的互动，并要求论文对 policy 或 management 有 implications。
 
@@ -33,7 +35,7 @@ RP 官方副标题式定位是 policy, management and economic studies of scienc
 - 可持续创新、绿色创新、气候、社会挑战和 mission-oriented innovation policy。
 - innovation indicators、patents、science/technology metrics。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 RP 是多学科期刊，接受理论和经验研究，但要求与 science/technology/innovation 和 policy/management 含义直接相关。
 
@@ -46,7 +48,7 @@ RP 是多学科期刊，接受理论和经验研究，但要求与 science/techn
 - **Economic / organizational contribution**：解释创新与经济、组织、制度和社会过程。
 - **Short communication / discussion / special issue contribution**：针对重要主题的短文、讨论和专题。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 RP 的论文通常满足：
 
@@ -64,7 +66,9 @@ RP 是多学科期刊，接受理论和经验研究，但要求与 science/techn
 - 只是一般创业、战略或组织研究，创新研究贡献不清。
 - 研究与 science/technology/innovation 的互动关系弱。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 RP 时，可以把下面内容加入系统提示词：
 
@@ -82,7 +86,7 @@ RP 是多学科期刊，接受理论和经验研究，但要求与 science/techn
 如果论文只是企业创新相关变量研究，必须要求作者强化 innovation studies 和 policy/management implications。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文研究的是 innovation、technology、research、R&D 还是 science？
 - 它与哪些经济、社会、政治或组织过程互动？
@@ -90,7 +94,7 @@ RP 是多学科期刊，接受理论和经验研究，但要求与 science/techn
 - 你的研究如何贡献给 innovation studies？
 - 主题是否只是企业创新，还是能进入 RP 的 science/technology/innovation 框架？
 
-## 来源
+### 来源
 
 - ScienceDirect Research Policy page：https://www.sciencedirect.com/journal/research-policy
 - RP Guide for Authors：https://www.sciencedirect.com/journal/research-policy/publish/guide-for-authors

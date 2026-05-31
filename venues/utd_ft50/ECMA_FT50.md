@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Econometric Society 的 Econometrica About、Editorial Procedures and Policies 与 Submission Guidelines。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：ECMA / Econometrica
 - 全名：Econometrica
@@ -13,11 +15,11 @@
 - 投稿指南：https://www.econometricsociety.org/publications/econometrica/information-authors
 - Editorial Procedures：https://www.econometricsociety.org/publications/econometrica/editorial-procedures-and-policies
 
-## 一句话定位
+### 一句话定位
 
 Econometrica 覆盖经济学所有分支，但它的核心气质是 rigorous analysis：推进经济理论、计量理论、应用经济问题或经验研究，并使用合适的 analytical 和 statistical methods。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 Econometrica 官方 About 说明它发表 all branches of economics，包括 theoretical and empirical、abstract and applied。它也明确把期刊目标和 Econometric Society 的宗旨相连：促进经济理论与统计、数学的关系，以及理论-定量和经验-定量方法的统一。
 
@@ -30,7 +32,7 @@ Econometrica 官方 About 说明它发表 all branches of economics，包括 the
 - **Applied economic problems**：应用问题可以很现实，但需要有深层经济机制和分析严谨性。
 - **Experimental / simulation-based work**：官方 policies 对实验和可复现材料要求明确，适合有完整设计和复现材料的研究。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 Econometrica 官方列出的核心发表品质是 interesting、original、well-crafted，并使用 appropriate analytical and statistical methods。智能体应把它理解为：**方法和经济问题必须同时强**。
 
@@ -42,7 +44,7 @@ Econometrica 官方列出的核心发表品质是 interesting、original、well-
 - **Applied contribution with rigorous analysis**：应用经济问题要有超出案例本身的理论或方法含义。
 - **Replication-ready empirical / experimental work**：实证、实验和模拟研究需要清楚的数据、代码和文档。
 
-## 官方强调的录用标准
+### 官方强调的录用标准
 
 Econometrica 的 editorial policies 明确说明，部分稿件可能在编辑评估后不送外审；appeal 通常不能针对“重要性和相关性”的专业判断。智能体可转成以下标准：
 
@@ -52,7 +54,7 @@ Econometrica 的 editorial policies 明确说明，部分稿件可能在编辑�
 - 方法必须 appropriate，而不是为了炫技。
 - 经验、实验、模拟结果要能满足数据和代码可复现政策。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 Econometrica 的论文通常满足：
 
@@ -69,7 +71,9 @@ Econometrica 的 editorial policies 明确说明，部分稿件可能在编辑�
 - 应用场景重要，但理论/计量/定量贡献不足。
 - 方法新颖但没有证明它如何推进经济学研究。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 Econometrica。
@@ -83,7 +87,7 @@ Econometrica 的 editorial policies 明确说明，部分稿件可能在编辑�
 5. 论文是否使用 appropriate analytical and statistical methods，而不是过度方法化。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文主要贡献是经济理论、计量理论、定量模型、应用经济，还是经验研究？
 - 为什么这个问题需要 Econometrica 级别的 rigorous analysis？
@@ -91,7 +95,7 @@ Econometrica 的 editorial policies 明确说明，部分稿件可能在编辑�
 - 你的分析是否已经做到 self-contained、well-crafted 和可复现？
 - 如果把技术复杂性拿掉，论文的经济学贡献还剩什么？
 
-## 来源
+### 来源
 
 - Econometrica About：https://www.econometricsociety.org/publications/econometrica/about
 - Econometrica Submission Guidelines：https://www.econometricsociety.org/publications/econometrica/information-authors

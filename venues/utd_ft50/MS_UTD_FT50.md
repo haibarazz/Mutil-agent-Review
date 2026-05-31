@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 INFORMS 官方 Editorial Statement。此文件用于用户选择 Management Science 后，智能体判断论文主题 fit、贡献方式和写作重点。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：MS
 - 全名：Management Science
@@ -14,11 +16,11 @@
 - 投稿指南：https://pubsonline.informs.org/page/mnsc/submission-guidelines
 - Code and Data Disclosure Policy：https://pubsonline.informs.org/page/mnsc/code-and-data-disclosure-policy
 
-## 一句话定位
+### 一句话定位
 
 Management Science 是管理科学领域的综合顶刊，发表关于管理理论与实践的科学研究。它覆盖战略、创业、创新、技术、组织，以及会计、金融、信息系统、营销、运营等所有商业功能领域；统一标准是：论文必须用严谨分析推进对管理问题的理解。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 Management Science 的 scope 非常宽，但不是“什么管理话题都可以”。它要求研究与管理理论或管理实践相关，并且对 management science scholars 有广泛兴趣。
 
@@ -40,7 +42,7 @@ Management Science 的 scope 非常宽，但不是“什么管理话题都可以
 - **Strategy**：组织如何部署以解决重要问题，覆盖竞争、企业边界、治理、位置、目的、可持续、非市场战略、文化、员工、利益相关者和国际管理。
 - **Sustainability**：私营部门与社会、环境、经济、政治系统之间的相互影响、风险、机会、限制和协作。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 Management Science 欢迎理论、实验、实证和跨学科贡献。智能体应判断论文是否满足三条底线：
 
@@ -56,7 +58,7 @@ Management Science 欢迎理论、实验、实证和跨学科贡献。智能体�
 - 方法可以是理论模型、实验、field/lab experiment、档案数据、计量、优化、算法、仿真、调查、访谈或混合方法。
 - 对实践影响和 general audience visibility 有加分价值，尤其是能被 Practice Advisory Board 或实践读者理解的研究。
 
-## 主题 fit 判断规则
+### 主题 fit 判断规则
 
 适合 Management Science 的论文通常满足：
 
@@ -74,7 +76,9 @@ Management Science 欢迎理论、实验、实证和跨学科贡献。智能体�
 - 实证结果无法解释机制，也不能给管理实践或理论提供新理解。
 - 与某个 department 的 scope 不匹配，或没有说明应该投哪个 department。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 Management Science。
@@ -90,7 +94,7 @@ Management Science 欢迎理论、实验、实证和跨学科贡献。智能体�
 如果论文只是通用算法、通用经济学模型、普通心理实验或窄场景商业案例，必须指出 Management Science fit 不足，并建议重构为明确的管理决策问题。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你准备投 Management Science 的哪个 department？
 - 你的问题为什么是 management science 问题？
@@ -99,7 +103,7 @@ Management Science 欢迎理论、实验、实证和跨学科贡献。智能体�
 - 如果你的方法来自 CS/econ/psych/stats，它如何转化为管理知识？
 - 你的数据、代码、实验材料和补充材料是否能支持复现？
 
-## 来源
+### 来源
 
 - INFORMS Management Science journal page：https://pubsonline.informs.org/journal/mnsc
 - INFORMS Management Science Editorial Statement：https://pubsonline.informs.org/page/mnsc/editorial-statement

@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 JCR 官方站 About the Journal 与 OUP 投稿入口。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JCR
 - 全名：Journal of Consumer Research
@@ -13,11 +15,11 @@
 - 官方 About the Journal：https://consumerresearcher.com/about
 - 投稿指南：https://academic.oup.com/jcr/pages/General_Instructions
 
-## 一句话定位
+### 一句话定位
 
 JCR 是消费者研究领域的顶级跨学科期刊，发表最高质量的 empirical、theoretical 和 methodological papers，核心标准是推进对 consumer behavior 或 consumer research conduct 的理解。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JCR 的官方定位比“营销期刊”更宽，它是 consumer research 的跨学科期刊。论文可以来自营销、心理、社会学、人类学、传播、统计、家庭与消费科学、运营等多种学科视角，但必须推进对消费、消费者行为或消费者研究方法的理解。
 
@@ -30,7 +32,7 @@ JCR 的官方定位比“营销期刊”更宽，它是 consumer research 的跨
 - methodological papers：能改进 consumer research 的研究设计、测量、数据、分析或方法论。
 - 多学科、多方法、多理论范式的消费者研究。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JCR 官方明确说，它发表 empirical、theoretical、methodological papers of the highest quality。智能体判断时，应把“是否推进消费者行为/消费者研究理解”放在第一位。
 
@@ -42,7 +44,7 @@ JCR 官方明确说，它发表 empirical、theoretical、methodological papers 
 - **Repudiation contribution**：有力地反驳、修正或重新界定既有消费研究结论。
 - **Multidisciplinary contribution**：从不同学科范式进入，但读者必须能看到其对 consumer research 的贡献。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JCR 的论文通常满足：
 
@@ -60,7 +62,9 @@ JCR 官方明确说，它发表 empirical、theoretical、methodological papers 
 - 只是方法工具展示，没有说明如何改善 consumer research。
 - 只对一个平台或产品有效，无法连接到更广泛的消费理论或研究实践。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 JCR 时，可以把下面内容加入系统提示词：
 
@@ -78,7 +82,7 @@ JCR 官方明确说，它发表 empirical、theoretical、methodological papers 
 如果论文只是营销策略、心理学、社会学或方法论文，必须要求作者明确它对 consumer research 的直接贡献。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文要推进对哪一种 consumer behavior 的理解？
 - 你是在 advance、deepen，还是 repudiate 哪条既有 consumer research？
@@ -87,7 +91,7 @@ JCR 官方明确说，它发表 empirical、theoretical、methodological papers 
 - 你的结论对跨学科 consumer research 读者有什么价值？
 - 你的理论或发现能推广到哪些消费场景？
 
-## 来源
+### 来源
 
 - JCR About the Journal：https://consumerresearcher.com/about
 - OUP Journal of Consumer Research page：https://academic.oup.com/jcr

@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 APA 官方 Journal of Applied Psychology 页面。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JAP
 - 全名：Journal of Applied Psychology
@@ -13,11 +15,11 @@
 - 官方主页：https://www.apa.org/pubs/journals/apl
 - 投稿系统：https://www.editorialmanager.com/apl/default1.aspx
 
-## 一句话定位
+### 一句话定位
 
 JAP 发表应用心理学领域的原创研究，核心是推进对工作和组织情境中认知、动机、情感和行为心理现象的理解，并具有直接或间接实践含义。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JAP 的核心是 applied psychology，而不是一般管理或 HRM。官方 scope 强调 work and organizational settings 中的 psychological phenomena，层级可以是 individuals、groups、organizations 或 cultures，场景可以是商业、教育、培训、健康、服务、政府、军事、公共/私人、营利/非营利组织。
 
@@ -36,7 +38,7 @@ JAP 的核心是 applied psychology，而不是一般管理或 HRM。官方 scop
 - 创造力、创新、适应。
 - 组织文化、气候、设计、变革和干预。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JAP 明确接受多种文章类型。智能体判断时，应把“心理现象理解是否推进”和“实践含义是否存在”作为核心。
 
@@ -49,7 +51,7 @@ JAP 明确接受多种文章类型。智能体判断时，应把“心理现象�
 - **Qualitative research**：研究难以量化或适合归纳理论建构的现象。
 - **Replications**：对文献有重要价值和 insight 的复制研究。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JAP 的论文通常满足：
 
@@ -67,7 +69,9 @@ JAP 明确接受多种文章类型。智能体判断时，应把“心理现象�
 - 方法严谨但理论心理机制弱。
 - 实践含义与工作或组织心理无关。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 JAP 时，可以把下面内容加入系统提示词：
 
@@ -85,7 +89,7 @@ JAP 明确接受多种文章类型。智能体判断时，应把“心理现象�
 如果论文只是管理、HR 或组织绩效研究，必须要求作者明确 psychological process 和 applied psychology contribution。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的核心心理现象是什么：认知、动机、情感，还是行为？
 - 这个现象为什么属于 work and organizational settings？
@@ -93,7 +97,7 @@ JAP 明确接受多种文章类型。智能体判断时，应把“心理现象�
 - 你的实践含义直接或间接指向哪些工作/组织结果？
 - 你的设计如何支持心理机制或理论贡献？
 
-## 来源
+### 来源
 
 - APA Journal of Applied Psychology page：https://www.apa.org/pubs/journals/apl
 - Editorial Manager submission site：https://www.editorialmanager.com/apl/default1.aspx

@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 INFORMS 官方 Editorial Statement。此文件用于用户选择 IJOC 后，智能体判断论文是否符合计算与运筹交叉期刊的内容定位。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：IJOC / Journal on Computing
 - 全名：INFORMS Journal on Computing
@@ -15,11 +17,11 @@
 - IJOC Data Policy：https://pubsonline.informs.org/page/ijoc/datapolicy
 - IJOC Software Policy：https://pubsonline.informs.org/page/ijoc/softwarepolicy
 
-## 一句话定位
+### 一句话定位
 
 IJOC 关注 computing 与 operations research 的交叉，发表能扩展 OR 与计算边界的高质量论文，包括理论、方法、实验、系统、应用、survey/tutorial、软件工具和数据/软件 artifact。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 IJOC 的核心标准是：论文必须同时体现 computing 贡献和 OR/management science 问题意识。它不只是算法期刊，也不只是应用期刊，而是要求研究能被后续研究者构建、复用，或被实践者使用。
 
@@ -35,7 +37,7 @@ IJOC 的核心标准是：论文必须同时体现 computing 贡献和 OR/manage
 - **Simulation, Stochastic Models, & Stochastic Optimization**：随机优化、随机动态规划、强化学习、随机整数规划、simulation optimization、随机系统建模。
 - **Software Tools**：面向研究社群的软件和数据，要求软件/数据本身有新贡献、工程质量、可维护性和长期价值。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 IJOC 接受：
 
@@ -47,7 +49,7 @@ IJOC 接受：
 
 贡献必须能被后续研究或实践使用。对计算型论文，单纯“跑得更快”通常不够，除非能在足够广泛的问题范围中显示对 state of the art 的显著提升，并有可靠实验设计和可复现性。
 
-## 主题 fit 判断规则
+### 主题 fit 判断规则
 
 适合 IJOC 的论文通常满足：
 
@@ -66,7 +68,9 @@ IJOC 接受：
 - 软件论文像用户手册或技术规格，而不是研究贡献。
 - 数据论文没有说明数据如何推进研究社群。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 INFORMS Journal on Computing。
@@ -82,7 +86,7 @@ IJOC 接受：
 如果论文只是通用机器学习、普通软件系统或窄应用工程，必须指出 IJOC fit 不足，并建议补强 OR/计算方法贡献。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的 computing contribution 是什么？
 - 你的 OR / decision-making 问题是什么？
@@ -91,7 +95,7 @@ IJOC 接受：
 - 计算实验是否比较了 state-of-the-art，并且可复现？
 - 如果有软件/数据，是否能公开、维护并被研究社群复用？
 
-## 来源
+### 来源
 
 - INFORMS IJOC journal page：https://pubsonline.informs.org/journal/ijoc
 - INFORMS IJOC Editorial Statement：https://pubsonline.informs.org/page/ijoc/editorial-statement

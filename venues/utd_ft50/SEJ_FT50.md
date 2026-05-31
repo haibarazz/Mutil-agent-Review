@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Wiley / Strategic Management Society 官方 SEJ overview。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：SEJ
 - 全名：Strategic Entrepreneurship Journal
@@ -13,11 +15,11 @@
 - Overview：https://sms.onlinelibrary.wiley.com/hub/journal/1932443x/homepage/productinformation.html
 - 投稿指南：https://sms.onlinelibrary.wiley.com/hub/journal/1932443x/homepage/forauthors.html
 
-## 一句话定位
+### 一句话定位
 
 SEJ 是 general-interest entrepreneurship journal，发表原创创业研究，欢迎 theory-driven 或 phenomenon-driven、micro/meso/macro 层级以及定量、定性或概念研究。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 SEJ 的核心是 entrepreneurship and innovation，但它是 general-interest entrepreneurship journal，不只服务一个创业子领域。官方 readership 包括 scholars、entrepreneurs、managers 和 policymakers。
 
@@ -31,7 +33,7 @@ SEJ 的核心是 entrepreneurship and innovation，但它是 general-interest en
 - theory-driven 或 phenomenon-driven 研究。
 - entrepreneurship 方法评估或综述，但需对理解领域有 unusually strong contribution。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 SEJ 接受多种贡献方式，但必须对创业领域有一般兴趣和原创贡献。
 
@@ -45,7 +47,7 @@ SEJ 接受多种贡献方式，但必须对创业领域有一般兴趣和原创�
 - **Conceptual / qualitative / quantitative contribution**：方法开放，但必须服务创业问题。
 - **Review / methodological contribution**：只有在对创业领域理解有异常强贡献时适合。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 SEJ 的论文通常满足：
 
@@ -63,7 +65,9 @@ SEJ 接受多种贡献方式，但必须对创业领域有一般兴趣和原创�
 - 综述或方法论文贡献不够强。
 - 单一案例不能推广到创业研究理解。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 SEJ 时，可以把下面内容加入系统提示词：
 
@@ -81,7 +85,7 @@ SEJ 接受多种贡献方式，但必须对创业领域有一般兴趣和原创�
 如果论文只是战略、创新或管理研究，必须要求作者明确 entrepreneurship contribution。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的核心 entrepreneurship 问题是什么？
 - 研究是 theory-driven 还是 phenomenon-driven？
@@ -89,7 +93,7 @@ SEJ 接受多种贡献方式，但必须对创业领域有一般兴趣和原创�
 - 你的发现如何推进创业领域的一般理解？
 - 对创业者、管理者或政策制定者有什么启示？
 
-## 来源
+### 来源
 
 - Wiley SEJ page：https://sms.onlinelibrary.wiley.com/journal/1932443x
 - Wiley SEJ overview：https://sms.onlinelibrary.wiley.com/hub/journal/1932443x/homepage/productinformation.html

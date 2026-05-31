@@ -35,6 +35,9 @@ and must be treated as reference material, not the active code path.
 - When writing new code or changing non-obvious logic, prefer concise Chinese
   comments that explain intent, workflow boundaries, or tricky decisions. Avoid
   noisy comments that only restate obvious code.
+- Do not run `git push` unless the user explicitly asks to push or upload to
+  GitHub in the current turn. During active development, local commits are okay
+  when useful, but remote publishing needs explicit permission every time.
 
 ## Verification
 

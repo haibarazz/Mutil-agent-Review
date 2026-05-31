@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 AOM 官方 Author Resources 与 AMJ journal page 入口。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：AMJ
 - 全名：Academy of Management Journal
@@ -13,11 +15,11 @@
 - AOM Author Resources：https://aom.org/research/publishing-with-aom/author-resources
 - 投稿系统：https://mc.manuscriptcentral.com/AMJ
 
-## 一句话定位
+### 一句话定位
 
 AMJ 是管理学经验研究顶刊，发表以 empirical research 为基础、能够 test、extend 或 build management theory 的新知识。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 AOM 官方把 AMJ 定位为 empirical based、source of new knowledge that tests, extends, or builds management theory。对智能体来说，AMJ 的核心不是“有数据”本身，而是通过经验研究推进管理与组织理论。
 
@@ -30,7 +32,7 @@ AOM 官方把 AMJ 定位为 empirical based、source of new knowledge that tests
 - 通过定量、定性、混合方法、田野、实验、档案、纵向、过程数据等经验材料推进理论。
 - 以管理/组织理论为中心，而不是只做现象描述或政策评估。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 AMJ 的主线是 empirical management theory contribution。智能体判断时，应要求论文回答“这篇经验研究如何检验、扩展或建立管理理论”。
 
@@ -42,7 +44,7 @@ AMJ 的主线是 empirical management theory contribution。智能体判断时�
 - **Method-rich empirical contribution**：方法服务于理论推进，而不是单纯炫技。
 - **Phenomenon-driven contribution**：新现象可以成为入口，但必须导向管理理论贡献。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 AMJ 的论文通常满足：
 
@@ -60,7 +62,9 @@ AMJ 的主线是 empirical management theory contribution。智能体判断时�
 - 研究问题本质是经济、心理、社会学或信息系统问题，管理理论不是核心。
 - 只验证已知关系，缺少理论扩展或新知识。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 AMJ 时，可以把下面内容加入系统提示词：
 
@@ -78,7 +82,7 @@ AMJ 的主线是 empirical management theory contribution。智能体判断时�
 如果论文只有现象、数据或方法，没有明确管理理论贡献，必须指出与 AMJ fit 不足。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文测试、扩展或建立了哪条管理理论？
 - 为什么这个问题属于 management and organizations？
@@ -86,7 +90,7 @@ AMJ 的主线是 empirical management theory contribution。智能体判断时�
 - 你的理论贡献是新机制、新边界、新概念，还是新层级解释？
 - 你的结果能改变管理学读者对什么问题的理解？
 
-## 来源
+### 来源
 
 - AOM Author Resources：https://aom.org/research/publishing-with-aom/author-resources
 - AMJ journal page：https://journals.aom.org/journal/amj

@@ -1,0 +1,322 @@
+{
+  "downloaded_at_utc": "2026-05-29T11:17:36+00:00",
+  "copyright_policy": "Do not store full raw review texts here. Keep URLs, note ids, field names, counts, and short structural observations only.",
+  "samples": [
+    {
+      "label": "neurips_2023_poster",
+      "forum_id": "LTdfYIvbHc",
+      "forum_url": "https://openreview.net/forum?id=LTdfYIvbHc",
+      "api_url": "https://api2.openreview.net/notes?forum=LTdfYIvbHc&limit=1000",
+      "title": "Feature-Learning Networks Are Consistent Across Widths At Realistic Scales",
+      "venue": "NeurIPS 2023 poster",
+      "venue_family": "NeurIPS 2023",
+      "why_this_sample": "NeurIPS public reviews with summary, aspect scores, strengths, weaknesses, questions, limitations, rating, confidence.",
+      "public_notes_count": 21,
+      "official_review_count": 5,
+      "official_review_note_urls": [
+        "https://openreview.net/forum?id=LTdfYIvbHc&noteId=4G8ulRHLDC",
+        "https://openreview.net/forum?id=LTdfYIvbHc&noteId=nLcXlScEdZ",
+        "https://openreview.net/forum?id=LTdfYIvbHc&noteId=4oOhJBBkHA",
+        "https://openreview.net/forum?id=LTdfYIvbHc&noteId=0LcpVY38md",
+        "https://openreview.net/forum?id=LTdfYIvbHc&noteId=lMZNdPtEcg"
+      ],
+      "review_field_counts": {
+        "code_of_conduct": 5,
+        "confidence": 5,
+        "contribution": 5,
+        "flag_for_ethics_review": 5,
+        "limitations": 5,
+        "presentation": 5,
+        "questions": 5,
+        "rating": 5,
+        "soundness": 5,
+        "strengths": 5,
+        "summary": 5,
+        "weaknesses": 5
+      },
+      "aspect_score_fields": [
+        "contribution",
+        "presentation",
+        "soundness"
+      ],
+      "rating_values_compact": [
+        "6: Weak Accept",
+        "6: Weak Accept",
+        "5: Borderline accept",
+        "6: Weak Accept",
+        "6: Weak Accept"
+      ],
+      "confidence_values_compact": [
+        "3",
+        "4",
+        "3",
+        "3",
+        "3"
+      ],
+      "meta_or_decision_notes": [
+        {
+          "note_id": "V6K6SHQzY2",
+          "url": "https://openreview.net/forum?id=LTdfYIvbHc&noteId=V6K6SHQzY2",
+          "signature_hint": "NeurIPS.cc/2023/Conference/Program_Chairs",
+          "fields": [
+            "decision",
+            "comment"
+          ]
+        },
+        {
+          "note_id": "V6K6SHQzY2",
+          "url": "https://openreview.net/forum?id=LTdfYIvbHc&noteId=V6K6SHQzY2",
+          "decision": "Accept (poster)"
+        }
+      ]
+    },
+    {
+      "label": "iclr_2024_poster_llm_optimizer",
+      "forum_id": "Bb4VGOWELI",
+      "forum_url": "https://openreview.net/forum?id=Bb4VGOWELI",
+      "api_url": "https://api2.openreview.net/notes?forum=Bb4VGOWELI&limit=1000",
+      "title": "Large Language Models as Optimizers",
+      "venue": "ICLR 2024 poster",
+      "venue_family": "ICLR 2024",
+      "why_this_sample": "ICLR poster with official reviews, author discussion, meta review, and final decision.",
+      "public_notes_count": 25,
+      "official_review_count": 4,
+      "official_review_note_urls": [
+        "https://openreview.net/forum?id=Bb4VGOWELI&noteId=zQXNjgMbnX",
+        "https://openreview.net/forum?id=Bb4VGOWELI&noteId=fLCRDq9IjJ",
+        "https://openreview.net/forum?id=Bb4VGOWELI&noteId=1ynYt3hcjf",
+        "https://openreview.net/forum?id=Bb4VGOWELI&noteId=lEn6qgvQgY"
+      ],
+      "review_field_counts": {
+        "code_of_conduct": 4,
+        "confidence": 4,
+        "contribution": 4,
+        "flag_for_ethics_review": 4,
+        "presentation": 4,
+        "questions": 4,
+        "rating": 4,
+        "soundness": 4,
+        "strengths": 4,
+        "summary": 4,
+        "weaknesses": 4
+      },
+      "aspect_score_fields": [
+        "contribution",
+        "presentation",
+        "soundness"
+      ],
+      "rating_values_compact": [
+        "5: marginally below the acceptance threshold",
+        "6: marginally above the acceptance threshold",
+        "8: accept, good paper",
+        "8: accept, good paper"
+      ],
+      "confidence_values_compact": [
+        "4",
+        "4",
+        "4",
+        "4"
+      ],
+      "meta_or_decision_notes": [
+        {
+          "note_id": "iUjgkJKcgL",
+          "url": "https://openreview.net/forum?id=Bb4VGOWELI&noteId=iUjgkJKcgL",
+          "signature_hint": "ICLR.cc/2024/Conference/Program_Chairs",
+          "fields": [
+            "decision",
+            "comment"
+          ]
+        },
+        {
+          "note_id": "V6eDrWimAJ",
+          "url": "https://openreview.net/forum?id=Bb4VGOWELI&noteId=V6eDrWimAJ",
+          "signature_hint": "ICLR.cc/2024/Conference/Submission358/Area_Chair_8hTx",
+          "fields": [
+            "metareview"
+          ]
+        },
+        {
+          "note_id": "iUjgkJKcgL",
+          "url": "https://openreview.net/forum?id=Bb4VGOWELI&noteId=iUjgkJKcgL",
+          "decision": "Accept (poster)"
+        }
+      ]
+    },
+    {
+      "label": "iclr_2024_spotlight_cas",
+      "forum_id": "E78OaH2s3f",
+      "forum_url": "https://openreview.net/forum?id=E78OaH2s3f",
+      "api_url": "https://api2.openreview.net/notes?forum=E78OaH2s3f&limit=1000",
+      "title": "CAS: A Probability-Based Approach for Universal Condition Alignment Score",
+      "venue": "ICLR 2024 spotlight",
+      "venue_family": "ICLR 2024",
+      "why_this_sample": "ICLR spotlight case with concise meta-review justifications and standard reviewer fields.",
+      "public_notes_count": 19,
+      "official_review_count": 3,
+      "official_review_note_urls": [
+        "https://openreview.net/forum?id=E78OaH2s3f&noteId=Zk9aeilLvs",
+        "https://openreview.net/forum?id=E78OaH2s3f&noteId=4ZhvoSEgDy",
+        "https://openreview.net/forum?id=E78OaH2s3f&noteId=v0XmLBqfsi"
+      ],
+      "review_field_counts": {
+        "code_of_conduct": 3,
+        "confidence": 3,
+        "contribution": 3,
+        "flag_for_ethics_review": 3,
+        "presentation": 3,
+        "questions": 3,
+        "rating": 3,
+        "soundness": 3,
+        "strengths": 3,
+        "summary": 3,
+        "weaknesses": 3
+      },
+      "aspect_score_fields": [
+        "contribution",
+        "presentation",
+        "soundness"
+      ],
+      "rating_values_compact": [
+        "8: accept, good paper",
+        "8: accept, good paper",
+        "8: accept, good paper"
+      ],
+      "confidence_values_compact": [
+        "4",
+        "4",
+        "3"
+      ],
+      "meta_or_decision_notes": [
+        {
+          "note_id": "2onsg11KRD",
+          "url": "https://openreview.net/forum?id=E78OaH2s3f&noteId=2onsg11KRD",
+          "signature_hint": "ICLR.cc/2024/Conference/Program_Chairs",
+          "fields": [
+            "decision",
+            "comment"
+          ]
+        },
+        {
+          "note_id": "gKIQsuUU2N",
+          "url": "https://openreview.net/forum?id=E78OaH2s3f&noteId=gKIQsuUU2N",
+          "signature_hint": "ICLR.cc/2024/Conference/Submission7028/Area_Chair_2GBZ",
+          "fields": [
+            "metareview"
+          ]
+        },
+        {
+          "note_id": "2onsg11KRD",
+          "url": "https://openreview.net/forum?id=E78OaH2s3f&noteId=2onsg11KRD",
+          "decision": "Accept (spotlight)"
+        }
+      ]
+    },
+    {
+      "label": "iclr_2024_oral_causal_world_models",
+      "forum_id": "pOoKI3ouv1",
+      "forum_url": "https://openreview.net/forum?id=pOoKI3ouv1",
+      "api_url": "https://api2.openreview.net/notes?forum=pOoKI3ouv1&limit=1000",
+      "title": "Robust agents learn causal world models",
+      "venue": "ICLR 2024 oral",
+      "venue_family": "ICLR 2024",
+      "why_this_sample": "ICLR oral case with multiple reviewer reports and area-chair meta review.",
+      "public_notes_count": 15,
+      "official_review_count": 4,
+      "official_review_note_urls": [
+        "https://openreview.net/forum?id=pOoKI3ouv1&noteId=DIlJnd32YJ",
+        "https://openreview.net/forum?id=pOoKI3ouv1&noteId=tUMhfkMi14",
+        "https://openreview.net/forum?id=pOoKI3ouv1&noteId=v7bE5YG9xr",
+        "https://openreview.net/forum?id=pOoKI3ouv1&noteId=UEJtxOTC7A"
+      ],
+      "review_field_counts": {
+        "code_of_conduct": 4,
+        "confidence": 4,
+        "contribution": 4,
+        "flag_for_ethics_review": 4,
+        "presentation": 4,
+        "questions": 4,
+        "rating": 4,
+        "soundness": 4,
+        "strengths": 4,
+        "summary": 4,
+        "weaknesses": 4
+      },
+      "aspect_score_fields": [
+        "contribution",
+        "presentation",
+        "soundness"
+      ],
+      "rating_values_compact": [
+        "8: accept, good paper",
+        "10: strong accept, should be highlighted at the conference",
+        "6: marginally above the acceptance threshold",
+        "8: accept, good paper"
+      ],
+      "confidence_values_compact": [
+        "3",
+        "4",
+        "4",
+        "3"
+      ],
+      "meta_or_decision_notes": [
+        {
+          "note_id": "7Th9v6fQFR",
+          "url": "https://openreview.net/forum?id=pOoKI3ouv1&noteId=7Th9v6fQFR",
+          "signature_hint": "ICLR.cc/2024/Conference/Program_Chairs",
+          "fields": [
+            "decision",
+            "comment"
+          ]
+        },
+        {
+          "note_id": "ywwZ6YF8d6",
+          "url": "https://openreview.net/forum?id=pOoKI3ouv1&noteId=ywwZ6YF8d6",
+          "signature_hint": "ICLR.cc/2024/Conference/Submission2566/Area_Chair_wyN4",
+          "fields": [
+            "metareview"
+          ]
+        },
+        {
+          "note_id": "7Th9v6fQFR",
+          "url": "https://openreview.net/forum?id=pOoKI3ouv1&noteId=7Th9v6fQFR",
+          "decision": "Accept (oral)"
+        }
+      ]
+    },
+    {
+      "label": "tmlr_neural_collapse_review",
+      "forum_id": "QTXocpAP9p",
+      "forum_url": "https://openreview.net/forum?id=QTXocpAP9p",
+      "api_url": "https://api2.openreview.net/notes?forum=QTXocpAP9p&limit=1000",
+      "title": "Neural Collapse: A Review on Modelling Principles and Generalization",
+      "venue": "Accepted by TMLR",
+      "venue_family": "TMLR",
+      "why_this_sample": "Journal-style OpenReview/TMLR example with claims-and-evidence review schema and action-editor recommendation.",
+      "public_notes_count": 13,
+      "official_review_count": 3,
+      "official_review_note_urls": [
+        "https://openreview.net/forum?id=QTXocpAP9p&noteId=MU249zbMvF",
+        "https://openreview.net/forum?id=QTXocpAP9p&noteId=02tgz0Jgku",
+        "https://openreview.net/forum?id=QTXocpAP9p&noteId=7HxWwAy4XA"
+      ],
+      "review_field_counts": {
+        "claims_and_evidence": 3
+      },
+      "aspect_score_fields": [],
+      "rating_values_compact": [],
+      "confidence_values_compact": [],
+      "meta_or_decision_notes": [
+        {
+          "note_id": "544QMw2Ygi",
+          "url": "https://openreview.net/forum?id=QTXocpAP9p&noteId=544QMw2Ygi",
+          "signature_hint": "TMLR/Paper758/Action_Editors",
+          "fields": [
+            "claims_and_evidence",
+            "recommendation",
+            "comment"
+          ]
+        }
+      ]
+    }
+  ]
+}

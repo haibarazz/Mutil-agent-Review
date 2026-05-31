@@ -2,7 +2,9 @@
 
 > CCF-A 智能体 venue 画像版，更新日期：2026-05-25。资料来源为 CCF 第七版《中国计算机学会推荐国际学术会议和期刊目录》正式版、CCF 官方目录入口和结构化整理源。此文件用于“用户选择 CS/CCF-A venue 后，智能体判断主题 fit、贡献类型和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：SIGIR
 - 全名：International ACM SIGIR Conference on Research and Development in Information Retrieval
@@ -13,11 +15,11 @@
 - 出版方 / 主办方：ACM
 - CCF 官方目录入口：https://www.ccf.org.cn/Academic_Evaluation/By_category/
 
-## 一句话定位
+### 一句话定位
 
 SIGIR 是 CCF 推荐目录中 **数据库/数据挖掘/内容检索** 领域的 A 类会议。数据库、数据挖掘和内容检索方向的顶级 venue，适合数据管理、数据系统、数据挖掘、信息检索和 Web 数据研究。
 
-## 官方目录定位：适合什么主题
+### 官方目录定位：适合什么主题
 
 CCF 第七版目录把该 venue 归入 **数据库/数据挖掘/内容检索**，并标记为 **A 类**。对智能体来说，最重要的 fit 判断是：论文是否真正推进该 CCF 专业领域的核心问题，而不是只借用该领域作为应用背景。
 
@@ -30,7 +32,7 @@ CCF 第七版目录把该 venue 归入 **数据库/数据挖掘/内容检索**�
 - Web、图数据、知识图谱和数据质量
 - 数据系统评测与真实工作负载
 
-## CCF-A 投稿/选刊判断要点
+### CCF-A 投稿/选刊判断要点
 
 - A 类表示 CCF 推荐目录中该专业领域的最高推荐等级之一，但 CCF 官方也说明目录是推荐建议，不建议简单作为学术评价依据。
 - 主题必须与该 venue 所在 CCF 专业领域高度一致。
@@ -40,7 +42,7 @@ CCF 第七版目录把该 venue 归入 **数据库/数据挖掘/内容检索**�
 - 如果是 AI/数据类论文，应有强基线、消融、误差分析、数据/任务合理性和泛化讨论。
 - CCF 官方说明中，会议论文指 Full paper 或 Regular paper；Short paper、Demo paper、Technical Brief、Summary、Findings 以及 Workshop 等不计入目录考虑范围。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 SIGIR 的论文通常满足：
 
@@ -57,19 +59,19 @@ CCF 第七版目录把该 venue 归入 **数据库/数据挖掘/内容检索**�
 - 只有性能数字，没有机制解释、消融、误差分析或系统洞察。
 - 论文贡献主要是产品实现、工程堆叠或业务报告，而不是可发表研究。
 
-## 官方要求抓取（官方源，2026-05-25）
+### 官方要求抓取（官方源，2026-05-25）
 
 官方来源：
 
 - SIGIR 2026 Full Papers Track: https://sigir2026.org/en-AU/pages/submissions/full-papers-track
 
-### 官方定位与主题范围
+#### 官方定位与主题范围
 
 - 官方短摘：`broad field of information retrieval`；`high-impact original papers`。
 - SIGIR 2026 full paper call 欢迎与 information retrieval and access 任何方面相关的贡献，包括 theories、foundations、algorithms、evaluation、analysis、applications。
 - 官方 relevant areas 包括 Search and Ranking、System/Efficiency/Scalability、Recommender Systems、Machine Learning for IR、NLP for IR、Conversational or Agentic IR、Humans and Interfaces、Datasets/Benchmarks/Evaluations for IR、FATE in IR、Multi Modal IR、Domain-Specific IR Applications、Other IR Topics。
 
-### 官方投稿与评审要求
+#### 官方投稿与评审要求
 
 - Full papers 必须是 original work，不能 previously published、accepted elsewhere、simultaneously submitted 或 under review。
 - Submission 为 ACM two-column conference format，最多 9 pages（除 references 外所有内容都计入），references 不限；accepted version 可加 1 页。
@@ -78,13 +80,15 @@ CCF 第七版目录把该 venue 归入 **数据库/数据挖掘/内容检索**�
 - 每篇 submission 要求一位作者同意 serve as reviewer；review process 至少 3 位 PC reviewers 和 senior PC member。
 - Acceptance decisions 会考虑 novelty、technical depth、elegance、practical/theoretical impact、presentation。
 
-### 给智能体的硬约束
+#### 给智能体的硬约束
 
 - SIGIR fit 必须围绕 information retrieval/access/search/recommendation/evaluation/user interaction/FATE in IR 等问题；仅使用检索作为工具而不解决 IR 研究挑战，fit 弱。
 - 对 RAG/LLM-agent/search tool learning 论文，应明确它贡献给 IR：retrieval model、ranking、evaluation、interaction、system scalability、user behavior 或 domain-specific IR。
 - 必须检查 topical fit，因为官方把 clear lack of topical fit 列为 desk rejection 风险。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标 venue 是 International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR)，CCF-A，类型为会议，所属 CCF 专业领域为：数据库/数据挖掘/内容检索 / Database / Data Mining / Content Retrieval。
@@ -94,7 +98,7 @@ CCF 第七版目录把该 venue 归入 **数据库/数据挖掘/内容检索**�
 如果论文只是把通用方法套到一个场景，或者主题与 数据库/数据挖掘/内容检索 关系弱，请明确指出 fit 不足，并建议如何重写为该领域核心问题。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文最核心的 CS 问题是什么？它为什么属于 **数据库/数据挖掘/内容检索**？
 - 你的贡献是理论、算法、系统、实证、数据集、benchmark，还是多种结合？
@@ -102,7 +106,7 @@ CCF 第七版目录把该 venue 归入 **数据库/数据挖掘/内容检索**�
 - 你的 strongest baselines、ablation、scalability 或 proof obligations 是否足够？
 - 如果审稿人认为这是相邻领域论文，你如何解释它适合 SIGIR？
 
-## 来源
+### 来源
 
 - CCF 官方目录入口：https://www.ccf.org.cn/Academic_Evaluation/By_category/
 - CCF 第七版正式目录 PDF：CCF 官方页面中的“第七版中国计算机学会推荐国际学术会议和期刊目录（正式版）”

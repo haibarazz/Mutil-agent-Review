@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Springer 的 Review of Accounting Studies 官方 Aims and Scope 与 Submission Guidelines。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：RAST
 - 全名：Review of Accounting Studies
@@ -13,11 +15,11 @@
 - 官方 Aims and Scope：https://www.springer.com/journal/11142/aims-and-scope
 - 投稿指南：https://www.springer.com/journal/11142/submission-guidelines
 
-## 一句话定位
+### 一句话定位
 
 RAST 是面向 significant academic research in accounting 的期刊，接收 theoretical、empirical 和 experimental work；它强调 distinctive scholarship 必须 rigorous，并要求论文明确贡献于 accounting discipline。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 RAST 官方 Aims and Scope 的边界很清楚：它鼓励各种研究形式，但研究必须 contribute to the discipline of accounting。对智能体来说，RAST 的主题判断应聚焦 **会计学术贡献的显著性和严谨性**，而不是某一固定子领域。
 
@@ -29,7 +31,7 @@ RAST 官方 Aims and Scope 的边界很清楚：它鼓励各种研究形式，�
 - **Accounting discipline-wide questions**：能够推进会计学科知识的跨子领域问题。
 - **Rigorous distinctive scholarship**：有清晰会计问题、扎实方法和显著学术贡献的研究。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 RAST 的官方定位比许多期刊更强调审稿流程和明确判断。它通常希望在第一轮做出 accept-reject 判断，revise and resubmit 保留给编辑认为有清晰修改路径的新投稿。
 
@@ -41,7 +43,7 @@ RAST 的官方定位比许多期刊更强调审稿流程和明确判断。它通
 - 贡献是否清楚属于 accounting discipline。
 - 文章是否能在第一轮让编辑和审稿人看见明确可发表路径。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 RAST 的论文通常满足：
 
@@ -58,7 +60,9 @@ RAST 的官方定位比许多期刊更强调审稿流程和明确判断。它通
 - 方法执行不足，无法在有限修改中修复。
 - 贡献过于增量，无法说明对 accounting discipline 的推进。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 Review of Accounting Studies (RAST)。
@@ -72,7 +76,7 @@ RAST 的官方定位比许多期刊更强调审稿流程和明确判断。它通
 5. 贡献是否比普通增量研究更 distinctive。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文贡献给 accounting discipline 的核心知识是什么？
 - 你的研究属于 theoretical、empirical 还是 experimental accounting work？
@@ -80,7 +84,7 @@ RAST 的官方定位比许多期刊更强调审稿流程和明确判断。它通
 - 主要方法缺陷是否已经在投稿前解决？
 - 如果审稿人只给一轮判断，你的贡献是否足够清楚？
 
-## 来源
+### 来源
 
 - Springer RAST journal page：https://link.springer.com/journal/11142
 - Springer RAST Aims and Scope：https://www.springer.com/journal/11142/aims-and-scope

@@ -46,6 +46,7 @@ def get_review_nodes() -> ReviewNodes:
 
     if settings.llm_provider == "router":
         # Router 模式: prompts 只写 model id，具体供应商由 configs/llm.yaml 决定
+        # 在这里定义了我们的llm router
         llm = LLMRouter(
             config=load_llm_router_config(settings.llm_config_path),
             timeout_sec=settings.llm_timeout_sec,

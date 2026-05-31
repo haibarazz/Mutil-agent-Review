@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Association for Psychological Science 官方 Psychological Science 页面。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：PsychSci / PSS
 - 全名：Psychological Science
@@ -14,11 +16,11 @@
 - SAGE journal page：https://journals.sagepub.com/home/pss
 - 投稿指南：https://journals.sagepub.com/author-instructions/PSS
 
-## 一句话定位
+### 一句话定位
 
 Psychological Science 是 Association for Psychological Science 的旗舰期刊，发表覆盖心理科学全谱系、具有 general interest 的高质量 empirical research，并欢迎复制研究。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 Psychological Science 是 broad psychology journal，不是商业或管理期刊。它的关键词是 empirical research、entire spectrum of the science of psychology、general interest、important topics。
 
@@ -30,7 +32,7 @@ Psychological Science 是 broad psychology journal，不是商业或管理期刊
 - 重要主题上的可重复、透明、严谨研究。
 - 复制研究，按与新研究相同标准评估。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 PsychSci 强调高质量 empirical research 和 general interest。智能体判断时，应要求论文说明“为什么心理科学广泛读者会关心这个发现”。
 
@@ -42,7 +44,7 @@ PsychSci 强调高质量 empirical research 和 general interest。智能体判�
 - **Replication contribution**：有价值的复制研究。
 - **Transparency and rigor contribution**：符合当前心理科学对透明性、严谨性和可重复性的期待。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 PsychSci 的论文通常满足：
 
@@ -60,7 +62,9 @@ PsychSci 强调高质量 empirical research 和 general interest。智能体判�
 - 方法或证据不足以支持高质量 empirical claim。
 - 只是管理或消费现象，没有心理机制和理论意义。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 PsychSci 时，可以把下面内容加入系统提示词：
 
@@ -78,7 +82,7 @@ PsychSci 强调高质量 empirical research 和 general interest。智能体判�
 如果论文只是商业场景中的心理变量检验，必须要求作者重写为心理科学问题。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的核心心理科学问题是什么？
 - 为什么心理学广泛读者会关心这个发现？
@@ -86,7 +90,7 @@ PsychSci 强调高质量 empirical research 和 general interest。智能体判�
 - 你的证据如何体现透明性和严谨性？
 - 如果你的数据来自管理/营销场景，心理学贡献是什么？
 
-## 来源
+### 来源
 
 - APS Psychological Science page：https://www.psychologicalscience.org/publications/psychological_science
 - SAGE Psychological Science page：https://journals.sagepub.com/home/pss

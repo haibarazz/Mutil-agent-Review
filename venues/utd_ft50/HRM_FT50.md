@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Wiley 官方 Human Resource Management 页面。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：HRM
 - 全名：Human Resource Management
@@ -13,11 +15,11 @@
 - Overview：https://onlinelibrary.wiley.com/page/journal/1099050x/homepage/productinformation.html
 - 投稿指南：https://onlinelibrary.wiley.com/page/journal/1099050x/homepage/forauthors.html
 
-## 一句话定位
+### 一句话定位
 
 Human Resource Management 是专注 HRM 研究的顶级期刊，发表能够独特推进学术文献且具有清晰实践含义的 conceptual 和 empirical articles，覆盖所有 HRM 主题的微观、宏观和多层级现象。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 HRM 的核心是 human resource management，不是一般组织行为或管理论文。官方强调 strong global recognition、conceptual and empirical articles、clear practical implications，以及 micro-, macro-, multi-level HRM phenomena。
 
@@ -30,7 +32,7 @@ HRM 的核心是 human resource management，不是一般组织行为或管理�
 - 可持续 HRM、绿色 HRM、多样性、公平、包容、全球 HRM。
 - 微观员工行为、宏观组织制度和多层级 HRM 机制之间的连接。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 HRM 要求学术推进和实践含义同时清晰。智能体判断时，不能只看“研究对象是员工”，还要看是否是 HRM 问题。
 
@@ -43,7 +45,7 @@ HRM 要求学术推进和实践含义同时清晰。智能体判断时，不能�
 - **Multi-level contribution**：连接员工、团队、组织和外部环境。
 - **Practical implication**：对 HR 管理者、组织领导者或政策制定者有清楚应用价值。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 HRM 的论文通常满足：
 
@@ -61,7 +63,9 @@ HRM 要求学术推进和实践含义同时清晰。智能体判断时，不能�
 - 实践建议空泛，不能指导 HRM 决策。
 - 贡献只在数据或方法上，未推进 HRM 文献。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 HRM 时，可以把下面内容加入系统提示词：
 
@@ -79,7 +83,7 @@ HRM 要求学术推进和实践含义同时清晰。智能体判断时，不能�
 如果论文只是员工行为研究或组织绩效研究，必须要求作者明确 HRM 机制和实践含义。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的核心 HRM topic/issue 是什么？
 - 涉及哪些 HR practice、HR system 或 people management 决策？
@@ -87,7 +91,7 @@ HRM 要求学术推进和实践含义同时清晰。智能体判断时，不能�
 - 你如何独特推进 HRM academic literature？
 - 你的结果对 HR 管理者有什么清晰实践含义？
 
-## 来源
+### 来源
 
 - Wiley HRM journal page：https://onlinelibrary.wiley.com/journal/1099050x
 - Wiley HRM overview：https://onlinelibrary.wiley.com/page/journal/1099050x/homepage/productinformation.html

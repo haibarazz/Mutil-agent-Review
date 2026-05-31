@@ -1,23 +1,46 @@
-# Paper Review Agent
+# Mutil-Agent Review
 
-Local-first rewrite of the multi-agent paper review system.
+<p align="center">
+  <img src="https://img.shields.io/badge/status-alpha-111111?style=for-the-badge" alt="Status: alpha">
+  <img src="https://img.shields.io/badge/Python-3.13-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.13">
+  <img src="https://img.shields.io/badge/LangGraph-workflow-1f6feb?style=for-the-badge" alt="LangGraph workflow">
+  <img src="https://img.shields.io/badge/FastAPI-backend-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI backend">
+  <img src="https://img.shields.io/badge/React-workbench-61DAFB?style=for-the-badge&logo=react&logoColor=111111" alt="React workbench">
+  <img src="https://img.shields.io/badge/local--first-artifacts-2ea44f?style=for-the-badge" alt="Local-first artifacts">
+</p>
 
-The previous Coze/Vibe implementation has been archived under
-`reference/legacy-coze-review/`. Treat it as a reference for workflow shape,
-prompt wording, venue profiles, and UI screenshots. New development happens in
-the active `src/` package.
+A local-first multi-agent paper review workbench. It turns a manuscript into a
+structured review run with parser, venue context, editor triage, multiple
+reviewers, devil's advocate, final decision synthesis, diagnostics, and
+downloadable artifacts.
 
-## Current Shape
+The previous Coze/Vibe implementation is archived under
+`reference/legacy-coze-review/`. Active development now lives in `src/`,
+`frontend/`, `prompts/`, `venues/`, and `configs/`.
 
-- LangGraph-first Python framework with a CLI and future FastAPI frontend boundary.
-- Local `.env` configuration instead of Coze workspace variables.
-- Ports and adapters for LLM, search, fetch, parser, venue profiles, and storage.
-- Multi-provider LLM routing through `configs/llm.yaml`.
-- Local artifact storage under `data/runs/`.
-- Review prompts are Markdown files under `prompts/`; prompt frontmatter only
-  declares the prompt name and model id.
-- Venue selection is organized as CS/CCFA and IS/FT50/UTD24 before entering LangGraph.
-- Venue profiles are active under `venues/ccfa/` and `venues/utd_ft50/`.
+## Preview
+
+<p align="center">
+  <img src="docs/assets/workbench.png" alt="Mutil-Agent Review workbench" width="920">
+</p>
+
+<p align="center">
+  <img src="docs/assets/review-theater.gif" alt="Review theater workflow animation" width="920">
+</p>
+
+<p align="center">
+  <img src="docs/assets/review-report.png" alt="Generated review report and artifacts" width="920">
+</p>
+
+## What It Does
+
+- Runs a LangGraph review workflow from manuscript intake to final report.
+- Supports PDF, Markdown, and TeX inputs through replaceable parser adapters.
+- Uses Markdown prompts and venue profiles as readable, versionable context.
+- Routes model calls through `configs/llm.yaml`, while provider keys stay in local `.env`.
+- Provides a FastAPI backend and a React workbench for uploads, progress, reports, and artifact management.
+- Stores generated reports, diagnostics, and node artifacts locally under `data/`.
+- Includes a mock LLM mode, so the full workflow can be smoke-tested without external API keys.
 
 ## Quick Start
 
@@ -25,31 +48,91 @@ the active `src/` package.
 uv venv
 uv sync
 cp .env.example .env
-python -m src.cli doctor
-python -m src.cli venue-catalog
-python -m src.cli review paper.md --mode QUICK_REVIEW --venue-domain CS --venue-collection CCFA --venue-code AAAI
+.venv/bin/python -m src.cli doctor
+.venv/bin/python -m src.cli venue-catalog
 ```
 
-The default `LLM_PROVIDER=mock` makes the workflow runnable without API keys.
-Switch to `router` after filling provider credentials in `.env`. The router
-uses `configs/llm.yaml` to map prompt model ids to SiliconFlow, OpenRouter,
-DeepSeek official, or other OpenAI-compatible providers.
+Run a local mock review:
 
-## Important Paths
+```bash
+.venv/bin/python -m src.cli review paper.md \
+  --mode QUICK_REVIEW \
+  --venue-domain CS \
+  --venue-collection CCFA \
+  --venue-code AAAI \
+  --output-language zh
+```
 
-- `docs/ARCHITECTURE_REDESIGN.md`: full rewrite plan.
-- `src/graphs/state.py`: graph state contract.
-- `src/graphs/graph.py`: active LangGraph topology.
-- `src/graphs/nodes/`: active node functions mirroring the original workflow.
-- `src/graphs/review_nodes.py`: provider-free node business logic.
-- `src/core/`: review-domain models, prompts, and venue profiles.
-- `src/ports/`: tool contracts.
-- `src/infra/`: parser, LLM, storage, search, and settings adapters.
-- `configs/llm.yaml`: model registry and per-prompt LLM call parameters.
-- `src/services/`: application service wrapper around LangGraph.
-- `src/api/`: backend boundary for the future frontend.
-- `src/cli.py`: local command-line entrypoint.
-- `frontend/`: frontend placeholder.
-- `reference/legacy-coze-review/`: frozen reference implementation.
-- `prompts/`: active Markdown prompt files.
-- `venues/`: active venue profiles migrated from the legacy workflow.
+The default `LLM_PROVIDER=mock` makes the system runnable without API keys. To
+use real providers, set `LLM_PROVIDER=router`, fill credentials in `.env`, and
+edit model routing in `configs/llm.yaml`.
+
+## Full-Stack Development
+
+Run backend and frontend separately:
+
+```bash
+scripts/dev-backend.sh
+scripts/dev-frontend.sh
+```
+
+Or run both:
+
+```bash
+scripts/dev-fullstack.sh
+```
+
+Open:
+
+```text
+http://127.0.0.1:5173
+```
+
+## Architecture
+
+```text
+frontend/                React workbench
+src/api/                 FastAPI boundary
+src/services/            application services and local job runner
+src/graphs/              LangGraph topology and nodes
+src/core/                domain models, venues, output schemas
+src/infra/               parser, LLM router, renderer, settings adapters
+src/ports/               replaceable tool contracts
+prompts/                 Markdown prompts
+venues/                  venue requirements and venue profiles
+configs/llm.yaml         model registry and prompt call parameters
+data/                    local runtime data, ignored by Git
+```
+
+Main review execution goes through `src.graphs.graph.main_graph`.
+
+## Verification
+
+Run the lightweight checks before pushing framework changes:
+
+```bash
+.venv/bin/python -m unittest discover tests
+.venv/bin/python -m src.cli doctor
+npm --prefix frontend run build
+scripts/check-api-contract.sh
+```
+
+Browser smoke checks are available for the frontend:
+
+```bash
+scripts/check-frontend-smoke.sh
+scripts/check-frontend-command-smoke.sh
+scripts/check-frontend-desktop-smoke.sh
+```
+
+## Privacy
+
+Local secrets and generated artifacts are intentionally ignored:
+
+- `.env`, `.env.*`
+- `.venv/`, `node_modules/`, `frontend/dist/`
+- `data/`, `runs/`, `artifacts/`, `outputs/`, `uploads/`
+- local logs, databases, and generated JSONL traces
+
+Use `.env.example` as the safe template. Do not commit real provider keys,
+uploaded papers, or generated review outputs.

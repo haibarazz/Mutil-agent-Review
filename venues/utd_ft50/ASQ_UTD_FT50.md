@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Cornell Johnson 官方 ASQ 页面与 SAGE journal page 入口。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：ASQ
 - 全名：Administrative Science Quarterly
@@ -13,11 +15,11 @@
 - Cornell ASQ page：https://www.johnson.cornell.edu/administrative-science-quarterly/
 - 投稿指南：https://journals.sagepub.com/author-instructions/asq
 
-## 一句话定位
+### 一句话定位
 
 ASQ 是组织研究领域的顶级期刊，长期处在 organizational studies 前沿，发表最好的理论与经验论文，以及组织理论方向的跨学科研究。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 Cornell 官方页面强调 ASQ has been at the cutting edge of organizational studies since the field began，并发表 best theoretical and empirical papers 以及 interdisciplinary work in organizational theory。对智能体来说，ASQ 的核心是组织现象、组织理论和扎实的理论-经验结合。
 
@@ -30,7 +32,7 @@ Cornell 官方页面强调 ASQ has been at the cutting edge of organizational st
 - 能推进 organizational theory 的理论或经验论文。
 - 基于 dissertation 或成熟学者新工作形成的高质量组织研究。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 ASQ 强调理论和经验论文都可以，但必须处在组织研究前沿。智能体判断时，应重点看“组织现象是否核心、理论贡献是否锋利、证据是否足以支撑复杂组织机制”。
 
@@ -42,7 +44,7 @@ ASQ 强调理论和经验论文都可以，但必须处在组织研究前沿。�
 - **Process contribution**：解释组织现象如何随时间展开。
 - **Field / institutional contribution**：解释组织与制度、行业、职业和社会环境的互动。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 ASQ 的论文通常满足：
 
@@ -60,7 +62,9 @@ ASQ 强调理论和经验论文都可以，但必须处在组织研究前沿。�
 - 研究对象是组织，但分析重点是个人心理、市场绩效或政策效果。
 - 只对单一实践有用，无法上升到组织理论。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 ASQ 时，可以把下面内容加入系统提示词：
 
@@ -78,7 +82,7 @@ ASQ 强调理论和经验论文都可以，但必须处在组织研究前沿。�
 如果论文只是管理经验研究但没有组织理论贡献，必须指出与 ASQ fit 不足。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的核心组织现象是什么？
 - 你的论文推进了哪条组织理论？
@@ -86,7 +90,7 @@ ASQ 强调理论和经验论文都可以，但必须处在组织研究前沿。�
 - 这个研究为什么处在 organizational studies 前沿？
 - 你的结论能如何推广到其他组织或组织化情境？
 
-## 来源
+### 来源
 
 - Cornell ASQ page：https://www.johnson.cornell.edu/administrative-science-quarterly/
 - SAGE ASQ journal page：https://journals.sagepub.com/home/asq

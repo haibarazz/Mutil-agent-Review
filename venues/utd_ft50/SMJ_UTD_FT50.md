@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Strategic Management Society 官方 SMJ 页面与 Wiley SMJ 页面。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：SMJ
 - 全名：Strategic Management Journal
@@ -14,11 +16,11 @@
 - 投稿指南：https://www.strategicmanagement.net/publications-resources/sms-journals/submissions-for-sms-journals/
 - 投稿系统：https://wiley.atyponrex.com/journal/SMJ
 
-## 一句话定位
+### 一句话定位
 
 SMJ 是战略管理研究的世界领先高影响力期刊，发表能够提出并回答战略管理中重要且有趣问题的研究，主要面向 strategy scholars，同时也要求对 practicing managers 有相关启示。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 SMJ 的核心是 strategic management。官方强调 important and interesting questions in strategic management，既欢迎理论发展和理论检验，也欢迎复制研究、有趣现象探索、研究综述、方法评估和数据集论文。
 
@@ -31,7 +33,7 @@ SMJ 的核心是 strategic management。官方强调 important and interesting q
 - 创业战略、学术衍生、地域/行业/制度环境对战略绩效的影响。
 - 战略管理领域的方法、复制、综述和数据资源。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 SMJ 的官方范围非常开放，但必须围绕战略管理问题。智能体判断时，应把“是否是 strategy question”放在第一位。
 
@@ -45,7 +47,7 @@ SMJ 的官方范围非常开放，但必须围绕战略管理问题。智能体�
 - **Dataset paper**：描述并开放可被战略研究者广泛使用的数据集。
 - **Null / lack-of-support studies**：在特定样本中展示假设缺乏统计支持，只要有战略研究价值。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 SMJ 的论文通常满足：
 
@@ -63,7 +65,9 @@ SMJ 的官方范围非常开放，但必须围绕战略管理问题。智能体�
 - 现象有趣但不能推进战略理论或实践理解。
 - 管理启示不是战略层面的。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 SMJ 时，可以把下面内容加入系统提示词：
 
@@ -81,7 +85,7 @@ SMJ 的官方范围非常开放，但必须围绕战略管理问题。智能体�
 如果论文只是一般管理/创业/组织/经济问题，必须要求作者重写为明确的 strategy question。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的 important and interesting strategic management question 是什么？
 - 你发展、检验、复制、综述还是评估战略研究？
@@ -89,7 +93,7 @@ SMJ 的官方范围非常开放，但必须围绕战略管理问题。智能体�
 - 你的发现如何影响 strategy scholars 的理论对话？
 - 对 practicing managers 的战略启示是什么？
 
-## 来源
+### 来源
 
 - SMS SMJ page：https://www.strategicmanagement.net/publications-resources/sms-journals/strategic-management-journal/
 - Wiley SMJ page：https://sms.onlinelibrary.wiley.com/journal/10970266

@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 ASA/SAGE 官方 American Sociological Review 页面。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：ASR
 - 全名：American Sociological Review
@@ -15,11 +17,11 @@
 - 投稿指南：https://journals.sagepub.com/author-instructions/ASR
 - 投稿系统：https://mc.manuscriptcentral.com/asr
 
-## 一句话定位
+### 一句话定位
 
 ASR 是 American Sociological Association 的旗舰期刊，发表对整个社会学学科有普遍兴趣的原创作品、新理论发展、推进基本社会过程理解的研究结果和重要方法创新。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 ASR 的核心是 sociology in general，而不是商学院管理子领域。它欢迎社会学所有领域，但强调 exceptional quality and general interest。进入 FT50 后，对商学院作者的意义在于：只有当论文对社会学基本问题有贡献时才适合 ASR。
 
@@ -33,7 +35,7 @@ ASR 的核心是 sociology in general，而不是商学院管理子领域。它�
 - 对社会学方法有重要创新的研究。
 - 所有社会学领域，只要质量异常高且有 general interest。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 ASR 的贡献可以是理论、经验或方法，但必须对社会学学科有普遍意义。
 
@@ -45,7 +47,7 @@ ASR 的贡献可以是理论、经验或方法，但必须对社会学学科有�
 - **Methodological innovation**：提出对社会学研究重要的方法创新。
 - **General-interest contribution**：对整个社会学学科，而非单一子领域，有足够吸引力。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 ASR 的论文通常满足：
 
@@ -63,7 +65,9 @@ ASR 的贡献可以是理论、经验或方法，但必须对社会学学科有�
 - 主题属于社会学小众子领域，但缺少 general interest。
 - 方法创新无法说明对社会学研究的普遍意义。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 ASR 时，可以把下面内容加入系统提示词：
 
@@ -81,7 +85,7 @@ ASR 的贡献可以是理论、经验或方法，但必须对社会学学科有�
 如果论文只是管理、心理、经济或政策研究，必须要求作者重写为社会学问题。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的研究解释的 fundamental social process 是什么？
 - 你的贡献对 sociology in general 有什么兴趣？
@@ -89,7 +93,7 @@ ASR 的贡献可以是理论、经验或方法，但必须对社会学学科有�
 - 如果研究组织/市场/工作，它如何连接社会结构、制度、权力或不平等？
 - 为什么这不是管理学或经济学论文，而是社会学论文？
 
-## 来源
+### 来源
 
 - ASA ASR page：https://www.asanet.org/publications/journals/american-sociological-review/
 - SAGE ASR page：https://uk.sagepub.com/en-gb/eur/journal/american-sociological-review

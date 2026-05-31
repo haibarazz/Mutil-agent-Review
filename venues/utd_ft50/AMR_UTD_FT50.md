@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 AOM 官方 Author Resources 与 AMR journal page 入口。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：AMR
 - 全名：Academy of Management Review
@@ -13,11 +15,11 @@
 - AOM Author Resources：https://aom.org/research/publishing-with-aom/author-resources
 - 投稿系统：https://mc.manuscriptcentral.com/amr
 
-## 一句话定位
+### 一句话定位
 
 AMR 是管理学理论顶刊，发表能够推进我们对 management and organizations 理解的理论 insight，重点是 conceptual research 和 theory advancement/development。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 AOM 官方把 AMR 定位为 conceptual research，强调 theory advancement or development，要显著增加或开启新的 theoretical conversations。AMR 不是经验研究期刊，论文即使引用证据，也必须以理论构建为主。
 
@@ -29,7 +31,7 @@ AOM 官方把 AMR 定位为 conceptual research，强调 theory advancement or d
 - 跨学科理论引入，但必须导向管理与组织理论的新对话。
 - 理论综述或整合，但必须产生新的 conceptual contribution，而不是文献罗列。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 AMR 的核心是 theory contribution。智能体判断时，应优先追问“这个概念论文提出了什么新理论命题，为什么会改变管理学理论对话”。
 
@@ -41,7 +43,7 @@ AMR 的核心是 theory contribution。智能体判断时，应优先追问“�
 - **Theory critique / challenge**：挑战既有理论假设、概念或因果逻辑。
 - **New theoretical conversation**：围绕新现象或新问题开启管理理论对话。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 AMR 的论文通常满足：
 
@@ -59,7 +61,9 @@ AMR 的核心是 theory contribution。智能体判断时，应优先追问“�
 - 理论范围太窄，只解释一个单一案例或特殊现象。
 - 概念定义模糊、命题不可区分、因果逻辑跳跃。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 AMR 时，可以把下面内容加入系统提示词：
 
@@ -77,7 +81,7 @@ AMR 的核心是 theory contribution。智能体判断时，应优先追问“�
 如果论文主要依赖实证结果、方法或现象描述，必须指出这更像 AMJ/OrgSci 而不是 AMR。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的核心 theoretical insight 是什么？
 - 你推进或挑战的是哪条管理与组织理论？
@@ -85,7 +89,7 @@ AMR 的核心是 theory contribution。智能体判断时，应优先追问“�
 - 你的命题之间的因果逻辑是什么？
 - 这篇文章会开启什么新的 theoretical conversation？
 
-## 来源
+### 来源
 
 - AOM Author Resources：https://aom.org/research/publishing-with-aom/author-resources
 - AMR journal page：https://journals.aom.org/journal/amr

@@ -9,7 +9,7 @@ from src.core.venue_catalog import VenueCatalogRepository
 from src.core.venues import VenueRepository
 from src.services.review_service import build_workflow
 from src.services.review_service import ReviewSubmissionError
-from src.core.models import ReviewMode, ReviewRequest, VenueCollection, VenueDomain
+from src.core.models import OutputLanguage, ReviewMode, ReviewRequest, VenueCollection, VenueDomain
 from src.core.models import to_jsonable
 from src.infra.settings import load_settings
 
@@ -28,11 +28,10 @@ def main() -> None:
     review_cmd = subcommands.add_parser("review", help="Run a review workflow")
     review_cmd.add_argument("path")
     review_cmd.add_argument("--mode", choices=[m.value for m in ReviewMode], default=ReviewMode.FULL_REVIEW.value)
+    review_cmd.add_argument("--output-language", choices=[l.value for l in OutputLanguage], default=OutputLanguage.ZH.value)
     review_cmd.add_argument("--venue-domain", choices=[d.value for d in VenueDomain])
     review_cmd.add_argument("--venue-collection", choices=[c.value for c in VenueCollection])
     review_cmd.add_argument("--venue-code", default="")
-    review_cmd.add_argument("--journal-name", default="")
-    review_cmd.add_argument("--journal-requirements-path", default="")
 
     venues_cmd = subcommands.add_parser("venues", help="List available venue codes")
     venues_cmd.add_argument("--limit", type=int, default=30)
@@ -82,11 +81,10 @@ def _review(args: argparse.Namespace) -> None:
             ReviewRequest(
                 paper_path=args.path,
                 review_mode=ReviewMode(args.mode),
+                output_language=OutputLanguage(args.output_language),
                 venue_domain=VenueDomain(args.venue_domain) if args.venue_domain else None,
                 venue_collection=VenueCollection(args.venue_collection) if args.venue_collection else None,
                 venue_code=args.venue_code,
-                journal_name=args.journal_name,
-                journal_requirements_path=args.journal_requirements_path,
             )
         )
     except ReviewSubmissionError as exc:

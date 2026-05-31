@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Wiley 官方 Journal of Management Studies 页面。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JMS
 - 全名：Journal of Management Studies
@@ -14,11 +16,11 @@
 - 投稿指南：https://onlinelibrary.wiley.com/page/journal/14676486/homepage/forauthors.html
 - 投稿系统：https://mc.manuscriptcentral.com/jmstudies
 
-## 一句话定位
+### 一句话定位
 
 JMS 是全球认可的多学科 business and management 期刊，发表能够推进 management and organization 领域的创新性 empirical 和 conceptual articles，并欢迎多种方法和哲学基础。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JMS 的官方定位是 multidisciplinary management journal。它不只收某个子领域，而是欢迎与 management and organization 相关的广泛贡献，尤其强调创新性、跨学科和包容性。
 
@@ -31,7 +33,7 @@ JMS 的官方定位是 multidisciplinary management journal。它不只收某个
 - empirical articles 和 conceptual articles 都可以，但必须推进 management and organization。
 - 可使用多种方法论和哲学立场，包括定量、定性、历史、批判、解释、过程、综述和概念研究。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JMS 强调 innovative empirical and conceptual articles。智能体判断时，应看论文是否真的推进 management and organization，而不是只落在狭窄功能领域。
 
@@ -43,7 +45,7 @@ JMS 强调 innovative empirical and conceptual articles。智能体判断时，�
 - **Methodological / philosophical pluralism**：方法和哲学基础可以多元，但要服务于研究问题。
 - **Critical / reflective contribution**：对管理研究中的假设、权力、伦理、社会影响进行批判性推进。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JMS 的论文通常满足：
 
@@ -61,7 +63,9 @@ JMS 强调 innovative empirical and conceptual articles。智能体判断时，�
 - 只服务一个窄行业或政策场景，无法连接 management and organization。
 - 研究立场和分析逻辑不一致。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 JMS 时，可以把下面内容加入系统提示词：
 
@@ -79,7 +83,7 @@ JMS 强调 innovative empirical and conceptual articles。智能体判断时，�
 如果论文只属于一个狭窄功能领域，必须要求作者提升到 management and organization 层面的理论对话。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文推进了 management and organization 的哪一部分？
 - 你的创新性在哪里：理论、经验、情境、方法，还是批判视角？
@@ -87,7 +91,7 @@ JMS 强调 innovative empirical and conceptual articles。智能体判断时，�
 - 你的方法论/哲学立场为什么适合这个问题？
 - 你的贡献是否超越单一管理实践或行业？
 
-## 来源
+### 来源
 
 - Wiley JMS journal page：https://onlinelibrary.wiley.com/journal/14676486
 - Wiley JMS overview：https://onlinelibrary.wiley.com/page/journal/14676486/homepage/productinformation.html

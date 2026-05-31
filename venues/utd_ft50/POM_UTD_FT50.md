@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 SAGE 当前 journal page。此文件用于用户选择 POM 后，智能体判断论文是否符合生产与运营管理旗舰期刊的内容定位。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：POM
 - 全名：Production and Operations Management
@@ -12,11 +14,11 @@
 - 官方主页：https://journals.sagepub.com/home/pao
 - 投稿指南：https://journals.sagepub.com/author-instructions/pao
 
-## 一句话定位
+### 一句话定位
 
 POM 是 Production and Operations Management Society 的旗舰研究期刊，定位于制造与服务中的运营管理研究，关注管理者在产品与流程设计、运营和供应链管理中面对的问题、兴趣和关切。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 POM 官方主页明确把期刊定位在 operations management in manufacturing and services。它覆盖：
 
@@ -30,7 +32,7 @@ POM 官方主页明确把期刊定位在 operations management in manufacturing 
 
 与 M&SOM 相比，POM 的定位更像 OM 社群旗舰刊物，范围覆盖所有产品与流程设计、运营和供应链管理主题，并明确欢迎任何 research paradigm。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 POM 强调 scientific research，并且不限定单一范式。智能体可以接受以下贡献路径：
 
@@ -44,7 +46,7 @@ POM 强调 scientific research，并且不限定单一范式。智能体可以�
 
 POM 当前主页的近期文章也显示，它接受供应商选择、渠道成本披露、生成式 AI 系统与 OR、罕见病 OM、供应链韧性、餐厅 analytics、多智能体强化学习库存管理等新兴主题。
 
-## 主题 fit 判断规则
+### 主题 fit 判断规则
 
 适合 POM 的论文通常满足：
 
@@ -61,7 +63,9 @@ POM 当前主页的近期文章也显示，它接受供应商选择、渠道成�
 - 只提供技术模型，没有说明其对产品、流程、运营或供应链决策的意义。
 - 只描述实践，没有科学研究问题和可推广贡献。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 Production and Operations Management (POM)。
@@ -77,7 +81,7 @@ POM 当前主页的近期文章也显示，它接受供应商选择、渠道成�
 如果论文只是借用运营场景做通用算法或管理研究，必须指出 POM fit 不足，并建议把核心改写为运营管理问题。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文处理的是产品设计、流程设计、运营系统还是供应链问题？
 - 管理者在这个问题中要做什么决策？
@@ -85,7 +89,7 @@ POM 当前主页的近期文章也显示，它接受供应商选择、渠道成�
 - 你的发现如何改善制造或服务运营？
 - 论文是否只是用了运营场景，还是确实推进了 OM 知识？
 
-## 来源
+### 来源
 
 - SAGE POM journal page：https://journals.sagepub.com/home/pao
 - SAGE POM submission guidelines：https://journals.sagepub.com/author-instructions/pao

@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Elsevier / ScienceDirect 官方 Aims & Scope。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JFE
 - 全名：Journal of Financial Economics
@@ -12,11 +14,11 @@
 - 官方主页：https://www.sciencedirect.com/journal/journal-of-financial-economics
 - 投稿指南：https://www.sciencedirect.com/journal/journal-of-financial-economics/publish/guide-for-authors
 
-## 一句话定位
+### 一句话定位
 
 JFE 是 financial economics 领域的顶级同行评审期刊，发表金融经济学和 firm theory 的理论与经验研究，重点关注最高质量的 analytical、empirical 和 clinical contributions。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JFE 提供 financial economics and theory of the firm 的 specialized forum。它比 broad finance 仍然宽，但官方明确强调几大核心领域。
 
@@ -29,7 +31,7 @@ JFE 提供 financial economics and theory of the firm 的 specialized forum。�
 - Economics of organizations、firm boundaries、contracts、organizational finance。
 - 理论模型、实证识别、clinical evidence、机构细节驱动的金融经济学研究。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JFE 官方强调 highest quality analytical, empirical, and clinical contributions。智能体判断时，应看论文是否对金融经济学或企业理论做出高质量贡献。
 
@@ -41,7 +43,7 @@ JFE 官方强调 highest quality analytical, empirical, and clinical contributio
 - **Capital-market contribution**：市场定价、交易、资产配置和资本市场机制。
 - **Corporate/organization contribution**：企业融资、治理和组织经济学机制。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JFE 的论文通常满足：
 
@@ -59,7 +61,9 @@ JFE 官方强调 highest quality analytical, empirical, and clinical contributio
 - 理论模型没有金融含义。
 - 只对单一市场制度有描述意义，缺少一般化 insight。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 JFE 时，可以把下面内容加入系统提示词：
 
@@ -75,7 +79,7 @@ JFE 官方强调 highest quality analytical, empirical, and clinical contributio
 5. 结论是否对金融经济学读者重要。
 ```
 
-## 来源
+### 来源
 
 - ScienceDirect JFE page：https://www.sciencedirect.com/journal/journal-of-financial-economics
 - JFE Guide for Authors：https://www.sciencedirect.com/journal/journal-of-financial-economics/publish/guide-for-authors

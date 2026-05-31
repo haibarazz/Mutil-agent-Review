@@ -2,7 +2,9 @@
 
 > CCF-A 智能体 venue 画像版，更新日期：2026-05-25。资料来源为 CCF 第七版《中国计算机学会推荐国际学术会议和期刊目录》正式版、CCF 官方目录入口和结构化整理源。此文件用于“用户选择 CS/CCF-A venue 后，智能体判断主题 fit、贡献类型和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：ACL
 - 全名：Annual Meeting of the Association for Computational Linguistics
@@ -13,11 +15,11 @@
 - 出版方 / 主办方：ACL
 - CCF 官方目录入口：https://www.ccf.org.cn/Academic_Evaluation/By_category/
 
-## 一句话定位
+### 一句话定位
 
 ACL 是 CCF 推荐目录中 **人工智能** 领域的 A 类会议。人工智能方向的顶级 venue，适合机器学习、人工智能、计算机视觉、自然语言处理、表示学习和智能系统研究。
 
-## 官方目录定位：适合什么主题
+### 官方目录定位：适合什么主题
 
 CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**。对智能体来说，最重要的 fit 判断是：论文是否真正推进该 CCF 专业领域的核心问题，而不是只借用该领域作为应用背景。
 
@@ -30,7 +32,7 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - 强化学习、生成模型和表示学习
 - AI 系统评测、可靠性、公平性和安全性
 
-## CCF-A 投稿/选刊判断要点
+### CCF-A 投稿/选刊判断要点
 
 - A 类表示 CCF 推荐目录中该专业领域的最高推荐等级之一，但 CCF 官方也说明目录是推荐建议，不建议简单作为学术评价依据。
 - 主题必须与该 venue 所在 CCF 专业领域高度一致。
@@ -40,7 +42,7 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - 如果是 AI/数据类论文，应有强基线、消融、误差分析、数据/任务合理性和泛化讨论。
 - CCF 官方说明中，会议论文指 Full paper 或 Regular paper；Short paper、Demo paper、Technical Brief、Summary、Findings 以及 Workshop 等不计入目录考虑范围。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 ACL 的论文通常满足：
 
@@ -57,20 +59,20 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - 只有性能数字，没有机制解释、消融、误差分析或系统洞察。
 - 论文贡献主要是产品实现、工程堆叠或业务报告，而不是可发表研究。
 
-## 官方要求抓取（官方源，2026-05-25）
+### 官方要求抓取（官方源，2026-05-25）
 
 官方来源：
 
 - ACL Rolling Review CFP: https://github.com/acl-org/aclrollingreview/blob/main/cfp.md
 
-### 官方定位与主题范围
+#### 官方定位与主题范围
 
 - 官方短摘：`Computational Linguistics and Natural Language Processing`；`substantial, original, and unpublished research`。
 - ARR/ACL-family 官方 scope 覆盖 all aspects of CL/NLP；topic areas 包括 biomedical NLP、computational social science、dialogue、discourse、efficient NLP、ethics/bias/fairness、generation、human-centered NLP、information extraction、IR/text mining、interpretability、language modeling、LLM agents、linguistic/cognitive modeling、ML for NLP、MT、multilingual/cross-lingual、multimodality/language grounding、NLP and code、symbolic reasoning、applications、QA、resources/evaluation、semantics、sentiment/style/argument mining、speech、summarization、syntax 等。
 - 官方欢迎多种 contribution types：low-resource、low-compute/efficiency、data resources、data analysis、model analysis & interpretability、NLP engineering experiment、public software/pretrained models、position papers、reproduction study、surveys、theory。
 - 官方明确 positive 和 negative experimental results 都可接受，但必须论证结果为什么 interesting and important。
 
-### 官方投稿与评审要求
+#### 官方投稿与评审要求
 
 - Long papers: 最多 8 pages content；Short papers: 最多 4 pages content；limitations section 必须有，references 不限。
 - Short paper 不是缩短版 long paper，而是小而聚焦的贡献。
@@ -79,13 +81,15 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - Authors 必须遵守 ACL Code of Ethics，并完成 responsible NLP research checklist；不正确、不完整或误导性 checklist 可 desk reject。
 - Generative AI 写作/代码辅助需要在 Responsible NLP Checklist 披露；LLM 不满足 authorship；prompt injection 可 desk reject。
 
-### 给智能体的硬约束
+#### 给智能体的硬约束
 
 - ACL fit 必须以语言、文本、语音、符号/语义或 NLP 系统问题为中心；单纯 ML 方法如果没有 substantive contribution to language processing，应判为弱。
 - 允许 survey、reproduction、negative results、resource/model analysis 等非传统“新模型”贡献，但必须说明 NLP 社区价值。
 - 所有 ACL-family 建议都应默认加入 Limitations、Responsible NLP Checklist、伦理/数据声明、匿名资源链接检查。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标 venue 是 Annual Meeting of the Association for Computational Linguistics (ACL)，CCF-A，类型为会议，所属 CCF 专业领域为：人工智能 / Artificial Intelligence。
@@ -95,7 +99,7 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 如果论文只是把通用方法套到一个场景，或者主题与 人工智能 关系弱，请明确指出 fit 不足，并建议如何重写为该领域核心问题。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文最核心的 CS 问题是什么？它为什么属于 **人工智能**？
 - 你的贡献是理论、算法、系统、实证、数据集、benchmark，还是多种结合？
@@ -103,7 +107,7 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - 你的 strongest baselines、ablation、scalability 或 proof obligations 是否足够？
 - 如果审稿人认为这是相邻领域论文，你如何解释它适合 ACL？
 
-## 来源
+### 来源
 
 - CCF 官方目录入口：https://www.ccf.org.cn/Academic_Evaluation/By_category/
 - CCF 第七版正式目录 PDF：CCF 官方页面中的“第七版中国计算机学会推荐国际学术会议和期刊目录（正式版）”

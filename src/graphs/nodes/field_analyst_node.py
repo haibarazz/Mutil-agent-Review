@@ -5,7 +5,11 @@ from src.graphs.state import GlobalState
 
 
 def field_analyst_node(state: GlobalState) -> GlobalState:
-    result = get_review_nodes().field_analyst(state["parsed_paper"], state["journal_requirements"])
+    result = get_review_nodes().field_analyst(
+        state["parsed_paper"],
+        state["journal_requirements"],
+        output_language=state.get("output_language", "zh"),
+    )
     return {
         "field_analysis": result,
         "field_info": result.get("field_info", {}),

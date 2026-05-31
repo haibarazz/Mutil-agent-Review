@@ -11,6 +11,7 @@ def ae_final_node(state: GlobalState) -> GlobalState:
         venue_profile=state.get("venue_profile"),
         ae_result=state.get("ae_result", {}),
         reviewer_reports=state.get("reviewer_reports", []),
+        output_language=state.get("output_language", "zh"),
     )
     return {
         "ae_final": result,

@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Elsevier / ScienceDirect 官方 Aims & Scope。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JBV
 - 全名：Journal of Business Venturing
@@ -13,11 +15,11 @@
 - 投稿指南：https://www.sciencedirect.com/journal/journal-of-business-venturing/publish/guide-for-authors
 - 投稿系统：https://www.editorialmanager.com/JBV/default.aspx
 
-## 一句话定位
+### 一句话定位
 
 JBV 是专门面向 entrepreneurship 的顶级期刊，提供学术论坛来分享关于创业前因、机制和结果的有用且有趣的理论、叙事和解释。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JBV 官方强调 entrepreneurial phenomenon in its myriad forms，并把期刊定位为 multi-disciplinary、multi-functional、multi-contextual。对智能体来说，JBV 的核心是“创业现象本身”，包括创业的 antecedents、mechanisms、consequences。
 
@@ -30,7 +32,7 @@ JBV 官方强调 entrepreneurial phenomenon in its myriad forms，并把期刊�
 - 功能视角：finance/accounting、management、marketing、strategy，同时欢迎 operations、IT、public policy、medicine、law、music 等。
 - 情境视角：international、sustainability、high uncertainty、dynamism、time pressure、emotion 等。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JBV 接受理论、叙事和解释，但必须围绕创业现象并有学术价值。
 
@@ -43,7 +45,7 @@ JBV 接受理论、叙事和解释，但必须围绕创业现象并有学术价�
 - **Multi-functional contribution**：从管理功能领域切入创业。
 - **Multi-contextual contribution**：在国际、可持续、高不确定等情境中深化创业理解。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JBV 的论文通常满足：
 
@@ -61,7 +63,9 @@ JBV 接受理论、叙事和解释，但必须围绕创业现象并有学术价�
 - 只对特定创业项目有案例价值，缺少学术解释。
 - 跨学科视角没有转化为创业研究贡献。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 JBV 时，可以把下面内容加入系统提示词：
 
@@ -79,7 +83,7 @@ JBV 接受理论、叙事和解释，但必须围绕创业现象并有学术价�
 如果论文只是 SME、创新、战略或管理研究，必须要求作者重写为 entrepreneurship phenomenon。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的创业现象是什么？
 - 你解释的是 antecedents、mechanisms 还是 consequences？
@@ -87,7 +91,7 @@ JBV 接受理论、叙事和解释，但必须围绕创业现象并有学术价�
 - 你的学科/功能/情境视角如何服务创业研究？
 - 为什么这不是一般战略、创新或 SME 论文？
 
-## 来源
+### 来源
 
 - ScienceDirect JBV page：https://www.sciencedirect.com/journal/journal-of-business-venturing
 - JBV Guide for Authors：https://www.sciencedirect.com/journal/journal-of-business-venturing/publish/guide-for-authors

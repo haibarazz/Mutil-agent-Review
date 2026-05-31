@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 MIS Quarterly 官方 Overview 页面。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：MISQ
 - 全名：MIS Quarterly
@@ -13,11 +15,11 @@
 - 官方 Overview：https://misq.umn.edu/pages/Overview
 - 投稿入口：https://misq.umn.edu/submissions/
 
-## 一句话定位
+### 一句话定位
 
 MISQ 的编辑使命是增强并传播关于 IT-based services 的开发、IT resources 的管理，以及 IT 的 use、impact 和 economics 的知识，并要求这些知识具有 managerial、organizational 和 societal implications。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 MISQ 的核心是 information systems scholarship。它不仅关注技术本身，还关注 IT 如何作为服务、资源、组织能力和社会经济现象被开发、管理、使用并产生影响。
 
@@ -31,7 +33,7 @@ MISQ 的核心是 information systems scholarship。它不仅关注技术本身�
 - 对 IS discipline 有重要贡献的专业议题。
 - 跨学科研究，但必须突出 IS 在问题形成和贡献中的角色。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 MISQ 官方提出三维 excellence framework。智能体判断时，应把这三点作为核心：
 
@@ -41,7 +43,7 @@ MISQ 官方提出三维 excellence framework。智能体判断时，应把这三
 
 理想 MISQ 贡献同时满足以上三维，而不是只在其中一项强。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 MISQ 的论文通常满足：
 
@@ -59,7 +61,9 @@ MISQ 官方提出三维 excellence framework。智能体判断时，应把这三
 - 只有理论复杂度，缺少 powerful simplicity 和现实影响。
 - 跨学科研究没有说明 IS 在问题形成中的中心角色。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 MISQ 时，可以把下面内容加入系统提示词：
 
@@ -75,7 +79,7 @@ MISQ 官方提出三维 excellence framework。智能体判断时，应把这三
 跨学科论文必须突出 IS 在 problem formulation 和 contribution 中的角色。如果 IT 只是背景或工具，必须指出 MISQ fit 不足。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的研究如何贡献给 IS discipline？
 - IT-based services、IT resources、IT use/impact/economics 中哪个是核心？
@@ -83,7 +87,7 @@ MISQ 官方提出三维 excellence framework。智能体判断时，应把这三
 - IS 在问题形成中是中心，还是只是场景？
 - 你的核心答案能否表达为 powerful simplicity？
 
-## 来源
+### 来源
 
 - MISQ home：https://misq.umn.edu
 - MISQ Overview：https://misq.umn.edu/pages/Overview

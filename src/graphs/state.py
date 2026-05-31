@@ -20,11 +20,11 @@ class GlobalState(TypedDict, total=False):
     run_id: str                   # 当前审稿运行的唯一标识符
     paper_path: str               # 用户上传的论文文件路径 (PDF/MD)
     review_mode: str              # 审稿模式: FULL_REVIEW(完整) / QUICK_REVIEW(快速)
+    output_language: str          # 最终自然语言输出: zh / en
     venue_domain: str             # 领域: CS(计算机) / IS(信息系统)
     venue_collection: str         # 期刊集合: CCFA/CCFB/CCFC/FT50/UTD24
     venue_code: str               # 具体期刊代码: AAAI/IJCAI/NeurIPS 等
-    journal_name: str             # 期刊名称 (可选)
-    journal_requirements_path: str # 期刊要求文档路径 (可选)
+    node_progress_callback: Any   # 可选回调：job 模式下用于记录每个节点 start/done/error
 
     # ========== 解析与校验 ==========
     parsed_paper: Any             # 解析后的论文对象 (ParsedPaper 类型)
@@ -36,8 +36,8 @@ class GlobalState(TypedDict, total=False):
 
     # ========== 期刊与期刊要求 ==========
     venue_profile: Any             # 目标期刊的配置信息 (VenueProfile)
-    journal_requirements: str     # 期刊投稿要求原文
-    journal_requirements_result: dict[str, Any] # 期刊要求收集结果
+    journal_requirements: str     # 从 venue md 读取的官方投稿要求
+    journal_requirements_result: dict[str, Any] # 期刊要求加载结果
 
     # ========== 领域分析与编辑筛选 ==========
     field_analysis: dict[str, Any] # 领域分析结果
@@ -56,6 +56,8 @@ class GlobalState(TypedDict, total=False):
     ae_final: dict[str, Any]       # AE 最终综合报告
     final_decision: str            # 最终决定: ACCEPT / MINOR_REVISION / MAJOR_REVISION / REJECT / DESK_REJECT
     decision_letter: str           # 最终决定的正式通知信
+    final_report_md: str           # 最终渲染出的 Markdown 审稿报告
+    rendered_artifacts: dict[str, str] # 文件名到文件内容的映射，后面可扩展 tex/pdf
 
     # ========== 阶段输出 (用于追踪每个节点的中间结果) ==========
     # 使用 Annotated + merge_dict 操作符合并各阶段输出
@@ -66,11 +68,10 @@ class GlobalState(TypedDict, total=False):
 class GraphInput(TypedDict, total=False):
     paper_path: str               # 用户上传的论文文件路径 (PDF/MD)
     review_mode: str              # 审稿模式: FULL_REVIEW / QUICK_REVIEW
+    output_language: str          # 最终自然语言输出: zh / en
     venue_domain: str             # 领域: CS / IS
     venue_collection: str         # 期刊集合: CCFA/CCFB/CCFC/FT50/UTD24
     venue_code: str               # 具体期刊代码
-    journal_name: str             # 期刊名称 (可选)
-    journal_requirements_path: str # 期刊要求文档路径 (可选)
 
 
 # 图输出: 审稿流程结束时的最终输出
@@ -79,4 +80,6 @@ class GraphOutput(TypedDict, total=False):
     final_decision: str           # 最终决定: ACCEPT/MINOR_REVISION/MAJOR_REVISION/REJECT/DESK_REJECT
     decision_letter: str          # 最终决定的正式通知信
     reviewer_reports: list[Any]   # 审稿人报告列表 (ReviewerReport[])
+    final_report_md: str          # 最终渲染出的 Markdown 审稿报告
+    rendered_artifacts: dict[str, str] # 文件名到文件内容的映射
     stage_outputs: dict[str, Any] # 各阶段中间结果的字典

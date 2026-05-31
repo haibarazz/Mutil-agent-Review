@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 JFQA 官方站与 Cambridge journal page。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JFQA
 - 全名：Journal of Financial and Quantitative Analysis
@@ -13,11 +15,11 @@
 - Cambridge page：https://www.cambridge.org/core/journals/journal-of-financial-and-quantitative-analysis
 - 投稿入口：https://jfqa.org/submissions/
 
-## 一句话定位
+### 一句话定位
 
 JFQA 发表 financial economics 中的理论和经验研究，主题包括 corporate finance、investments、capital and security markets，以及与金融研究者特别相关的 quantitative methods。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JFQA 的核心是 financial and quantitative analysis。相较 broad finance，JFQA 对 quantitative methods 和严谨金融实证/理论分析有明显强调。
 
@@ -30,7 +32,7 @@ JFQA 的核心是 financial and quantitative analysis。相较 broad finance，J
 - 理论与经验 financial economics。
 - 能为金融研究者提供方法、证据或理论 insight 的研究。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JFQA 的关键是 theoretical and empirical research in financial economics，以及 quantitative methods of relevance to financial researchers。
 
@@ -42,7 +44,7 @@ JFQA 的关键是 theoretical and empirical research in financial economics，�
 - **Market contribution**：资本和证券市场机制。
 - **Corporate/investment contribution**：公司金融或投资研究。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JFQA 的论文通常满足：
 
@@ -59,7 +61,9 @@ JFQA 的关键是 theoretical and empirical research in financial economics，�
 - 只是单一市场描述，缺少理论或实证金融 insight。
 - 方法复杂但金融研究者价值不清。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 JFQA 时，可以把下面内容加入系统提示词：
 
@@ -75,7 +79,7 @@ JFQA 的关键是 theoretical and empirical research in financial economics，�
 5. 实证和量化分析是否严谨。
 ```
 
-## 来源
+### 来源
 
 - JFQA official site：https://jfqa.org/
 - Cambridge JFQA page：https://www.cambridge.org/core/journals/journal-of-financial-and-quantitative-analysis

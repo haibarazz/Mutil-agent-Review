@@ -1,0 +1,49 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: docker
+      APP_CORS_ORIGINS: http://127.0.0.1:8080,http://localhost:8080,http://127.0.0.1:5173,http://localhost:5173
+      DATA_DIR: /app/data
+      PROMPTS_DIR: /app/prompts
+      VENUES_DIR: /app/venues
+      LLM_CONFIG_PATH: /app/configs/llm.yaml
+      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_DEFAULT_MODEL: ${LLM_DEFAULT_MODEL:-gpt-4o-mini}
+      LLM_TIMEOUT_SEC: ${LLM_TIMEOUT_SEC:-600}
+      LLM_SILICONFLOW_BASE_URL: ${LLM_SILICONFLOW_BASE_URL:-https://api.siliconflow.cn/v1}
+      LLM_SILICONFLOW_API_KEY: ${LLM_SILICONFLOW_API_KEY:-}
+      LLM_DEEPSEEK_BASE_URL: ${LLM_DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      LLM_DEEPSEEK_API_KEY: ${LLM_DEEPSEEK_API_KEY:-}
+      LLM_OPENOUTER_BASE_URL: ${LLM_OPENOUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      LLM_OPENOUTER_API_KEY: ${LLM_OPENOUTER_API_KEY:-}
+      PARSER_BACKEND: ${PARSER_BACKEND:-auto}
+      MINERU_API_TOKEN: ${MINERU_API_TOKEN:-}
+      MINERU_BASE_URL: ${MINERU_BASE_URL:-https://mineru.net}
+      MINERU_MODEL_VERSION: ${MINERU_MODEL_VERSION:-vlm}
+      MINERU_TIMEOUT_SEC: ${MINERU_TIMEOUT_SEC:-300}
+      MINERU_POLL_INTERVAL_SEC: ${MINERU_POLL_INTERVAL_SEC:-3}
+      MINERU_REQUEST_TIMEOUT_SEC: ${MINERU_REQUEST_TIMEOUT_SEC:-30}
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2).read()"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy

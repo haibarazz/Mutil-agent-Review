@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 INFORMS 官方 Editorial Statement。此文件用于用户选择 Marketing Science 后，智能体判断论文是否符合定量营销顶刊的内容定位。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：MKS / Marketing Science
 - 榜单归属：UTD24；FT50
@@ -13,11 +15,11 @@
 - 投稿指南：https://pubsonline.informs.org/page/mksc/submission-guidelines
 - Data Disclosure and Replication Policy：https://pubsonline.informs.org/page/mksc/replicationpolicy
 
-## 一句话定位
+### 一句话定位
 
 Marketing Science 是定量营销领域的顶级期刊，重点发表面向营销问题的经验和理论 quantitative research，尤其偏好用数学建模、数据、实验、应用和方法创新回答重要营销问题的论文。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 Marketing Science 明确覆盖的主题包括：
 
@@ -41,7 +43,7 @@ Marketing Science 明确覆盖的主题包括：
 
 智能体可以把它理解为：**论文必须回答重要营销问题，并且最好能通过模型、数据、实验、理论或方法让目标受众做出更好的营销决策或行动。**
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 Marketing Science 的主要偏好是用 mathematical modeling 回答重要营销研究问题，但它也接受多种类型：
 
@@ -61,7 +63,7 @@ Marketing Science 的主要偏好是用 mathematical modeling 回答重要营销
 - 方法比较。
 - 经验研究带来的新管理行动。
 
-## 主题 fit 判断规则
+### 主题 fit 判断规则
 
 适合 Marketing Science 的论文通常满足：
 
@@ -81,7 +83,9 @@ Marketing Science 的主要偏好是用 mathematical modeling 回答重要营销
 - 结果只对一个小场景有效，缺少营销知识的一般化意义。
 - 论文没有足够细节支持方法评估和结果复现。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 Marketing Science。
@@ -97,7 +101,7 @@ Marketing Science 的主要偏好是用 mathematical modeling 回答重要营销
 如果论文只是使用营销数据做通用预测，必须指出 Marketing Science fit 不足，并建议重构为明确的营销决策问题。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的核心营销决策是什么？
 - 目标受众是谁：营销经理、平台、监管者、消费者、市场研究者还是学术读者？
@@ -106,7 +110,7 @@ Marketing Science 的主要偏好是用 mathematical modeling 回答重要营销
 - 你的方法细节是否足以让读者评估和复现？
 - 如果是行为研究，它如何连接营销模型或营销理论？
 
-## 来源
+### 来源
 
 - INFORMS Marketing Science journal page：https://pubsonline.informs.org/journal/mksc
 - INFORMS Marketing Science Editorial Statement：https://pubsonline.informs.org/page/mksc/editorial-statement

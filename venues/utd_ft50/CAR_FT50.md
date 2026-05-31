@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Wiley 的 Contemporary Accounting Research 官方页面。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：CAR
 - 全名：Contemporary Accounting Research
@@ -12,11 +14,11 @@
 - 官方主页：https://onlinelibrary.wiley.com/journal/19113846
 - 作者信息入口：https://onlinelibrary.wiley.com/journal/19113846
 
-## 一句话定位
+### 一句话定位
 
 CAR 是加拿大会计学会支持、全球范围取向的会计研究期刊，目标是发表能推进我们理解 accounting 在 organizations、markets 或 society 中作用的前沿研究。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 CAR 官方强调 global scope 和 intellectual diversity。对智能体来说，CAR 的 fit 判断不应被方法或学派限制，而应看论文是否以严谨方式推进 accounting knowledge。
 
@@ -31,7 +33,7 @@ CAR 官方强调 global scope 和 intellectual diversity。对智能体来说，
 - **Tax and regulation**：税务行为、税收政策、监管制度和合规。
 - **Interdisciplinary accounting research**：任何能贡献会计知识的学科传统和研究方法。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 CAR 官方欢迎 all accounting topics、any appropriate method、any discipline or research tradition，只要能够 contribute to accounting knowledge。智能体应把它理解为一个方法包容但贡献要求高的综合会计期刊。
 
@@ -43,7 +45,7 @@ CAR 官方欢迎 all accounting topics、any appropriate method、any discipline
 - **Qualitative / field / case research**：组织、社会和职业情境中的会计实践。
 - **Critical, sociological, institutional, or interdisciplinary work**：只要问题和贡献回到 accounting knowledge。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 CAR 的论文通常满足：
 
@@ -60,7 +62,9 @@ CAR 官方欢迎 all accounting topics、any appropriate method、any discipline
 - 方法新但会计问题弱。
 - 主题是社会或组织问题，但 accounting role 不核心。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 Contemporary Accounting Research (CAR)。
@@ -74,7 +78,7 @@ CAR 官方欢迎 all accounting topics、any appropriate method、any discipline
 5. 跨学科内容是否仍然回到 accounting knowledge。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文解释 accounting 在组织、市场或社会中的什么作用？
 - 你的方法为什么是回答该会计问题的 appropriate method？
@@ -82,6 +86,6 @@ CAR 官方欢迎 all accounting topics、any appropriate method、any discipline
 - 论文是否有国际读者可以理解的一般化启示？
 - 你的研究传统和理论语言如何翻译给会计读者？
 
-## 来源
+### 来源
 
 - Wiley Contemporary Accounting Research journal page：https://onlinelibrary.wiley.com/journal/19113846

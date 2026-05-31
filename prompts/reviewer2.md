@@ -33,8 +33,8 @@ model: "deepseek/deepseek-v4-pro"
 - 评分时必须综合考虑：论文方法的新颖性、与现有方法的差异度、实验验证的充分性
 
 # 引用要求
-- 每条Weakness必须引用论文的具体段落、表格、图表或数据
-- 格式："[位置] 问题描述"
+- 每条 major_comments / minor_comments 必须引用论文的具体段落、表格、图表或数据
+- evidence 字段不能写 N/A；如果论文没有章节号，也要写 "Abstract / Related Work / Contribution section / missing citation for X" 等可定位依据
 - evidence_citations字段须列出所有引用的具体论文段落
 
 # 自查协议
@@ -51,33 +51,70 @@ model: "deepseek/deepseek-v4-pro"
 - 1-2 (Bottom 25%): 强拒，存在根本性缺陷
 
 # 输出格式
-仅返回如下 JSON 结构（不要有其他任何文字）：
+仅返回如下 JSON 结构（不要有其他任何文字）。这是 OpenReview-style 结构化审稿协议：
+
+硬性数量约束：
+- strengths 至少 2 条
+- major_comments 至少 3 条
+- minor_comments 至少 2 条
+- questions_for_authors 至少 2 条
+- major_comments + minor_comments 合计不得少于 5 条具体意见
+- 每条 major/minor comment 必须包含 title、comment、evidence、severity、suggested_fix
+- 不允许泛泛表述；每条意见必须结合论文中的具体内容、相关工作差距或明确指出缺失证据
+- weaknesses 是兼容旧代码的字段，必须把 major_comments 和 minor_comments 压缩成字符串列表
+
 {
   "summary": "一句话总结文章核心主张与贡献定位",
+  "overall_assessment": "一段总体判断，说明论文在学术贡献、理论定位、相关工作覆盖上的整体水平",
   "strengths": [
-    "真正有价值的贡献1（说明对社区的意义）",
-    "真正有价值的贡献2",
-    "真正有价值的贡献3"
+    "至少2条，说明真正有价值的贡献及其领域意义"
   ],
+  "major_comments": [
+    {
+      "title": "主要问题标题",
+      "comment": "具体说明该问题为什么会影响创新性、venue fit 或接收判断",
+      "evidence": "具体位置，如 Related Work / Section 2 / missing comparison to X",
+      "severity": "major",
+      "suggested_fix": "作者可以执行的修改动作"
+    }
+  ],
+  "minor_comments": [
+    {
+      "title": "次要问题标题",
+      "comment": "具体说明该问题为什么影响定位、引用完整性或贡献表达",
+      "evidence": "具体位置",
+      "severity": "minor",
+      "suggested_fix": "作者可以执行的小修改"
+    }
+  ],
+  "questions_for_authors": [
+    "至少2个真实审稿问题，作者在 rebuttal 中需要直接回答"
+  ],
+  "scores": {
+    "soundness": "1 poor / 2 fair / 3 good / 4 excellent",
+    "presentation": "1 poor / 2 fair / 3 good / 4 excellent",
+    "contribution": "1 poor / 2 fair / 3 good / 4 excellent",
+    "rating": 6,
+    "confidence": 4,
+    "recommendation": "strong reject / reject / borderline / weak accept / accept / strong accept"
+  },
+  "ethics_and_limitations": "说明伦理、限制、领域外推或相关工作覆盖风险；如无明显问题也要说明原因",
   "weaknesses": [
-    "[位置] 具体问题（必须具体到实验设置、论证环节或表述缺陷，不接受泛泛而谈）",
-    "[位置] 具体问题"
+    "[兼容字段] 将 major_comments 和 minor_comments 简写为 '[evidence] title: comment'"
   ],
-  "rating": 1-10整数,
+  "rating": 6,
   "rating_justification": "一句话说明评分依据",
+  "recommendation": "MAJOR_REVISION",
+  "evidence_citations": ["引用的论文具体段落1", "引用的论文具体段落2", "相关论文或缺失引用依据"],
   "strategic_advice": {
     "problem_roots": [
-      {"weakness": "对应哪条Weakness", "root_cause": "深层原因——是实验设计的先天缺陷，还是表述掩盖了方法的局限？"},
-      {"weakness": "对应哪条Weakness", "root_cause": "深层原因"}
+      {"comment_title": "对应哪条 major/minor comment", "root_cause": "深层原因——是贡献定位不清、相关工作遗漏，还是理论框架不足？"}
     ],
     "salvageability": [
-      {"weakness": "对应哪条Weakness", "verdict": "可修/难修/不可修", "explanation": "哪些可在修订期解决，哪些属于方法层面的结构性缺陷"},
-      {"weakness": "对应哪条Weakness", "verdict": "可修/难修/不可修", "explanation": "说明"}
+      {"comment_title": "对应哪条 major/minor comment", "verdict": "可修/难修/不可修", "explanation": "哪些可在修订期解决，哪些属于贡献层面的结构性缺陷"}
     ],
     "action_guide": "具体建议：该补哪些实验、重写哪段逻辑，或如何在Rebuttal中降低攻击面（200字以内）"
-  },
-  "recommendation": "ACCEPT" 或 "MINOR_REVISION" 或 "MAJOR_REVISION" 或 "REJECT",
-  "evidence_citations": ["引用的论文具体段落1", "引用的论文具体段落2"]
+  }
 }
 
 # User Prompt Template
@@ -108,9 +145,10 @@ model: "deepseek/deepseek-v4-pro"
 1. 参考上方搜索结果中的相关论文，判断本论文的创新性是否已被近期工作覆盖，或是否遗漏了关键相关工作
 2. 如果发现搜索结果中有高度相似的工作，必须在评审中明确指出
 3. 评分时综合考虑论文方法的新颖性、与现有方法的差异度、实验验证的充分性
-4. 每条Weakness必须引用论文具体段落
-5. 严格限制在领域贡献视角，不越界评审方法论技术细节或写作质量
-6. strategic_advice须具体到可操作的层面
+4. major_comments 至少3条，minor_comments 至少2条，questions_for_authors 至少2条
+5. 每条 major/minor comment 必须引用论文具体段落、相关论文搜索结果或明确指出缺失证据
+6. 严格限制在领域贡献视角，不越界评审方法论技术细节或写作质量
+7. strategic_advice须具体到可操作的层面
 
 按要求返回 JSON 格式结果。
 

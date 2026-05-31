@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 Palgrave / Springer Nature 官方 JIBS submission guidelines 与 Statement of Editorial Policy。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JIBS
 - 全名：Journal of International Business Studies
@@ -13,11 +15,11 @@
 - 官方 Aims/Policy：https://www.palgrave.com/gp/journal/41267/authors/aims-and-scope
 - 投稿系统：http://mc.manuscriptcentral.com/jibs
 
-## 一句话定位
+### 一句话定位
 
 JIBS 是国际商务领域排名最高的期刊，目标是发表关于 international business 的 insightful、innovative、impactful research，强调多学科范围、跨学科内容与方法。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JIBS 的核心不是“使用跨国数据”，而是核心论证必须 inherently international in character。官方明确说，international business 不能只是背景或次要变量。
 
@@ -32,7 +34,7 @@ JIBS 官方列出的八个 IB 子领域包括：
 - Industry 4.0 in IB，例如 4.0 技术对国际运营企业治理、战略、结构和组织运行的影响。
 - Global sustainability，例如 ESGD、环境和气候影响缓解、分配正义、EDI 对国际运营企业的影响。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JIBS 欢迎 conceptual/theory-development papers、empirical hypothesis-testing papers、case-based studies 和合适的 mathematical modeling papers。关键是要对 international business 研究有理论贡献。
 
@@ -45,7 +47,7 @@ JIBS 欢迎 conceptual/theory-development papers、empirical hypothesis-testing 
 - **Multi-level contribution**：micro、meso、macro 多层级研究受到欢迎。
 - **Distinctively international theory**：理论命题本身具有国际性，或因变量和自变量都具有国际属性。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JIBS 的论文通常满足：
 
@@ -65,7 +67,9 @@ JIBS 欢迎 conceptual/theory-development papers、empirical hypothesis-testing 
 - 只面向 practitioner audience、教学材料、普通 literature review。
 - 只批评前人而不提供建设性新 insight。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 JIBS 时，可以把下面内容加入系统提示词：
 
@@ -83,7 +87,7 @@ JIBS 欢迎 conceptual/theory-development papers、empirical hypothesis-testing 
 如果论文只是跨国数据、国际样本或国内理论外推，必须指出 JIBS fit 不足。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的核心论证为什么 inherently international？
 - 你属于 JIBS 八个 IB 子领域中的哪一个？
@@ -91,7 +95,7 @@ JIBS 欢迎 conceptual/theory-development papers、empirical hypothesis-testing 
 - 国际商务是主线，还是只是数据背景？
 - 你的研究如何开辟或重定向 IB 研究线？
 
-## 来源
+### 来源
 
 - Springer JIBS page：https://link.springer.com/journal/41267
 - Palgrave JIBS aims/policy：https://www.palgrave.com/gp/journal/41267/authors/aims-and-scope

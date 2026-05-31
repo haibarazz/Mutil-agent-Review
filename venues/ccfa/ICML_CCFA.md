@@ -2,7 +2,9 @@
 
 > CCF-A 智能体 venue 画像版，更新日期：2026-05-25。资料来源为 CCF 第七版《中国计算机学会推荐国际学术会议和期刊目录》正式版、CCF 官方目录入口和结构化整理源。此文件用于“用户选择 CS/CCF-A venue 后，智能体判断主题 fit、贡献类型和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：ICML
 - 全名：International Conference on Machine Learning
@@ -13,11 +15,11 @@
 - 出版方 / 主办方：ACM
 - CCF 官方目录入口：https://www.ccf.org.cn/Academic_Evaluation/By_category/
 
-## 一句话定位
+### 一句话定位
 
 ICML 是 CCF 推荐目录中 **人工智能** 领域的 A 类会议。人工智能方向的顶级 venue，适合机器学习、人工智能、计算机视觉、自然语言处理、表示学习和智能系统研究。
 
-## 官方目录定位：适合什么主题
+### 官方目录定位：适合什么主题
 
 CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**。对智能体来说，最重要的 fit 判断是：论文是否真正推进该 CCF 专业领域的核心问题，而不是只借用该领域作为应用背景。
 
@@ -30,7 +32,7 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - 强化学习、生成模型和表示学习
 - AI 系统评测、可靠性、公平性和安全性
 
-## CCF-A 投稿/选刊判断要点
+### CCF-A 投稿/选刊判断要点
 
 - A 类表示 CCF 推荐目录中该专业领域的最高推荐等级之一，但 CCF 官方也说明目录是推荐建议，不建议简单作为学术评价依据。
 - 主题必须与该 venue 所在 CCF 专业领域高度一致。
@@ -40,7 +42,7 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - 如果是 AI/数据类论文，应有强基线、消融、误差分析、数据/任务合理性和泛化讨论。
 - CCF 官方说明中，会议论文指 Full paper 或 Regular paper；Short paper、Demo paper、Technical Brief、Summary、Findings 以及 Workshop 等不计入目录考虑范围。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 ICML 的论文通常满足：
 
@@ -57,20 +59,20 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - 只有性能数字，没有机制解释、消融、误差分析或系统洞察。
 - 论文贡献主要是产品实现、工程堆叠或业务报告，而不是可发表研究。
 
-## 官方要求抓取（官方源，2026-05-25）
+### 官方要求抓取（官方源，2026-05-25）
 
 官方来源：
 
 - ICML 2026 Call for Papers: https://icml.cc/Conferences/2026/CallForPapers
 
-### 官方定位与主题范围
+#### 官方定位与主题范围
 
 - 官方短摘：`original and rigorous research`；`significant interest to the machine learning community`。
 - ICML 2026 main conference solicits machine learning research, including general ML、deep learning、evaluation methodology、theory、ML systems、optimization、probabilistic methods、reinforcement learning、trustworthy ML、application-driven ML。
 - 官方 application-driven ML 包括 healthcare、physical sciences、biosciences、social sciences、sustainability、climate 等，但强调需要有机器学习社区感兴趣的问题、技术或数据集。
 - Position papers 是单独 call，不应与 main conference research paper 混淆。
 
-### 官方投稿与评审要求
+#### 官方投稿与评审要求
 
 - Main paper 为 8 pages，references、impact statement、appendices 不限页；accepted final version 可多 1 页 main paper。
 - 所有论文 double-blind review。
@@ -79,13 +81,15 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - Generative AI 可以辅助写作或研究，但作者对全部内容负责，LLM 不能列为作者，prompt injection 会导致 desk rejection。
 - ICML 2026 有 reciprocal reviewing 要求；不满足要求可能 desk reject。
 
-### 给智能体的硬约束
+#### 给智能体的硬约束
 
 - ICML fit 的核心是“对 ML 社区有重要兴趣”的原创严谨研究，不是普通应用系统或领域案例。
 - 应用论文必须说明它对 ML 方法、评估、数据、理论、可靠性或泛化理解的贡献。
 - 检查 claims 是否有可复现实验或可靠理论分析支撑；只有 benchmark 分数而缺少方法/分析/有效性论证时，应判为弱。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标 venue 是 International Conference on Machine Learning (ICML)，CCF-A，类型为会议，所属 CCF 专业领域为：人工智能 / Artificial Intelligence。
@@ -95,7 +99,7 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 如果论文只是把通用方法套到一个场景，或者主题与 人工智能 关系弱，请明确指出 fit 不足，并建议如何重写为该领域核心问题。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文最核心的 CS 问题是什么？它为什么属于 **人工智能**？
 - 你的贡献是理论、算法、系统、实证、数据集、benchmark，还是多种结合？
@@ -103,7 +107,7 @@ CCF 第七版目录把该 venue 归入 **人工智能**，并标记为 **A 类**
 - 你的 strongest baselines、ablation、scalability 或 proof obligations 是否足够？
 - 如果审稿人认为这是相邻领域论文，你如何解释它适合 ICML？
 
-## 来源
+### 来源
 
 - CCF 官方目录入口：https://www.ccf.org.cn/Academic_Evaluation/By_category/
 - CCF 第七版正式目录 PDF：CCF 官方页面中的“第七版中国计算机学会推荐国际学术会议和期刊目录（正式版）”

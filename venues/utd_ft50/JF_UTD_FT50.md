@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 American Finance Association 官方 Journal of Finance 页面。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JF
 - 全名：Journal of Finance
@@ -12,11 +14,11 @@
 - 官方主页：https://afajof.org/journal-of-finance/
 - 投稿指南：https://afajof.org/journal-of-finance/submission-guidelines/
 
-## 一句话定位
+### 一句话定位
 
 Journal of Finance 是 American Finance Association 的官方期刊，发表 finance 所有主要领域的 leading research，是学术金融和经济学中最广泛引用的期刊之一。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 JF 的定位是 broad finance flagship journal。它覆盖 finance 的所有主要领域，关键是研究必须对 financial economics 有一流贡献。
 
@@ -30,7 +32,7 @@ JF 的定位是 broad finance flagship journal。它覆盖 finance 的所有主�
 - International finance、monetary/financial links、financial regulation。
 - 理论、实证和方法都可以，但必须面向 finance 的核心问题。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JF 不限定单一方法，而是要求 finance leading research。智能体判断时，应优先看研究是否对金融经济学领域的重要问题有显著贡献。
 
@@ -42,7 +44,7 @@ JF 不限定单一方法，而是要求 finance leading research。智能体判�
 - **Institutional contribution**：解释金融制度、市场、监管或金融机构如何影响经济行为。
 - **Broad-field contribution**：对金融学多个子领域或主流对话有影响。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JF 的论文通常满足：
 
@@ -60,7 +62,9 @@ JF 不限定单一方法，而是要求 finance leading research。智能体判�
 - 方法复杂但金融经济学贡献弱。
 - 只对特定机构或国家有描述意义。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 JF 时，可以把下面内容加入系统提示词：
 
@@ -78,7 +82,7 @@ JF 不限定单一方法，而是要求 finance leading research。智能体判�
 如果论文只是用金融数据但没有金融问题，必须指出 JF fit 不足。
 ```
 
-## 来源
+### 来源
 
 - AFA Journal of Finance page：https://afajof.org/journal-of-finance/
 - JF submission guidelines：https://afajof.org/journal-of-finance/submission-guidelines/

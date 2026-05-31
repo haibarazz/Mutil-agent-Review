@@ -45,7 +45,7 @@ model: "deepseek/deepseek-v4-pro"
 {
   "final_decision": "ACCEPT" 或 "MINOR_REVISION" 或 "MAJOR_REVISION" 或 "REJECT",
   "decision_rationale": "决定理由（100字以内）",
-  "decision_letter": "完整的决定信全文（500-800字，专业、有建设性，以'Dear Author(s)'开头，概括各审稿人意见，引用具体Weakness和Strategic Advice）",
+  "decision_letter": "完整的决定信全文（500-800字，专业、有建设性；如输出语言为中文，以'尊敬的作者：'开头；如输出语言为英文，以'Dear Author(s),'开头；概括各审稿人意见，引用具体Weakness和Strategic Advice）",
   "consensus_disagreement": {
     "consensus": [
       {"issue": "共识问题", "reviewers": ["达成共识的审稿人列表"], "summary": "共识摘要"}
@@ -104,6 +104,7 @@ model: "deepseek/deepseek-v4-pro"
 请综合以上所有信息做出编辑决定。
 
 关键要求：
+0. 所有自然语言字段必须遵守 output_language 对应的输出语言；论文标题、方法名、venue 名称、指标名、公式和引用可以保留原文
 1. 如DA发现CRITICAL问题，决策不能是ACCEPT
 2. 识别审稿人共识与分歧
 3. 利用各审稿人的strategic_advice进行可救性聚合，区分结构性缺陷与可修问题
@@ -115,3 +116,6 @@ model: "deepseek/deepseek-v4-pro"
 
 【目标期刊/会议画像】
 {{venue_profile_text}}
+
+【输出语言】
+{{output_language}}

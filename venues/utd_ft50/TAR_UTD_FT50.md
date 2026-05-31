@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 American Accounting Association 的 The Accounting Review 官方页面与 Guide for Authors。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：TAR
 - 全名：The Accounting Review
@@ -12,11 +14,11 @@
 - 官方主页：https://aaahq.org/Research/Journals/The-Accounting-Review
 - 投稿指南：https://aaahq.org/Research/Journals/The-Accounting-Review/Guide-for-Authors
 
-## 一句话定位
+### 一句话定位
 
 TAR 是 AAA 旗舰会计学术期刊，定位是发表使用严格、前沿研究方法的高质量会计研究；它覆盖会计的所有主要领域，并特别强调论文对会计知识、实践、监管和决策的贡献。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 TAR 官方 mission 的核心不是某一种方法或子领域，而是“扩展会计各领域知识”。对智能体来说，TAR 的 fit 判断应从 **会计问题是否重要、贡献是否显著、方法是否严谨** 三个维度开始。
 
@@ -31,7 +33,7 @@ TAR 官方 mission 的核心不是某一种方法或子领域，而是“扩展�
 
 TAR 还强调会计研究应能支持 practice 和 regulation，并呈现会计作为 decision-making tool 的作用。因此，一篇论文即使方法上很强，也需要清楚说明它为什么是会计研究，而不是一般金融、管理、信息系统或经济学论文。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 TAR 官方说它对 rigorous research methods 持开放态度，因此智能体不应按方法先验排除论文。可接受的贡献方式包括：
 
@@ -41,7 +43,7 @@ TAR 官方说它对 rigorous research methods 持开放态度，因此智能体�
 - **Field / survey / qualitative evidence**：只要方法严谨并能产生显著会计贡献，也可考虑。
 - **Cross-disciplinary accounting research**：官方欢迎跨学科协作，但跨学科必须回到会计知识和会计决策。
 
-## 官方强调的录用标准
+### 官方强调的录用标准
 
 TAR 官方最关键的标准是 contribution to the literature。智能体可以把它转成下面的 desk-reject 风险检查：
 
@@ -51,7 +53,7 @@ TAR 官方最关键的标准是 contribution to the literature。智能体可以
 - 结果是否能 inform accounting practice、standard setting、regulation 或 decision-making。
 - 论文是否清楚说明会计信息、会计制度、会计人员、会计组织或会计规则在机制中的核心作用。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 TAR 的论文通常满足：
 
@@ -68,7 +70,9 @@ TAR 官方最关键的标准是 contribution to the literature。智能体可以
 - 数据来自会计报表，但研究问题并不推进会计知识。
 - 贡献只停留在“发现一个相关关系”，缺少机制、识别或理论价值。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 The Accounting Review (TAR)。
@@ -82,7 +86,7 @@ TAR 官方最关键的标准是 contribution to the literature。智能体可以
 5. 跨学科内容是否最终回到会计制度、会计信息、会计行为或会计决策。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文推进的是哪一类会计知识：财务会计、审计、管理会计、税务、AIS，还是其他会计问题？
 - 会计信息、会计制度或会计决策在机制里是不是核心，而不是背景？
@@ -90,7 +94,7 @@ TAR 官方最关键的标准是 contribution to the literature。智能体可以
 - 你的方法为什么足以支撑顶级会计期刊的因果、理论或实验贡献？
 - 你的贡献相对 TAR 已有文献的新意在哪里？
 
-## 来源
+### 来源
 
 - AAA The Accounting Review journal page：https://aaahq.org/Research/Journals/The-Accounting-Review
 - AAA The Accounting Review Guide for Authors：https://aaahq.org/Research/Journals/The-Accounting-Review/Guide-for-Authors

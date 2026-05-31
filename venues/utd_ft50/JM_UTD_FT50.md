@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 AMA 官方 journal page 与 JM Editorial Cornerstones。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：JM
 - 全名：Journal of Marketing
@@ -14,11 +16,11 @@
 - 投稿指南：https://www.ama.org/submission-guidelines-american-marketing-association-journals/
 - 投稿系统：https://mc.manuscriptcentral.com/ama_jm
 
-## 一句话定位
+### 一句话定位
 
 JM 是营销学最核心的综合性顶刊，发表能够发展并传播关于真实世界营销问题的知识的研究，强调对学者、教育者、管理者、政策制定者、消费者和社会利益相关者都有用的实质性营销 scholarship。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 AMA 对 JM 的定位不是狭窄的“某一种方法期刊”，而是 marketing discipline 的 substantive journal。它关注真实世界营销问题，并希望论文能塑造营销学的内容和边界。
 
@@ -40,7 +42,7 @@ JM 官方 editorial cornerstones 对内容偏好尤其有用：
 - **Constructiveness**：强调公平、彻底、有帮助、建设性、及时的评审过程。
 - **Amplification**：鼓励作者把学术贡献转译给更广泛的利益相关者，甚至通过 research-driven apps 增强研究影响。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 JM 的关键不是某一种方法，而是论文是否对营销学和营销实践有实质贡献。智能体判断时，应优先看“营销问题是否重要、贡献是否清楚、结果是否有可用性和外部影响”。
 
@@ -53,7 +55,7 @@ JM 的关键不是某一种方法，而是论文是否对营销学和营销实�
 - **Contextual contribution**：通过新情境、新现象、新市场或跨学科导入/导出，拓展营销知识。
 - **Translation / amplification contribution**：把研究结果转化为可被实践者、课堂或公众使用的形式。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 JM 的论文通常满足：
 
@@ -71,7 +73,9 @@ JM 的关键不是某一种方法，而是论文是否对营销学和营销实�
 - 结果只对单一产品、平台或公司有描述意义，缺少可推广的营销知识。
 - 管理启示空泛，不能形成具体、现实、可执行的建议。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 JM 时，可以把下面内容加入系统提示词：
 
@@ -89,7 +93,7 @@ JM 的关键不是某一种方法，而是论文是否对营销学和营销实�
 如果论文只是方法、心理、管理或 AI 论文，必须要求作者重写为清楚的 marketing problem，并明确目标受众和可执行营销启示。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文解决的 real-world marketing question 是什么？
 - 这个问题对哪些利益相关者有用：企业、管理者、消费者、政策制定者、平台、社会？
@@ -98,7 +102,7 @@ JM 的关键不是某一种方法，而是论文是否对营销学和营销实�
 - 你的情境为什么重要？它是否生成了新的营销知识，而不是只提供数据？
 - 如果删除“营销”标签，论文是否还成立？如果成立，说明 marketing fit 可能不足。
 
-## 来源
+### 来源
 
 - AMA Journal of Marketing page：https://www.ama.org/journal-of-marketing/
 - AMA JM Editorial Cornerstones：https://www.ama.org/jm-editorial-cornerstones/

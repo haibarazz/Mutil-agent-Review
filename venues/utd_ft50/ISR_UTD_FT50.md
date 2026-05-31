@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 INFORMS 官方 Editorial Statement。此文件用于用户选择 ISR 后，智能体判断论文是否符合信息系统顶刊的内容定位。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：ISR
 - 全名：Information Systems Research
@@ -13,11 +15,11 @@
 - 官方 Editorial Statement：https://pubsonline.informs.org/page/isre/editorial-statement
 - 投稿指南：https://pubsonline.informs.org/page/isre/submission-guidelines
 
-## 一句话定位
+### 一句话定位
 
 ISR 是信息系统领域顶级期刊，使命是推进关于信息技术如何被个人、群体、组织、社会和国家有效、高效利用，并改善经济与社会福利的知识。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 ISR 的核心不是“使用了数字技术”这么简单，而是研究信息技术的设计、管理、使用、估值和影响。它接受不同分析层次：
 
@@ -36,7 +38,7 @@ ISR 的核心不是“使用了数字技术”这么简单，而是研究信息�
 - 从认知心理学、经济学、计算机科学、运筹学、设计科学、组织理论、组织行为、社会学、战略管理等传统出发研究 IS 问题。
 - 对 IS 研究流有实质贡献的 reviews 和 syntheses。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 ISR 的主要出版形式是 Research Article。它要求研究文章有 novel、innovative、rigorous 的原创贡献，能够开辟新方向，围绕重要现象产生实质洞见，并扎根于当前或新理论。
 
@@ -55,7 +57,7 @@ ISR 的主要出版形式是 Research Article。它要求研究文章有 novel�
 
 但纯方法论文只有在能清楚展示对 IS 社群的价值时才适合。
 
-## 主题 fit 判断规则
+### 主题 fit 判断规则
 
 适合 ISR 的论文通常满足：
 
@@ -73,7 +75,9 @@ ISR 的主要出版形式是 Research Article。它要求研究文章有 novel�
 - 纯方法论文没有说明对 IS 研究者和实践者的价值。
 - 论文无法说明对经济或社会福利、组织价值、数字治理或技术使用的含义。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 ```text
 目标期刊是 Information Systems Research (ISR)。
@@ -89,7 +93,7 @@ ISR 的主要出版形式是 Research Article。它要求研究文章有 novel�
 如果论文只是“用数字平台数据研究普通管理问题”或“用机器学习做预测”，必须指出 ISR fit 不足，并要求重构为信息系统问题。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的信息技术对象是什么？AI、平台、系统、算法、数据基础设施、数字工具还是 IT governance？
 - 技术在论文中是原因、机制、结果、情境，还是研究设计工具？
@@ -98,7 +102,7 @@ ISR 的主要出版形式是 Research Article。它要求研究文章有 novel�
 - 你的结果如何解释 IT 的设计、管理、使用、价值或影响？
 - 如果是纯方法或算法论文，它为什么属于 ISR 而不是 CS/OR/统计期刊？
 
-## 来源
+### 来源
 
 - INFORMS ISR journal page：https://pubsonline.informs.org/journal/isre
 - INFORMS ISR Editorial Statement：https://pubsonline.informs.org/page/isre/editorial-statement

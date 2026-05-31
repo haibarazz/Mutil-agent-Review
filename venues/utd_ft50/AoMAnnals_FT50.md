@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 AOM 官方 Author Resources 与 Annals journal page 入口。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：AoM Annals / ANNALS
 - 全名：Academy of Management Annals
@@ -13,11 +15,11 @@
 - AOM Author Resources：https://aom.org/research/publishing-with-aom/author-resources
 - 投稿系统：https://mc.manuscriptcentral.com/aomannals
 
-## 一句话定位
+### 一句话定位
 
 Academy of Management Annals 发表以文献为证据基础的、深入且整合性的管理研究综述，要求 review 有明确观点，并能为未来研究设定议程。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 AOM 官方把 Annals 描述为 literature as the evidence base、integrative reviews with a point of view that set the agenda for future research。它不是普通 literature review 期刊，而是高水平、带有观点和议程设定能力的管理学综述期刊。
 
@@ -29,7 +31,7 @@ AOM 官方把 Annals 描述为 literature as the evidence base、integrative rev
 - 能提出新的概念地图、理论框架、分类体系或未来研究议程。
 - 能把分散文献组织成对管理学读者有解释力的新观点。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 Annals 的贡献不是“列出所有文献”，而是用文献作为证据，形成 integrative review 和 point of view。
 
@@ -41,7 +43,7 @@ Annals 的贡献不是“列出所有文献”，而是用文献作为证据，�
 - **Field-mapping contribution**：重新组织一个领域的概念、机制、方法和边界。
 - **Theory-building review**：通过综述形成新理论框架或新命题。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 Annals 的论文通常满足：
 
@@ -59,7 +61,9 @@ Annals 的贡献不是“列出所有文献”，而是用文献作为证据，�
 - 主题太窄，只适合普通 review 或 special issue introduction。
 - 没有明确 point of view 或未来研究议程。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 Annals 时，可以把下面内容加入系统提示词：
 
@@ -77,7 +81,7 @@ Annals 的贡献不是“列出所有文献”，而是用文献作为证据，�
 如果论文只是系统综述、bibliometric 分析或普通文献回顾，必须指出与 Annals fit 不足。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的综述主题是否已经有成熟且足够大的文献基础？
 - 你的 point of view 是什么？
@@ -85,7 +89,7 @@ Annals 的贡献不是“列出所有文献”，而是用文献作为证据，�
 - 你的框架如何改变读者对领域的理解？
 - 你提出的未来研究议程能推动哪些新研究？
 
-## 来源
+### 来源
 
 - AOM Author Resources：https://aom.org/research/publishing-with-aom/author-resources
 - Annals journal page：https://journals.aom.org/journal/annals

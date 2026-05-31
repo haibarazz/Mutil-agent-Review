@@ -32,6 +32,11 @@ class FinalDecision(str, Enum):
     DESK_REJECT = "DESK_REJECT"
 
 
+class OutputLanguage(str, Enum):
+    ZH = "zh"
+    EN = "en"
+
+
 @dataclass(frozen=True)
 class ParsedSection:
     heading: str
@@ -54,6 +59,7 @@ class VenueProfile:
     code: str
     name: str
     source_path: str
+    journal_requirements_text: str
     profile_text: str
 
 
@@ -70,11 +76,10 @@ class VenueCatalogItem:
 class ReviewRequest:
     paper_path: str
     review_mode: ReviewMode = ReviewMode.FULL_REVIEW
+    output_language: OutputLanguage = OutputLanguage.ZH
     venue_domain: VenueDomain | None = None
     venue_collection: VenueCollection | None = None
     venue_code: str = ""
-    journal_name: str = ""
-    journal_requirements_path: str = ""
 
 
 @dataclass(frozen=True)
@@ -85,6 +90,15 @@ class ReviewFinding:
 
 
 @dataclass(frozen=True)
+class ReviewComment:
+    title: str
+    comment: str
+    evidence: str
+    severity: str
+    suggested_fix: str
+
+
+@dataclass(frozen=True)
 class ReviewerReport:
     reviewer_key: str
     role: str
@@ -92,6 +106,12 @@ class ReviewerReport:
     strengths: list[str]
     weaknesses: list[ReviewFinding]
     rating: int
+    overall_assessment: str = ""
+    major_comments: list[ReviewComment] = field(default_factory=list)
+    minor_comments: list[ReviewComment] = field(default_factory=list)
+    questions_for_authors: list[str] = field(default_factory=list)
+    scores: dict[str, Any] = field(default_factory=dict)
+    ethics_and_limitations: str = ""
     rating_justification: str = ""
     recommendation: str = "MAJOR_REVISION"
     evidence_citations: list[str] = field(default_factory=list)
@@ -110,6 +130,7 @@ class ReviewRun:
     final_decision: FinalDecision
     decision_letter: str
     artifact_dir: str
+    diagnostics: dict[str, Any] = field(default_factory=dict)
 
 
 def to_jsonable(value: Any) -> Any:

@@ -2,7 +2,9 @@
 
 > 智能体期刊画像版，更新日期：2026-05-25。资料主要来自 SAGE 官方 journal page / overview-metric 与 author instructions 入口。此文件用于“用户选择期刊后，智能体判断内容 fit、主题 fit 和写作方向”。
 
-## 基本识别
+## Journal Requirements
+
+### 基本识别
 
 - 简写：ETP
 - 全名：Entrepreneurship Theory and Practice
@@ -14,11 +16,11 @@
 - 投稿指南：https://journals.sagepub.com/author-instructions/ETP
 - 投稿系统：https://mc.manuscriptcentral.com/ETP
 
-## 一句话定位
+### 一句话定位
 
 ETP 是创业研究领域的 leading scholarly journal，使命是发表能够推进创业研究的原创 conceptual 和 empirical research。
 
-## 官方内容定位：适合什么主题
+### 官方内容定位：适合什么主题
 
 ETP 的核心是 entrepreneurship broadly defined。与 SEJ 相比，ETP 更直接强调 entrepreneurship theory and practice，适合发展、检验或扩展创业理论，并把理论与创业实践连接起来。
 
@@ -32,7 +34,7 @@ ETP 的核心是 entrepreneurship broadly defined。与 SEJ 相比，ETP 更直�
 - entrepreneurial practice 与理论之间的连接。
 - conceptual research 和 empirical research 都可以，但必须推进 entrepreneurship。
 
-## 官方偏好的论文类型与贡献方式
+### 官方偏好的论文类型与贡献方式
 
 ETP 强调 original conceptual and empirical research that contributes to advancement of entrepreneurship。智能体判断时，应要求论文清楚说明其对创业理论或实践的推进。
 
@@ -44,7 +46,7 @@ ETP 强调 original conceptual and empirical research that contributes to advanc
 - **Interdisciplinary contribution**：从心理、社会、经济、战略、组织等视角推进创业研究。
 - **Phenomenon contribution**：解释重要创业现象，但必须形成理论贡献。
 
-## 对主题 fit 的判断规则
+### 对主题 fit 的判断规则
 
 适合 ETP 的论文通常满足：
 
@@ -62,7 +64,9 @@ ETP 强调 original conceptual and empirical research that contributes to advanc
 - 实践建议和创业理论脱节。
 - 对创业领域贡献过窄。
 
-## 智能体提示词片段
+## Venue Profile
+
+### 智能体提示词片段
 
 当用户选择 ETP 时，可以把下面内容加入系统提示词：
 
@@ -80,7 +84,7 @@ ETP 强调 original conceptual and empirical research that contributes to advanc
 如果论文只是 SME、战略、创新或组织研究，必须要求作者明确 entrepreneurship advancement。
 ```
 
-## 可用于提问用户的 fit-check 问题
+### 可用于提问用户的 fit-check 问题
 
 - 你的论文推进了创业研究的哪个问题？
 - 你的贡献是 conceptual 还是 empirical？
@@ -88,7 +92,7 @@ ETP 强调 original conceptual and empirical research that contributes to advanc
 - 为什么这是 entrepreneurship，而不是 SME/strategy/innovation 研究？
 - 你的研究如何推进 entrepreneurship broadly defined？
 
-## 来源
+### 来源
 
 - SAGE ETP journal page：https://journals.sagepub.com/home/etp
 - SAGE ETP overview-metric：https://sage.cnpereading.com/overview-metric/ETP

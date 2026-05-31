@@ -1,14 +1,16 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
+from collections.abc import Callable
 from uuid import uuid4
+from typing import Any
 
+from src.core.errors import ErrorContext, NodeFatalError, ReviewAgentError
 from src.infra.storage import LocalArtifactStore
-from src.core.models import FinalDecision, ParsedPaper, ReviewMode, ReviewRequest, ReviewRun
-from src.core.models import to_jsonable
+from src.core.models import FinalDecision, OutputLanguage, ParsedPaper, ReviewRequest, ReviewRun
 from src.core.venue_catalog import VenueCatalogRepository
 from src.graphs.graph import main_graph
+from src.infra.llm_diagnostics import LLMCallCollector, llm_diagnostics_run, start_llm_call_collection, stop_llm_call_collection
 from src.infra.settings import Settings, load_settings
 
 
@@ -34,21 +36,41 @@ class ReviewWorkflow:
         self.store = store
         self.venue_catalog = venue_catalog
 
-    def run(self, request: ReviewRequest) -> ReviewRun:
+    def run(self, request: ReviewRequest, node_progress_callback: Callable[[dict[str, Any]], None] | None = None) -> ReviewRun:
         self._validate_submission(request)
         run_id = uuid4().hex
         initial_state = {
             "run_id": run_id,
             "paper_path": request.paper_path,
             "review_mode": request.review_mode.value,
+            "output_language": request.output_language.value,
             "venue_domain": request.venue_domain.value if request.venue_domain else "",
             "venue_collection": request.venue_collection.value if request.venue_collection else "",
             "venue_code": request.venue_code,
-            "journal_name": request.journal_name,
-            "journal_requirements_path": request.journal_requirements_path,
         }
+        if node_progress_callback:
+            initial_state["node_progress_callback"] = node_progress_callback
 
-        result = main_graph.invoke(initial_state)
+        start_llm_call_collection(run_id)
+        try:
+            with llm_diagnostics_run(run_id):
+                result = main_graph.invoke(initial_state)
+        except ReviewAgentError as exc:
+            llm_calls = stop_llm_call_collection(run_id)
+            self._write_failure_artifacts(run_id, request, exc, llm_calls)
+            raise
+        except Exception as exc:
+            error = NodeFatalError(
+                str(exc),
+                context=ErrorContext(details={"original_error_type": exc.__class__.__name__}),
+            )
+            llm_calls = stop_llm_call_collection(run_id)
+            self._write_failure_artifacts(run_id, request, error, llm_calls)
+            raise error from exc
+        else:
+            llm_calls = stop_llm_call_collection(run_id)
+
+        diagnostics = self._success_diagnostics(result, llm_calls)
         stage_outputs = dict(result.get("stage_outputs", {}))
         reviewer_reports = self._sort_reports(list(result.get("reviewer_reports", [])))
         parsed_paper = result.get("parsed_paper") or ParsedPaper(
@@ -61,6 +83,8 @@ class ReviewWorkflow:
         )
         final_decision = self._final_decision(result.get("final_decision", "REJECT"))
         decision_letter = str(result.get("decision_letter", ""))
+        final_report_md = str(result.get("final_report_md", ""))
+        rendered_artifacts = dict(result.get("rendered_artifacts", {}))
 
         self._write_artifacts(
             run_id=run_id,
@@ -71,6 +95,10 @@ class ReviewWorkflow:
             reviewer_reports=reviewer_reports,
             final_decision=final_decision,
             decision_letter=decision_letter,
+            final_report_md=final_report_md,
+            rendered_artifacts=rendered_artifacts,
+            diagnostics=diagnostics,
+            llm_calls=llm_calls,
         )
 
         return ReviewRun(
@@ -83,6 +111,7 @@ class ReviewWorkflow:
             final_decision=final_decision,
             decision_letter=decision_letter,
             artifact_dir=str(self.store.run_dir(run_id)),
+            diagnostics=diagnostics,
         )
 
     def _write_artifacts(
@@ -96,10 +125,15 @@ class ReviewWorkflow:
         reviewer_reports: list,
         final_decision: FinalDecision,
         decision_letter: str,
+        final_report_md: str,
+        rendered_artifacts: dict[str, str],
+        diagnostics: dict,
+        llm_calls: LLMCallCollector,
     ) -> None:
         self.store.write_json(run_id, "request.json", request)
         self.store.write_json(run_id, "parsed_paper.json", parsed_paper)
         self.store.write_json(run_id, "venue_profile.json", venue_profile)
+        self.store.write_json(run_id, "diagnostics.json", diagnostics)
 
         artifact_names = {
             "doc_parse": "doc_parse.json",
@@ -117,6 +151,7 @@ class ReviewWorkflow:
             "desk_reject_output": "desk_reject_output.json",
             "parse_fail_output": "parse_fail_output.json",
             "invalid_file": "invalid_file.json",
+            "final_artifact_render": "final_artifact_render.json",
         }
         for key, filename in artifact_names.items():
             if key in stage_outputs:
@@ -129,62 +164,104 @@ class ReviewWorkflow:
             "final_decision.json",
             {"final_decision": final_decision, "decision_letter": decision_letter},
         )
-        self.store.write_text(
-            run_id,
-            "final_report.md",
-            self._format_report(
-                title=getattr(parsed_paper, "title", "Review Report"),
-                decision=final_decision,
-                decision_letter=decision_letter,
-                reviewer_reports=reviewer_reports,
-                stage_outputs=stage_outputs,
-            ),
-        )
+        artifacts = rendered_artifacts or ({"final_report.md": final_report_md} if final_report_md else {})
+        for filename, content in artifacts.items():
+            # 文件名来自 graph 内部 renderer；落盘前仍收敛成 basename，避免未来误传路径。
+            self.store.write_text(run_id, Path(filename).name, str(content))
+        self._write_llm_calls_artifact(run_id, llm_calls)
 
-    def _format_report(
+    def _success_diagnostics(self, result: dict, llm_calls: LLMCallCollector) -> dict:
+        # diagnostics.json 放汇总；完整逐行事件写在 llm_calls.jsonl，避免主诊断文件膨胀。
+        return {
+            "status": "succeeded",
+            "errors": list(result.get("node_errors", [])),
+            "fallback_events": list(result.get("fallback_events", [])),
+            "llm_calls": llm_calls.summary(),
+        }
+
+    def _write_failure_artifacts(
         self,
-        *,
-        title: str,
-        decision: FinalDecision,
-        decision_letter: str,
-        reviewer_reports: list,
-        stage_outputs: dict,
-    ) -> str:
-        lines = [f"# Review Report: {title}", "", f"Final decision: **{decision.value}**", ""]
-        if decision_letter:
-            lines.extend(["## Decision Letter", "", decision_letter, ""])
+        run_id: str,
+        request: ReviewRequest,
+        error: ReviewAgentError,
+        llm_calls: LLMCallCollector,
+    ) -> None:
+        error = self._attach_failure_run_context(run_id, error)
+        diagnostics = {
+            "status": "failed",
+            "errors": [error.to_dict()],
+            "fallback_events": [],
+            "llm_calls": llm_calls.summary(),
+        }
+        self.store.write_json(run_id, "request.json", request)
+        self.store.write_json(run_id, "diagnostics.json", diagnostics)
+        self.store.write_text(run_id, "partial_report.md", self._render_partial_report(run_id, request, error))
+        self._write_llm_calls_artifact(run_id, llm_calls)
 
-        for report in reviewer_reports:
-            lines.extend(
-                [
-                    f"## {report.role}",
-                    "",
-                    "### Part1 [The Review Report]",
-                    "",
-                    report.summary,
-                    "",
-                    f"Rating: {report.rating}/10",
-                    "",
-                    "#### Strengths",
-                ]
+    def _write_llm_calls_artifact(self, run_id: str, llm_calls: LLMCallCollector) -> None:
+        if not llm_calls.events:
+            return
+        self.store.write_text(run_id, "llm_calls.jsonl", llm_calls.to_jsonl() + "\n")
+
+    def _attach_failure_run_context(self, run_id: str, error: ReviewAgentError) -> ReviewAgentError:
+        # 失败 run 也会有本地产物目录；把目录挂到错误上下文，job 层才能继续暴露 partial_report。
+        details = dict(error.context.details or {})
+        details.update({"run_id": run_id, "artifact_dir": str(self.store.run_dir(run_id))})
+        error.context = ErrorContext(
+            node=error.context.node,
+            prompt_name=error.context.prompt_name,
+            provider=error.context.provider,
+            model=error.context.model,
+            attempt=error.context.attempt,
+            elapsed_ms=error.context.elapsed_ms,
+            details=details,
+        )
+        return error
+
+    def _render_partial_report(self, run_id: str, request: ReviewRequest, error: ReviewAgentError) -> str:
+        error_payload = error.to_dict()
+        node = str(error_payload.get("node") or "-")
+        provider = str(error_payload.get("provider") or "-")
+        model = str(error_payload.get("model") or "-")
+        if request.output_language == OutputLanguage.EN:
+            return (
+                "# Partial Review Report\n\n"
+                "This run did not reach the final review renderer. The system saved this partial report so the failure can be inspected from the UI.\n\n"
+                "## Run\n"
+                f"- Run ID: `{run_id}`\n"
+                f"- Paper: `{request.paper_path}`\n"
+                f"- Venue: `{request.venue_domain.value if request.venue_domain else '-'} / {request.venue_collection.value if request.venue_collection else '-'} / {request.venue_code or '-'}`\n"
+                f"- Review mode: `{request.review_mode.value}`\n\n"
+                "## Failure\n"
+                f"- Error type: `{error_payload.get('error_type', 'Unknown')}`\n"
+                f"- Node: `{node}`\n"
+                f"- Provider: `{provider}`\n"
+                f"- Model: `{model}`\n"
+                f"- Message: {error.message}\n\n"
+                "## Next Steps\n"
+                "- Check `diagnostics.json` for the structured error payload.\n"
+                "- If the error is retryable, rerun the job after the provider or model recovers.\n"
+                "- If the error is configuration-related, check `.env`, `configs/llm.yaml`, and the node prompt model id.\n"
             )
-            lines.extend(f"- {item}" for item in report.strengths)
-            lines.extend(["", "#### Weaknesses"])
-            lines.extend(f"- [{item.location}] {item.issue}" for item in report.weaknesses)
-            lines.extend(["", "### Part2 [Strategic Advice]", ""])
-            if report.strategic_advice:
-                lines.append("```json")
-                lines.append(json.dumps(to_jsonable(report.strategic_advice), ensure_ascii=False, indent=2))
-                lines.append("```")
-            else:
-                lines.append("No strategic advice was returned.")
-            lines.append("")
-
-        if not reviewer_reports and stage_outputs:
-            lines.extend(["## Stage Outputs", "", "```json"])
-            lines.append(json.dumps(to_jsonable(stage_outputs), ensure_ascii=False, indent=2))
-            lines.append("```")
-        return "\n".join(lines).strip() + "\n"
+        return (
+            "# Partial Review Report\n\n"
+            "本次审稿没有走到最终报告渲染节点。系统先保存这个 partial report，方便你在前端或本地产物目录里查看失败位置。\n\n"
+            "## Run\n"
+            f"- Run ID: `{run_id}`\n"
+            f"- Paper: `{request.paper_path}`\n"
+            f"- Venue: `{request.venue_domain.value if request.venue_domain else '-'} / {request.venue_collection.value if request.venue_collection else '-'} / {request.venue_code or '-'}`\n"
+            f"- Review mode: `{request.review_mode.value}`\n\n"
+            "## Failure\n"
+            f"- Error type: `{error_payload.get('error_type', 'Unknown')}`\n"
+            f"- Node: `{node}`\n"
+            f"- Provider: `{provider}`\n"
+            f"- Model: `{model}`\n"
+            f"- Message: {error.message}\n\n"
+            "## Next Steps\n"
+            "- 先看 `diagnostics.json`，里面有结构化错误信息。\n"
+            "- 如果错误是 retryable，可以等供应商或模型恢复后重新运行。\n"
+            "- 如果是配置类错误，检查 `.env`、`configs/llm.yaml` 和节点 prompt 里的 model id。\n"
+        )
 
     def _final_decision(self, value) -> FinalDecision:
         try:
@@ -210,11 +287,8 @@ class ReviewWorkflow:
             raise ReviewSubmissionError(f"unsupported paper file type: {path.suffix or '<none>'}; supported: {supported}")
         if not request.venue_code:
             raise ReviewSubmissionError("venue_code is required")
-
-        if request.venue_domain is None and request.venue_collection is None:
-            return
         if request.venue_domain is None or request.venue_collection is None:
-            raise ReviewSubmissionError("venue_domain and venue_collection must be provided together")
+            raise ReviewSubmissionError("venue_domain, venue_collection, and venue_code are required")
         if not self.venue_catalog.contains(
             domain=request.venue_domain,
             venue_collection=request.venue_collection,
