@@ -147,6 +147,7 @@ class ReviewWorkflow:
             "reviewer2": "reviewer2.json",
             "reviewer3": "reviewer3.json",
             "devils_advocate": "devils_advocate.json",
+            "single_reviewer": "single_reviewer.json",
             "ae_final": "ae_final.json",
             "desk_reject_output": "desk_reject_output.json",
             "parse_fail_output": "parse_fail_output.json",

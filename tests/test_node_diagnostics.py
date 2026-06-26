@@ -100,6 +100,17 @@ class NodeDiagnosticsTests(unittest.TestCase):
         self.assertEqual("NodeFatalError", error["error_type"])
         self.assertEqual("KeyError", error["details"]["original_error_type"])
 
+    def test_single_reviewer_node_name_can_be_diagnosed(self) -> None:
+        def ok_node(state):
+            return {"ok": True}
+
+        events = []
+        wrapped = with_node_diagnostics("single_reviewer", ok_node)
+        wrapped({"node_progress_callback": events.append})
+
+        self.assertEqual("single_reviewer", events[0]["node"])
+        self.assertEqual("single_reviewer", events[1]["node"])
+
 
 if __name__ == "__main__":
     unittest.main()

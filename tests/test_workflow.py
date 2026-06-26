@@ -92,6 +92,36 @@ class WorkflowTests(unittest.TestCase):
                 self.assertGreaterEqual(len(report.major_comments) + len(report.minor_comments), 5)
                 self.assertTrue(report.scores)
 
+    def test_single_agent_review_skips_editorial_and_multi_reviewer_nodes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            paper = Path(tmp) / "paper.md"
+            paper.write_text(
+                "Test Paper\n\nAbstract\nA manuscript for single agent smoke testing.\n\n1 Introduction\nContent.",
+                encoding="utf-8",
+            )
+            workflow = build_workflow()
+            run = workflow.run(
+                ReviewRequest(
+                    paper_path=str(paper),
+                    review_mode=ReviewMode.SINGLE_AGENT_REVIEW,
+                    venue_domain=VenueDomain.CS,
+                    venue_collection=VenueCollection.CCFA,
+                    venue_code="AAAI",
+                )
+            )
+
+        self.assertEqual(run.request.review_mode, ReviewMode.SINGLE_AGENT_REVIEW)
+        self.assertIn("single_reviewer", run.stage_outputs)
+        self.assertIn("final_artifact_render", run.stage_outputs)
+        self.assertNotIn("se_check", run.stage_outputs)
+        self.assertNotIn("ae_check", run.stage_outputs)
+        self.assertNotIn("review_dispatch", run.stage_outputs)
+        self.assertNotIn("reviewer1", run.stage_outputs)
+        self.assertNotIn("devils_advocate", run.stage_outputs)
+        self.assertEqual(["single_reviewer"], [report.reviewer_key for report in run.reviewer_reports])
+        self.assertTrue((Path(run.artifact_dir) / "final_report.md").exists())
+        self.assertTrue((Path(run.artifact_dir) / "single_reviewer.json").exists())
+
     def test_rejects_mismatched_venue_selection_before_graph(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             paper = Path(tmp) / "paper.md"

@@ -19,7 +19,7 @@ class GlobalState(TypedDict, total=False):
     # ========== 输入参数 ==========
     run_id: str                   # 当前审稿运行的唯一标识符
     paper_path: str               # 用户上传的论文文件路径 (PDF/MD)
-    review_mode: str              # 审稿模式: FULL_REVIEW(完整) / QUICK_REVIEW(快速)
+    review_mode: str              # 审稿模式: FULL_REVIEW / QUICK_REVIEW / SINGLE_AGENT_REVIEW
     output_language: str          # 最终自然语言输出: zh / en
     venue_domain: str             # 领域: CS(计算机) / IS(信息系统)
     venue_collection: str         # 期刊集合: CCFA/CCFB/CCFC/FT50/UTD24
@@ -67,7 +67,7 @@ class GlobalState(TypedDict, total=False):
 # 图输入: 启动审稿流程的初始输入参数
 class GraphInput(TypedDict, total=False):
     paper_path: str               # 用户上传的论文文件路径 (PDF/MD)
-    review_mode: str              # 审稿模式: FULL_REVIEW / QUICK_REVIEW
+    review_mode: str              # 审稿模式: FULL_REVIEW / QUICK_REVIEW / SINGLE_AGENT_REVIEW
     output_language: str          # 最终自然语言输出: zh / en
     venue_domain: str             # 领域: CS / IS
     venue_collection: str         # 期刊集合: CCFA/CCFB/CCFC/FT50/UTD24

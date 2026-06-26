@@ -197,6 +197,34 @@ class ReviewNodes:
         )
         return self._report_from_result("devils_advocate", "Devil's Advocate", result)
 
+    def single_reviewer(
+        self,
+        *,
+        paper: ParsedPaper,
+        journal_requirements: str,
+        venue_profile: VenueProfile | None,
+        field_info: dict[str, Any],
+        output_language: str = "zh",
+    ) -> dict[str, Any]:
+        """单 Agent 综合审稿：一个审稿人直接给出完整意见和最终建议。"""
+        result = self._complete_json(
+            "single_reviewer",
+            {
+                "paper_content": paper.full_text,
+                "journal_requirements": journal_requirements,
+                "venue_profile_text": venue_profile.profile_text if venue_profile else "未提供目标期刊画像。",
+                "field_info": field_info,
+            },
+            output_language=output_language,
+        )
+        report = self._report_from_result("single_reviewer", "Solo Reviewer", result)
+        return {
+            "report": report,
+            "final_decision": self._final_decision(result.get("final_decision", "MAJOR_REVISION")).value,
+            "decision_letter": str(result.get("decision_letter") or result.get("overall_assessment") or report.summary),
+            "raw_result": result,
+        }
+
     def ae_final(
         self,
         *,
@@ -258,7 +286,7 @@ class ReviewNodes:
         )
 
     def _validator_for_prompt(self, prompt_name: str) -> JsonValidator | None:
-        if prompt_name in {"reviewer1", "reviewer2", "reviewer3", "devils_advocate"}:
+        if prompt_name in {"reviewer1", "reviewer2", "reviewer3", "devils_advocate", "single_reviewer"}:
             return validate_reviewer_output
         if prompt_name == "ae_final":
             return validate_ae_final_output

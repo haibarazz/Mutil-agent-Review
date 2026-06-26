@@ -5,10 +5,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-# 目前我们这里支持这个快速审稿模式和这个完全审稿模式
+# 审稿模式枚举：后续 graph.py 会根据这个字段决定走哪条审稿流程。
 class ReviewMode(str, Enum):
     FULL_REVIEW = "FULL_REVIEW"
     QUICK_REVIEW = "QUICK_REVIEW"
+    SINGLE_AGENT_REVIEW = "SINGLE_AGENT_REVIEW"
 
 
 class VenueDomain(str, Enum):

@@ -19,6 +19,7 @@ from src.graphs.nodes.reviewer1_node import reviewer1_node
 from src.graphs.nodes.reviewer2_node import reviewer2_node
 from src.graphs.nodes.reviewer3_node import reviewer3_node
 from src.graphs.nodes.se_check_node import se_check_node
+from src.graphs.nodes.single_reviewer_node import single_reviewer_node
 from src.graphs.state import GlobalState
 
 
@@ -33,8 +34,13 @@ def route_after_content_check(state: GlobalState) -> str:
 
 
 def route_after_field_analyst(state: GlobalState) -> str:
-    # 领域分析后路由：快速审稿跳过编辑初筛，完整审稿进入 SE 初筛。
-    return "quick_review" if state.get("review_mode") == "QUICK_REVIEW" else "full_review"
+    # 领域分析后路由：单 Agent 直接综合审稿；快速审稿跳过编辑初筛；完整审稿进入 SE 初筛。
+    review_mode = state.get("review_mode")
+    if review_mode == "SINGLE_AGENT_REVIEW":
+        return "single_agent_review"
+    if review_mode == "QUICK_REVIEW":
+        return "quick_review"
+    return "full_review"
 
 
 def route_after_se(state: GlobalState) -> str:
@@ -80,6 +86,8 @@ add_diagnosed_node("reviewer2", reviewer2_node)
 add_diagnosed_node("reviewer3", reviewer3_node)
 # devils_advocate: 反方辩护人，专门攻击论文最强主张和潜在逻辑漏洞。
 add_diagnosed_node("devils_advocate", devils_advocate_node)
+# single_reviewer: 单 Agent 综合审稿人，直接输出一份完整审稿意见和最终建议。
+add_diagnosed_node("single_reviewer", single_reviewer_node)
 # ae_final: AE 终审，综合所有审稿意见生成最终决定和返修路线。
 add_diagnosed_node("ae_final", ae_final_node)
 # desk_reject_output: SE/AE 桌拒时生成正式拒稿说明和改进建议。
@@ -111,7 +119,11 @@ builder.add_edge("journal_req_collector", "field_analyst")
 builder.add_conditional_edges(
     "field_analyst",
     route_after_field_analyst,
-    {"full_review": "se_check", "quick_review": "review_dispatch"},
+    {
+        "full_review": "se_check",
+        "quick_review": "review_dispatch",
+        "single_agent_review": "single_reviewer",
+    },
 )
 
 # 完整审稿先走 SE，再走 AE；任一环节桌拒都会进入桌拒输出。
@@ -136,6 +148,7 @@ builder.add_edge("review_dispatch", "devils_advocate")
 builder.add_edge(["reviewer1", "reviewer2", "reviewer3", "devils_advocate"], "ae_final")
 # 所有终止路径最后都进入统一渲染节点，service 只负责把内容写成文件。
 builder.add_edge("ae_final", "final_artifact_render")
+builder.add_edge("single_reviewer", "final_artifact_render")
 builder.add_edge("final_artifact_render", END)
 
 # 编译后的 main_graph 是 CLI/API 实际调用的 LangGraph 对象。
