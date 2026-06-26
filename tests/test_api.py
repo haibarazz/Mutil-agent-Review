@@ -86,8 +86,8 @@ class ApiTests(unittest.TestCase):
             os.environ,
             {
                 "LLM_PROVIDER": "router",
-                "LLM_SILICONFLOW_BASE_URL": "https://secret-sf.example/v1",
-                "LLM_SILICONFLOW_API_KEY": "sk-secret-sf",
+                "LLM_XUNFEI_BASE_URL": "https://secret-xunfei.example/v1",
+                "LLM_XUNFEI_API_KEY": "sk-secret-xunfei",
             },
         ):
             client = TestClient(create_app())
@@ -97,22 +97,22 @@ class ApiTests(unittest.TestCase):
         body = response.json()
         self.assertEqual("loaded", body["status"])
         self.assertEqual("router", body["mode"])
-        self.assertEqual("sf/deepseek-v4-pro", body["default_model"])
+        self.assertEqual("review-main-model", body["default_model"])
 
         providers = {item["name"]: item for item in body["providers"]}
-        self.assertIn("siliconflow", providers)
-        self.assertEqual("LLM_SILICONFLOW_BASE_URL", providers["siliconflow"]["base_url_env"])
-        self.assertEqual("LLM_SILICONFLOW_API_KEY", providers["siliconflow"]["api_key_env"])
-        self.assertTrue(providers["siliconflow"]["base_url_configured"])
-        self.assertTrue(providers["siliconflow"]["api_key_configured"])
+        self.assertIn("xunfeid", providers)
+        self.assertEqual("LLM_XUNFEI_BASE_URL", providers["xunfeid"]["base_url_env"])
+        self.assertEqual("LLM_XUNFEI_API_KEY", providers["xunfeid"]["api_key_env"])
+        self.assertTrue(providers["xunfeid"]["base_url_configured"])
+        self.assertTrue(providers["xunfeid"]["api_key_configured"])
 
         prompts = {item["name"]: item for item in body["prompts"]}
-        self.assertEqual("sf/deepseek-v4-pro", prompts["reviewer1"]["model"])
-        self.assertEqual("siliconflow", prompts["reviewer1"]["provider"])
+        self.assertEqual("review-main-model", prompts["reviewer1"]["model"])
+        self.assertEqual("xunfeid", prompts["reviewer1"]["provider"])
         self.assertTrue(prompts["reviewer1"]["registered"])
 
-        self.assertNotIn("sk-secret-sf", response.text)
-        self.assertNotIn("https://secret-sf.example/v1", response.text)
+        self.assertNotIn("sk-secret-xunfei", response.text)
+        self.assertNotIn("https://secret-xunfei.example/v1", response.text)
 
     def test_openapi_exposes_typed_frontend_contracts(self) -> None:
         with patch.dict(os.environ, {"LLM_PROVIDER": "mock"}):
@@ -375,6 +375,50 @@ class ApiTests(unittest.TestCase):
                 self.assertEqual(11, status["progress"]["completed_nodes"])
                 self.assertIsNone(status["progress"]["next_node"])
                 self.assertIsInstance(status["progress"]["elapsed_ms"], (int, float))
+
+    def test_single_agent_job_progress_and_artifacts_match_single_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data_dir = Path(tmp) / "data"
+            with patch.dict(os.environ, {"DATA_DIR": str(data_dir), "LLM_PROVIDER": "mock"}):
+                client = TestClient(create_app())
+                create_response = client.post(
+                    "/api/jobs",
+                    data={
+                        "review_mode": "SINGLE_AGENT_REVIEW",
+                        "output_language": "zh",
+                        "venue_domain": "CS",
+                        "venue_collection": "CCFA",
+                        "venue_code": "AAAI",
+                    },
+                    files={
+                        "paper": (
+                            "single-agent-job.md",
+                            b"Single Agent Paper\n\nAbstract\nA small paper.\n\n1 Introduction\nContent.",
+                            "text/markdown",
+                        )
+                    },
+                )
+
+                self.assertEqual(202, create_response.status_code, create_response.text)
+                job_id = create_response.json()["job_id"]
+                status_response = client.get(f"/api/jobs/{job_id}")
+                artifacts_response = client.get(f"/api/jobs/{job_id}/artifacts")
+
+        self.assertEqual(200, status_response.status_code, status_response.text)
+        status = status_response.json()
+        self.assertEqual("SUCCEEDED", status["status"])
+        self.assertEqual("SINGLE_AGENT_REVIEW", status["request"]["review_mode"])
+        self.assertEqual(6, status["progress"]["total_nodes"])
+        self.assertEqual(6, status["progress"]["completed_nodes"])
+        self.assertEqual(100, status["progress"]["percent"])
+        self.assertIn("single_reviewer", status["nodes"])
+        self.assertNotIn("reviewer1", status["nodes"])
+        self.assertNotIn("ae_final", status["nodes"])
+
+        self.assertEqual(200, artifacts_response.status_code, artifacts_response.text)
+        artifact_names = {item["name"] for item in artifacts_response.json()["artifacts"]}
+        self.assertIn("single_reviewer.json", artifact_names)
+        self.assertIn("final_report.md", artifact_names)
 
     def test_completed_job_exposes_artifacts_and_report(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

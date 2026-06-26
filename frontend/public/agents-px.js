@@ -55,6 +55,7 @@ const AGENTS = {
   r2:        { name: "Reviewer · Domain", zh: "领域审稿人",   A: "#8A4A2E", a: "#5E311E" },
   r3:        { name: "Reviewer · Cross",  zh: "跨学科审稿人", A: "#6E5A2A", a: "#4A3B17" },
   da:        { name: "Devil's Advocate",  zh: "反方辩护人",   A: "#5A3B6E", a: "#3D264B" },
+  solo:      { name: "Solo Reviewer",     zh: "综合审稿人",   A: "#3F5162", a: "#293947" },
   final:     { name: "AE · Final",        zh: "终审编辑",     A: "#0E1014", a: "#000000" },
 };
 
@@ -267,6 +268,27 @@ const MAPS = {
     "KaAAAAAAAAAaaK",
     "KaaAAAAAAAaaaK",
     "KKKKKKKKKKKKKK",
+  ],
+
+  /* SOLO REVIEWER — single-agent generalist. Glasses, notebook collar,
+     deliberately between domain reviewer and editor silhouettes. */
+  solo: [
+    "..............",
+    "....KKKKKK....",
+    "...KHHHHHHK...",
+    "..KHHhHHhHHK..",
+    "..KSSSSSSSSK..",
+    "..KFFKFFKFFK..",
+    "..KSLKSSKSLK..",
+    "..KSSKMMSSSK..",
+    "...KSSSSSSK...",
+    "....KKKKK..KK.",
+    "...KAAAAAK.KWK",
+    "..KAAWaaAAKKWK",
+    ".KAAWWWAAAKKK.",
+    "KAAAWWWWWAAAAK",
+    "KAAAAAAAAAAAAA",
+    "..............",
   ],
 
   /* AE FINAL — older AE, glasses on nose, severe black robe/jacket.

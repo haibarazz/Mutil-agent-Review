@@ -1211,7 +1211,8 @@
       "ReviewMode": {
         "enum": [
           "FULL_REVIEW",
-          "QUICK_REVIEW"
+          "QUICK_REVIEW",
+          "SINGLE_AGENT_REVIEW"
         ],
         "title": "ReviewMode",
         "type": "string"

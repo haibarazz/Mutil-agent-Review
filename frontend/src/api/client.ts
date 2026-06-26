@@ -13,7 +13,7 @@ export type VenueCatalogItem = {
 
 export type VenueCatalogItemFromApi = Omit<VenueCatalogItem, "domain" | "venue_collection">;
 
-export type ReviewMode = "FULL_REVIEW" | "QUICK_REVIEW";
+export type ReviewMode = "FULL_REVIEW" | "QUICK_REVIEW" | "SINGLE_AGENT_REVIEW";
 export type OutputLanguage = "zh" | "en";
 export type ReviewJobStatus = "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED" | "CANCELED";
 export type ReviewJobsFilter = "ALL" | "ACTIVE" | ReviewJobStatus;

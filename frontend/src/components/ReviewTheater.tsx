@@ -1,6 +1,6 @@
 import type { ReviewJobResponse, ReviewNodeEvent } from "../api/client";
 
-type PixelAgentId = "parser" | "checker" | "collector" | "analyst" | "se" | "ae" | "r1" | "r2" | "r3" | "da" | "final";
+type PixelAgentId = "parser" | "checker" | "collector" | "analyst" | "se" | "ae" | "r1" | "r2" | "r3" | "da" | "solo" | "final";
 type AgentId = PixelAgentId | "parse_fail" | "invalid" | "dispatch" | "desk_reject" | "renderer";
 type TheaterStatus = "pending" | "running" | "done" | "failed" | "skipped";
 type VerdictKind = "ok" | "warn" | "err" | "info";
@@ -36,6 +36,7 @@ const agents: TheaterAgent[] = [
   { id: "r2", pixelId: "r2", node: "reviewer2", name: "Reviewer · R2", zh: "领域审稿人", role: "Domain", read: "领域贡献与定位", ponder: ["contribution?", "fit?", "related?"], mark: "✓", verdict: "贡献评审", verdictSub: "positioning", kind: "ok" },
   { id: "r3", pixelId: "r3", node: "reviewer3", name: "Reviewer · R3", zh: "跨学科审稿人", role: "Cross-disc", read: "清晰度与可迁移性", ponder: ["clear?", "assumption?", "transfer?"], mark: "✓", verdict: "表达评审", verdictSub: "clarity", kind: "ok" },
   { id: "da", pixelId: "da", node: "devils_advocate", name: "Devil's Advocate", zh: "反方辩护人", role: "Adversarial", read: "寻找最强反对意见", ponder: ["weakness?", "counter?", "failure?"], mark: "✕", verdict: "反例检查", verdictSub: "edge cases", kind: "err" },
+  { id: "solo", pixelId: "solo", node: "single_reviewer", name: "Solo Reviewer", zh: "综合审稿人", role: "Contribution · method · venue fit", read: "综合评估贡献、方法、实验与 venue fit", ponder: ["contribution?", "method?", "experiment?", "venue fit?", "revision risk?", "decision?"], mark: "★", verdict: "综合评审", verdictSub: "single reviewer", kind: "warn" },
   { id: "final", pixelId: "final", node: "ae_final", name: "AE · Final", zh: "终审编辑", role: "Decision letter", read: "汇总 4 份报告 · 权衡分歧", ponder: ["MAJOR?", "MINOR?", "ACCEPT?", "REJECT?"], mark: "±", verdict: "终审决定", verdictSub: "decision letter", kind: "warn" },
   { id: "renderer", pixelId: "final", node: "final_artifact_render", name: "Report Renderer", zh: "报告生成器", role: "Artifacts", read: "渲染 Markdown 报告、诊断信息与下载产物", ponder: ["markdown", "artifacts", "ready?"], mark: "◆", verdict: "产物完成", verdictSub: "artifacts ready", kind: "ok" },
 ];
@@ -249,7 +250,7 @@ function LogEntry({ event }: { event: ReviewNodeEvent }) {
 }
 
 function agentStatuses(job: ReviewJobResponse): Record<AgentId, TheaterStatus> {
-  // QUICK_REVIEW 会跳过 SE/AE；其余节点按服务端事件快照实时推进。
+  // 不同审稿模式只改变可见角色；节点状态仍以服务端 LangGraph 事件为准。
   const statuses = Object.fromEntries(agents.map((agent) => [agent.id, isSkipped(agent, job) ? "skipped" : "pending"])) as Record<AgentId, TheaterStatus>;
   for (const agent of agents) {
     if (isSkipped(agent, job)) continue;
@@ -298,6 +299,7 @@ function theaterNowText(job: ReviewJobResponse, activeAgents: TheaterAgent[]): s
   if (job.status === "SUCCEEDED") return "审稿完成 · Decision ready";
   if (job.status === "FAILED") return "审稿失败 · Diagnostics ready";
   if (job.status === "CANCELED") return "审稿已取消 · Run canceled";
+  if (activeAgents.length === 1 && activeAgents[0].id === "solo") return "综合审稿人正在快速审阅… · Solo review in progress";
   if (activeAgents.length > 1 && activeAgents.every((agent) => reviewerIds.includes(agent.id))) return "4 位审稿人并行评审中… · Reviewers ‖ + Devil's Advocate";
   if (activeAgents.length > 1) return `${activeAgents.length} 个节点并行运行中…`;
   if (activeAgents.length === 1) return `${activeAgents[0].name} 正在审阅… · ${activeAgents[0].role}`;
@@ -325,7 +327,13 @@ function nodeLabel(node: string): string {
 }
 
 function isSkipped(agent: TheaterAgent, job: ReviewJobResponse): boolean {
-  return job.request.review_mode === "QUICK_REVIEW" && (agent.id === "se" || agent.id === "ae");
+  if (job.request.review_mode === "SINGLE_AGENT_REVIEW") {
+    return ["se", "ae", "dispatch", "r1", "r2", "r3", "da", "final", "desk_reject"].includes(agent.id);
+  }
+  if (job.request.review_mode === "QUICK_REVIEW") {
+    return agent.id === "se" || agent.id === "ae" || agent.id === "solo";
+  }
+  return agent.id === "solo";
 }
 
 function nodeEventText(event: ReviewNodeEvent): string {
@@ -336,6 +344,7 @@ function nodeEventText(event: ReviewNodeEvent): string {
 }
 
 function humanReviewMode(value: string): string {
+  if (value === "SINGLE_AGENT_REVIEW") return "Single Agent";
   return value === "QUICK_REVIEW" ? "Quick Review" : "Full Review";
 }
 

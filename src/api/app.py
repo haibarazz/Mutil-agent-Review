@@ -90,6 +90,14 @@ _QUICK_REVIEW_PROGRESS_PATH = [
     "ae_final",
     "final_artifact_render",
 ]
+_SINGLE_AGENT_REVIEW_PROGRESS_PATH = [
+    "doc_parse",
+    "content_check",
+    "journal_req_collector",
+    "field_analyst",
+    "single_reviewer",
+    "final_artifact_render",
+]
 
 
 def _safe_upload_filename(filename: str) -> str:
@@ -112,6 +120,8 @@ def _review_progress_path(job: dict[str, object]) -> list[str]:
         if "ae_check" in node_names:
             return ["doc_parse", "content_check", "journal_req_collector", "field_analyst", "se_check", "ae_check", "desk_reject_output", "final_artifact_render"]
         return ["doc_parse", "content_check", "journal_req_collector", "field_analyst", "se_check", "desk_reject_output", "final_artifact_render"]
+    if request.get("review_mode") == ReviewMode.SINGLE_AGENT_REVIEW.value:
+        return list(_SINGLE_AGENT_REVIEW_PROGRESS_PATH)
     if request.get("review_mode") == ReviewMode.QUICK_REVIEW.value:
         return list(_QUICK_REVIEW_PROGRESS_PATH)
     return list(_FULL_REVIEW_PROGRESS_PATH)

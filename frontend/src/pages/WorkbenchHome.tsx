@@ -57,13 +57,13 @@ import {
   type ReviewJobsSummaryResponse,
   type ReviewJobsFilter,
   type ReviewJobResponse,
+  type ReviewMode,
   type ReviewPresetResponse,
   type ReviewReportResponse,
   type VenueCatalogItem,
 } from "../api/client";
 import { ReviewTheater } from "../components/ReviewTheater";
 
-type ReviewMode = "FULL_REVIEW" | "QUICK_REVIEW";
 type Domain = "CS" | "IS";
 type OutputLanguage = "zh" | "en";
 type RunStatus = "idle" | "queued" | "running" | "succeeded" | "failed" | "canceled";
@@ -165,7 +165,14 @@ const agents = [
       ["r2", "Reviewer 2", "领域贡献", "Contribution · positioning · related work."],
       ["r3", "Reviewer 3", "跨学科读者", "Clarity · assumptions · transferability."],
       ["da", "Devil's Advocate", "反方辩护人", "Strongest objections and failure cases."],
+      ["solo", "Solo Reviewer", "综合审稿人", "Contribution · method · venue fit · decision."],
       ["final", "AE Final", "终审编辑", "Decision letter · roadmap · artifacts."],
+    ],
+  },
+  {
+    group: "Output · 产物",
+    items: [
+      ["renderer", "Report Renderer", "报告生成器", "Markdown report · diagnostics · artifacts."],
     ],
   },
 ] as const;
@@ -181,6 +188,8 @@ const agentNodeMap: Record<string, string[]> = {
   r2: ["reviewer2"],
   r3: ["reviewer3"],
   da: ["devils_advocate"],
+  solo: ["single_reviewer"],
+  renderer: ["final_artifact_render"],
   final: ["ae_final", "final_artifact_render", "desk_reject_output", "parse_fail_output", "invalid_file"],
 };
 
@@ -371,9 +380,9 @@ export function WorkbenchHome() {
     ?? domainVenues.find((item) => item.code === venueCode)
     ?? collectionVenues[0]
     ?? domainVenues[0];
-  const reviewLabel = mode === "FULL_REVIEW" ? "Full Review" : "Quick Review";
-  const agentCount = mode === "FULL_REVIEW" ? "11 agents" : "7 agents";
-  const estimate = mode === "FULL_REVIEW" ? "~7 min" : "~4 min";
+  const reviewLabel = humanReviewMode(mode);
+  const agentCount = reviewModeAgentCount(mode);
+  const estimate = reviewModeEstimate(mode);
   const supportedUploadLabels = appConfig.supported_upload_extensions.map((item) => item.replace(/^\./, "").toUpperCase());
   const uploadAccept = appConfig.supported_upload_extensions.join(",");
   const uploadRules = `${supportedUploadLabels.join(" · ")} · ≤ ${formatBytes(appConfig.max_upload_bytes)}`;
@@ -391,8 +400,15 @@ export function WorkbenchHome() {
   const displayNodeStatuses = displayJob?.nodes ?? {};
   const displayStatusLabel = displayJob ? runStatusLabel(toRunStatus(displayJob.status)) : transientStatusLabel(viewMode, runStatus, reportDetailStatus);
   const queueStatusLabel = jobSummaryLabel(jobsSummary);
-  const railAgentLabel = displayReviewMode === "FULL_REVIEW" ? "FULL REVIEW · 11 AGENTS" : "QUICK REVIEW · 7 AGENTS";
-  const railEditorCount = displayReviewMode === "FULL_REVIEW" ? 3 : 1;
+  const railAgentLabel = railModeLabel(displayReviewMode);
+  const railReviewerCount = displayReviewMode === "SINGLE_AGENT_REVIEW" ? 1 : 4;
+  const railEditorCount = displayReviewMode === "FULL_REVIEW" ? 3 : displayReviewMode === "SINGLE_AGENT_REVIEW" ? 0 : 1;
+  const visibleAgentGroups = agents
+    .map((group) => ({
+      ...group,
+      items: group.items.filter(([id]) => !isRosterAgentHidden(id, displayReviewMode)),
+    }))
+    .filter((group) => group.items.length > 0);
   const railSelectedVenue = displayJob?.request.venue_code || selectedVenue?.code || "None";
   const reportDetailAutoRefreshing = viewMode === "report" && isLiveJobStatus(reportDetailJob?.status);
 
@@ -1157,6 +1173,13 @@ export function WorkbenchHome() {
                   estimate="~4 min"
                   onClick={() => setMode("QUICK_REVIEW")}
                 />
+                <ModeOption
+                  active={mode === "SINGLE_AGENT_REVIEW"}
+                  title="Single Agent"
+                  subtitle="一个综合审稿人快速出报告"
+                  estimate="~2 min"
+                  onClick={() => setMode("SINGLE_AGENT_REVIEW")}
+                />
               </div>
             </ConfigBlock>
 
@@ -1382,14 +1405,14 @@ export function WorkbenchHome() {
               <span className="zh">本次审稿团队 · 拟人化智能体 · 各司其职</span>
             </h2>
             <div className="stat">
-              <span className="x"><b>4</b> Reviewers · ‖</span>
+              <span className="x"><b>{railReviewerCount}</b> Reviewers</span>
               <span className="x"><b>{railEditorCount}</b> Editors</span>
               <span className="x"><b>4</b> Pre-proc + Context</span>
             </div>
           </div>
 
           <div className="roster">
-            {agents.map((group) => (
+            {visibleAgentGroups.map((group) => (
               <div key={group.group} className="role-section">
                 <div className="role-grouph">{group.group}</div>
                 {group.items.map(([id, name, zh, brief], index) => (
@@ -1401,7 +1424,7 @@ export function WorkbenchHome() {
                     brief={brief}
                     index={index}
                     status={agentStatus(id, displayNodeStatuses)}
-                    skipped={displayReviewMode === "QUICK_REVIEW" && ["se", "ae"].includes(id)}
+                    skipped={isRosterAgentSkipped(id, displayReviewMode)}
                   />
                 ))}
               </div>
@@ -1832,7 +1855,7 @@ function RunsView(props: {
             </div>
             <span className={`run-pill ${job.status.toLowerCase()}`}>{job.status}</span>
             <span className="run-meta">{job.request.venue_collection} · {job.request.venue_code}</span>
-            <span className="run-meta">{job.request.review_mode === "FULL_REVIEW" ? "Full" : "Quick"}</span>
+            <span className="run-meta">{shortReviewMode(job.request.review_mode)}</span>
             <RunProgressCell job={job} />
             <span className="run-meta">{formatRunTime(job.updated_at)}</span>
             <div className="report-actions">
@@ -2739,8 +2762,45 @@ function formatBytes(bytes: number): string {
   return `${bytes} B`;
 }
 
-function humanReviewMode(mode: ReviewMode): string {
-  return mode === "FULL_REVIEW" ? "Full Review" : "Quick Review";
+function humanReviewMode(mode: ReviewMode | string): string {
+  if (mode === "SINGLE_AGENT_REVIEW") return "Single Agent";
+  if (mode === "QUICK_REVIEW") return "Quick Review";
+  return "Full Review";
+}
+
+function shortReviewMode(mode: ReviewMode | string): string {
+  if (mode === "SINGLE_AGENT_REVIEW") return "Single";
+  if (mode === "QUICK_REVIEW") return "Quick";
+  return "Full";
+}
+
+function reviewModeAgentCount(mode: ReviewMode): string {
+  if (mode === "SINGLE_AGENT_REVIEW") return "1 reviewer";
+  if (mode === "QUICK_REVIEW") return "7 agents";
+  return "11 agents";
+}
+
+function reviewModeEstimate(mode: ReviewMode): string {
+  if (mode === "SINGLE_AGENT_REVIEW") return "~2 min";
+  if (mode === "QUICK_REVIEW") return "~4 min";
+  return "~7 min";
+}
+
+function railModeLabel(mode: ReviewMode | string): string {
+  if (mode === "SINGLE_AGENT_REVIEW") return "SINGLE AGENT · SOLO REVIEWER";
+  if (mode === "QUICK_REVIEW") return "QUICK REVIEW · 7 AGENTS";
+  return "FULL REVIEW · 11 AGENTS";
+}
+
+function isRosterAgentHidden(agentId: string, mode: ReviewMode | string): boolean {
+  if (mode === "SINGLE_AGENT_REVIEW") {
+    return ["se", "ae", "r1", "r2", "r3", "da", "final"].includes(agentId);
+  }
+  return ["solo", "renderer"].includes(agentId);
+}
+
+function isRosterAgentSkipped(agentId: string, mode: ReviewMode | string): boolean {
+  return mode === "QUICK_REVIEW" && ["se", "ae"].includes(agentId);
 }
 
 function nodeDisplayName(nodeName: string): string {
@@ -2756,6 +2816,7 @@ function nodeDisplayName(nodeName: string): string {
     reviewer2: "Reviewer 2",
     reviewer3: "Reviewer 3",
     devils_advocate: "Devil's Advocate",
+    single_reviewer: "Solo Reviewer",
     ae_final: "AE Final",
     final_artifact_render: "Artifact Renderer",
     invalid_file: "Invalid File Output",
