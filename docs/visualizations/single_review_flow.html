@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Single Agent Review Flow</title>
+  <style>
+    :root {
+      --paper: #f7f1e7;
+      --paper-2: #fffaf1;
+      --ink: #1e2027;
+      --muted: #6f7480;
+      --line: #d8cab6;
+      --soft: #efe2cf;
+      --accent: #c45535;
+      --accent-2: #18706a;
+      --good: #2f7d59;
+      --warn: #a46f17;
+      --bad: #a33a31;
+      --code: #1f2330;
+      --code-text: #f5ead8;
+      --shadow: 0 18px 50px rgba(64, 42, 20, 0.13);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, #fff8eb 0, var(--paper) 38%, #efe6d9 100%);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+    }
+
+    a { color: inherit; }
+
+    .shell {
+      width: min(1180px, calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 38px 0 72px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items: stretch;
+      margin-bottom: 28px;
+    }
+
+    .hero-card, .panel {
+      background: rgba(255, 250, 241, 0.92);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: 18px;
+    }
+
+    .hero-card { padding: 34px; }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.18; margin: 0; }
+
+    h1 {
+      margin-top: 12px;
+      max-width: 760px;
+      font-size: clamp(34px, 5vw, 70px);
+      letter-spacing: -0.03em;
+    }
+
+    h2 {
+      font-size: clamp(24px, 3vw, 38px);
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 18px 0 0;
+      color: #50535b;
+      font-size: 18px;
+    }
+
+    .metric-card {
+      padding: 28px;
+      display: grid;
+      align-content: center;
+      gap: 14px;
+      background: #26342f;
+      color: #fff7e8;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 16px;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .metric:last-child { border-bottom: 0; }
+
+    .metric strong {
+      font-size: 34px;
+      letter-spacing: -0.03em;
+    }
+
+    .metric span {
+      color: #d9cbb9;
+      font-size: 14px;
+    }
+
+    .panel {
+      padding: 28px;
+      margin: 24px 0;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .panel-head p {
+      max-width: 640px;
+      margin: 4px 0 0;
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff7e8;
+      color: #4f4a42;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .mental-map {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .map-tile {
+      min-height: 132px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      background: #fffaf2;
+      position: relative;
+    }
+
+    .map-tile::after {
+      content: "→";
+      position: absolute;
+      right: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .map-tile:last-child::after { display: none; }
+
+    .map-tile b {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .map-tile code {
+      color: var(--accent-2);
+      font-weight: 700;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      word-break: break-word;
+    }
+
+    .flow {
+      display: grid;
+      gap: 14px;
+    }
+
+    .node {
+      display: grid;
+      grid-template-columns: 180px 1fr 210px;
+      gap: 18px;
+      align-items: stretch;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      background: #fffdf7;
+    }
+
+    .node-name {
+      padding: 18px;
+      background: var(--soft);
+      border-right: 1px solid var(--line);
+    }
+
+    .node-name code {
+      display: block;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 800;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .node-name span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .node-body {
+      padding: 18px 0;
+    }
+
+    .node-body p {
+      margin: 0 0 10px;
+      color: #4b4f57;
+    }
+
+    .node-body ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #4b4f57;
+    }
+
+    .node-side {
+      padding: 18px;
+      background: #fbf1e2;
+      border-left: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .node-side b {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .branch {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .branch-card {
+      border: 1px dashed var(--line);
+      background: #fff9ee;
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .branch-card strong {
+      display: block;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .state-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .state-card {
+      border: 1px solid var(--line);
+      background: #fffaf2;
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .state-card code {
+      display: inline-block;
+      margin: 4px 4px 4px 0;
+      padding: 3px 7px;
+      border-radius: 8px;
+      background: #efe4d3;
+      color: #29302e;
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .code-block {
+      margin: 0;
+      padding: 20px;
+      overflow-x: auto;
+      border-radius: 16px;
+      background: var(--code);
+      color: var(--code-text);
+      font-size: 14px;
+      line-height: 1.6;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .artifact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .artifact {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fffaf2;
+    }
+
+    .artifact b { display: block; margin-bottom: 8px; }
+
+    .footer {
+      margin-top: 36px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    @media (max-width: 920px) {
+      .hero, .mental-map, .state-grid, .artifact-grid { grid-template-columns: 1fr; }
+      .map-tile::after { display: none; }
+      .node { grid-template-columns: 1fr; }
+      .node-name, .node-side { border: 0; }
+      .node-name { border-bottom: 1px solid var(--line); }
+      .node-side { border-top: 1px solid var(--line); }
+      .panel-head { display: block; }
+      .pill { margin-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow">LangGraph Visualization · Single Agent</div>
+        <h1>单 Agent 审稿流程</h1>
+        <p class="lead">
+          这张图只讲核心 LangGraph：论文文件如何进入 state，prompt 如何被读取，LLMRouter 如何被调用，最后如何生成一份 Markdown 审稿报告。
+        </p>
+      </div>
+      <aside class="metric-card">
+        <div class="metric"><strong>7</strong><span>主路径节点，不含失败分支</span></div>
+        <div class="metric"><strong>1</strong><span>综合审稿人节点：single_reviewer</span></div>
+        <div class="metric"><strong>1</strong><span>最终报告：final_report.md</span></div>
+      </aside>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>先用深度学习项目来类比</h2>
+          <p>如果你把这个项目当成一个模型训练/推理工程，下面这排就是最重要的心智地图。</p>
+        </div>
+        <span class="pill">入口：ReviewWorkflow.run → main_graph.invoke</span>
+      </div>
+      <div class="mental-map">
+        <div class="map-tile">
+          <b>main.py</b>
+          <code>src/cli.py</code><br>
+          <code>review_service.py</code>
+        </div>
+        <div class="map-tile">
+          <b>forward graph</b>
+          <code>src/graphs/graph.py</code>
+        </div>
+        <div class="map-tile">
+          <b>batch/state</b>
+          <code>src/graphs/state.py</code>
+        </div>
+        <div class="map-tile">
+          <b>layers/nodes</b>
+          <code>src/graphs/nodes/*.py</code><br>
+          <code>review_nodes.py</code>
+        </div>
+        <div class="map-tile">
+          <b>configs</b>
+          <code>prompts/*.md</code><br>
+          <code>configs/llm.yaml</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>主路径流程</h2>
+          <p>SINGLE_AGENT_REVIEW 会跳过 SE、AE 初筛和多审稿人并行，只保留必要预处理和一个综合审稿节点。</p>
+        </div>
+        <span class="pill">mode = SINGLE_AGENT_REVIEW</span>
+      </div>
+
+      <div class="flow">
+        <article class="node">
+          <div class="node-name"><code>doc_parse</code><span>文档解析</span></div>
+          <div class="node-body">
+            <p>把用户上传的 PDF、Markdown 或 TeX 解析成统一的 <b>ParsedPaper</b>。</p>
+            <ul>
+              <li>输入：<code>paper_path</code></li>
+              <li>输出：<code>parsed_paper</code>、<code>paper_content</code></li>
+            </ul>
+          </div>
+          <div class="node-side"><b>实现位置</b>src/graphs/nodes/doc_parse_node.py<br>src/infra/parser.py</div>
+        </article>
+
+        <div class="branch">
+          <div class="branch-card"><strong>parse_ok</strong>进入内容检查。</div>
+          <div class="branch-card"><strong>parse_failed</strong>进入 parse_fail_output，再走最终渲染。</div>
+        </div>
+
+        <article class="node">
+          <div class="node-name"><code>content_check</code><span>论文有效性判断</span></div>
+          <div class="node-body">
+            <p>用 LLM 判断上传内容是否像一篇学术论文，避免把任意文件送进审稿流程。</p>
+            <ul>
+              <li>输入：<code>paper_content</code></li>
+              <li>输出：<code>intent</code>、<code>content_check</code></li>
+            </ul>
+          </div>
+          <div class="node-side"><b>Prompt</b>prompts/content_check.md<br><b>模型路由</b>configs/llm.yaml</div>
+        </article>
+
+        <div class="branch">
+          <div class="branch-card"><strong>VALID_PAPER</strong>继续加载 venue 信息。</div>
+          <div class="branch-card"><strong>not_paper</strong>进入 invalid_file，再走最终渲染。</div>
+        </div>
+
+        <article class="node">
+          <div class="node-name"><code>journal_req_collector</code><span>目标 venue 加载</span></div>
+          <div class="node-body">
+            <p>根据 <code>venue_domain</code>、<code>venue_collection</code>、<code>venue_code</code> 读取本地 venue md。</p>
+            <ul>
+              <li>输出官方要求：<code>journal_requirements</code></li>
+              <li>输出智能体画像：<code>venue_profile</code></li>
+            </ul>
+          </div>
+          <div class="node-side"><b>数据来源</b>venues/**/*.md<br><b>加载器</b>src/core/venues.py</div>
+        </article>
+
+        <article class="node">
+          <div class="node-name"><code>field_analyst</code><span>领域分析</span></div>
+          <div class="node-body">
+            <p>判断论文领域、研究范式、潜在审稿关注点，并准备审稿人配置。</p>
+            <ul>
+              <li>输入：论文内容 + venue profile</li>
+              <li>输出：<code>field_analysis</code>、<code>field_info</code>、<code>reviewer_config</code></li>
+            </ul>
+          </div>
+          <div class="node-side"><b>Prompt</b>prompts/field_analyst.md<br><b>分流点</b>这里进入 single_reviewer</div>
+        </article>
+
+        <article class="node">
+          <div class="node-name"><code>single_reviewer</code><span>综合审稿</span></div>
+          <div class="node-body">
+            <p>一个 Agent 同时扮演综合审稿人，直接给出主要问题、次要问题、问题列表、分数和最终建议。</p>
+            <ul>
+              <li>输入：<code>parsed_paper</code>、<code>journal_requirements</code>、<code>venue_profile</code>、<code>field_info</code></li>
+              <li>输出：<code>reviewer_reports</code>、<code>final_decision</code>、<code>decision_letter</code></li>
+            </ul>
+          </div>
+          <div class="node-side"><b>Prompt</b>prompts/single_reviewer.md<br><b>节点文件</b>src/graphs/nodes/single_reviewer_node.py</div>
+        </article>
+
+        <article class="node">
+          <div class="node-name"><code>final_artifact_render</code><span>报告渲染</span></div>
+          <div class="node-body">
+            <p>把上游结构化结果渲染成最终 Markdown 报告，并准备后续可扩展的 tex/pdf 产物。</p>
+            <ul>
+              <li>输出：<code>final_report_md</code></li>
+              <li>输出：<code>rendered_artifacts</code></li>
+            </ul>
+          </div>
+          <div class="node-side"><b>落盘位置</b>data/runs/&lt;run_id&gt;/final_report.md</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>state 是怎么变厚的</h2>
+          <p>LangGraph 节点之间传递的不是 tensor，而是一个不断增加字段的 <code>GlobalState</code>。</p>
+        </div>
+        <span class="pill">src/graphs/state.py</span>
+      </div>
+      <div class="state-grid">
+        <div class="state-card">
+          <h3>一开始就有</h3>
+          <code>run_id</code><code>paper_path</code><code>review_mode</code><code>output_language</code><code>venue_code</code>
+        </div>
+        <div class="state-card">
+          <h3>解析后增加</h3>
+          <code>parsed_paper</code><code>paper_content</code><code>parse_error</code>
+        </div>
+        <div class="state-card">
+          <h3>审稿后增加</h3>
+          <code>reviewer_reports</code><code>final_decision</code><code>decision_letter</code><code>final_report_md</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>prompt 和模型如何进入节点</h2>
+          <p>节点不直接写死供应商。节点只选择 prompt，prompt 里写模型别名，Router 再查真实供应商。</p>
+        </div>
+      </div>
+      <pre class="code-block">single_reviewer_node
+  → get_review_nodes()
+  → ReviewNodes.single_reviewer(...)
+  → PromptRepository.render("single_reviewer", context)
+  → prompts/single_reviewer.md
+  → model: "review-main-model"
+  → configs/llm.yaml
+  → xunfeid / xopqwen36v35b
+  → .env 里的 LLM_XUNFEI_BASE_URL + LLM_XUNFEI_API_KEY</pre>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>最终会看到哪些文件</h2>
+          <p>每跑一篇论文，service 层都会把 LangGraph 的结果写进一个独立 run 目录。</p>
+        </div>
+        <span class="pill">data/runs/&lt;run_id&gt;/</span>
+      </div>
+      <div class="artifact-grid">
+        <div class="artifact"><b>final_report.md</b>最终给作者看的审稿报告。</div>
+        <div class="artifact"><b>single_reviewer.json</b>单 Agent 结构化审稿输出。</div>
+        <div class="artifact"><b>stage_outputs.json</b>每个节点的中间结果汇总。</div>
+        <div class="artifact"><b>diagnostics.json / llm_calls.jsonl</b>诊断信息和 LLM 调用摘要。</div>
+      </div>
+    </section>
+
+    <p class="footer">
+      Source of truth: src/graphs/graph.py, src/graphs/state.py, src/graphs/runtime.py
+    </p>
+  </main>
+</body>
+</html>

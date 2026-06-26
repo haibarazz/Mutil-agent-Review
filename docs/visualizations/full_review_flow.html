@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Full Review Flow</title>
+  <style>
+    :root {
+      --paper: #f4efe5;
+      --paper-2: #fffaf0;
+      --ink: #20222a;
+      --muted: #6d7280;
+      --line: #d5c6b2;
+      --soft: #eadbc6;
+      --accent: #1d6b63;
+      --accent-warm: #c65a36;
+      --reviewer: #76512b;
+      --editor: #2f5f5a;
+      --danger: #9c3f35;
+      --code: #1f2330;
+      --code-text: #f5ead8;
+      --shadow: 0 18px 48px rgba(52, 38, 21, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #fff8ec 0%, var(--paper) 44%, #eadfce 100%);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+    }
+
+    .shell {
+      width: min(1240px, calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 38px 0 72px;
+    }
+
+    .hero {
+      min-height: 360px;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 28px;
+      align-items: stretch;
+      margin-bottom: 28px;
+    }
+
+    .hero-card, .panel {
+      background: rgba(255, 250, 240, 0.94);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card { padding: 34px; }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { margin: 0; line-height: 1.18; }
+
+    h1 {
+      margin-top: 12px;
+      font-size: clamp(34px, 5vw, 70px);
+      letter-spacing: -0.03em;
+    }
+
+    h2 {
+      font-size: clamp(24px, 3vw, 38px);
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 18px 0 0;
+      color: #4e535c;
+      font-size: 18px;
+    }
+
+    .mode-card {
+      padding: 26px;
+      background: #263431;
+      color: #fff6e5;
+      border-radius: 18px;
+      display: grid;
+      align-content: center;
+      gap: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .mode-row {
+      display: grid;
+      grid-template-columns: 108px 1fr;
+      gap: 14px;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .mode-row:last-child { border-bottom: 0; }
+
+    .mode-row strong {
+      font-size: 32px;
+      letter-spacing: -0.03em;
+    }
+
+    .mode-row span {
+      color: #dccdb9;
+      font-size: 14px;
+    }
+
+    .panel {
+      padding: 28px;
+      margin: 24px 0;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .panel-head p {
+      max-width: 700px;
+      margin: 4px 0 0;
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff7e8;
+      color: #4f4a42;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .swimlane {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fffdf7;
+      margin-bottom: 16px;
+    }
+
+    .lane-label {
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background: var(--soft);
+      border-right: 1px solid var(--line);
+      font-weight: 900;
+      text-align: center;
+      color: #4a3a2b;
+    }
+
+    .lane-content {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .node-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .node {
+      min-height: 118px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 15px;
+      background: #fffaf2;
+      position: relative;
+    }
+
+    .node::after {
+      content: "→";
+      position: absolute;
+      right: -13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent-warm);
+      font-weight: 900;
+    }
+
+    .node:last-child::after { display: none; }
+
+    .node code {
+      display: block;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 900;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .node p {
+      margin: 0;
+      color: #555963;
+      font-size: 14px;
+    }
+
+    .node.editor { border-color: rgba(47, 95, 90, 0.35); background: #eff7f1; }
+    .node.reviewer { border-color: rgba(118, 81, 43, 0.35); background: #fff4df; }
+    .node.output { border-color: rgba(198, 90, 54, 0.35); background: #fff0e8; }
+    .node.fail { border-style: dashed; border-color: rgba(156, 63, 53, 0.4); background: #fff2ef; }
+
+    .parallel-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .reviewer-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      background: #fffaf2;
+      min-height: 190px;
+    }
+
+    .reviewer-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      min-width: 26px;
+      height: 26px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .reviewer-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .reviewer-card ul {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: #4f535b;
+    }
+
+    .route-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .route {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      background: #fffaf2;
+    }
+
+    .route strong {
+      display: block;
+      color: var(--accent-warm);
+      margin-bottom: 8px;
+    }
+
+    .route p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fffaf2;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 860px;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #efe1ce;
+      font-size: 13px;
+      color: #51473c;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    td code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .code-block {
+      margin: 0;
+      padding: 20px;
+      overflow-x: auto;
+      border-radius: 16px;
+      background: var(--code);
+      color: var(--code-text);
+      font-size: 14px;
+      line-height: 1.6;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .callout {
+      border-left: 5px solid var(--accent-warm);
+      border-radius: 14px;
+      padding: 18px;
+      background: #fff4e4;
+      color: #504b43;
+    }
+
+    .footer {
+      margin-top: 36px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .hero, .node-row, .parallel-grid, .route-grid, .two-col { grid-template-columns: 1fr; }
+      .swimlane { grid-template-columns: 1fr; }
+      .lane-label { border-right: 0; border-bottom: 1px solid var(--line); }
+      .node::after { display: none; }
+      .panel-head { display: block; }
+      .pill { margin-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow">LangGraph Visualization · Full Review</div>
+        <h1>完整审稿流程</h1>
+        <p class="lead">
+          FULL_REVIEW 更接近真实期刊/会议审稿链路：先解析论文和目标 venue，再由 SE/AE 做编辑筛选，通过后进入四路外审，最后由 AE 汇总成决定信和最终报告。
+        </p>
+      </div>
+      <aside class="mode-card">
+        <div class="mode-row"><strong>13</strong><span>主流程节点和可能终止节点</span></div>
+        <div class="mode-row"><strong>4</strong><span>外审并行角色：R1/R2/R3/Devil</span></div>
+        <div class="mode-row"><strong>3</strong><span>常见终止路径：解析失败、无效文件、桌拒</span></div>
+      </aside>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>全局泳道图</h2>
+          <p>这张图对应 <code>src/graphs/graph.py</code>。完整审稿路径会经过预处理、编辑筛选、外审并行、AE 终审和报告渲染。</p>
+        </div>
+        <span class="pill">mode = FULL_REVIEW</span>
+      </div>
+
+      <div class="swimlane">
+        <div class="lane-label">入口和预处理</div>
+        <div class="lane-content">
+          <div class="node-row">
+            <div class="node"><code>ReviewWorkflow.run</code><p>把 ReviewRequest 变成 initial_state，然后调用 main_graph.invoke。</p></div>
+            <div class="node"><code>doc_parse</code><p>解析 PDF/MD/TEX，生成 parsed_paper 和 paper_content。</p></div>
+            <div class="node"><code>content_check</code><p>判断内容是否是有效学术论文。</p></div>
+            <div class="node"><code>journal_req_collector</code><p>读取 venue md，注入投稿要求和 venue profile。</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane">
+        <div class="lane-label">编辑筛选</div>
+        <div class="lane-content">
+          <div class="node-row">
+            <div class="node editor"><code>field_analyst</code><p>分析领域、研究范式和审稿关注点。</p></div>
+            <div class="node editor"><code>se_check</code><p>Senior Editor 初筛，判断是否桌拒。</p></div>
+            <div class="node editor"><code>ae_check</code><p>Associate Editor 二次筛选，准备外审 rubric。</p></div>
+            <div class="node editor"><code>review_dispatch</code><p>把同一份 state 分发到四个外审角色。</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane">
+        <div class="lane-label">外审并行</div>
+        <div class="lane-content">
+          <div class="node-row">
+            <div class="node reviewer"><code>reviewer1</code><p>方法和实验审稿人。</p></div>
+            <div class="node reviewer"><code>reviewer2</code><p>贡献和相关工作审稿人。</p></div>
+            <div class="node reviewer"><code>reviewer3</code><p>跨学科清晰度审稿人。</p></div>
+            <div class="node reviewer"><code>devils_advocate</code><p>反方辩护人，攻击最强主张。</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane">
+        <div class="lane-label">汇总和输出</div>
+        <div class="lane-content">
+          <div class="node-row">
+            <div class="node editor"><code>ae_final</code><p>综合四份外审，生成最终决定和返修路线。</p></div>
+            <div class="node output"><code>final_artifact_render</code><p>渲染 final_report.md 和 rendered_artifacts。</p></div>
+            <div class="node output"><code>ReviewWorkflow</code><p>写入 data/runs/&lt;run_id&gt;/。</p></div>
+            <div class="node output"><code>END</code><p>LangGraph 结束。</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>外审四个角色怎么分工</h2>
+          <p>review_dispatch 不是一个复杂计算节点，它更像分发器。真正生成审稿意见的是下面四个并行节点。</p>
+        </div>
+        <span class="pill">reviewer_reports 使用 Annotated[list, add] 聚合</span>
+      </div>
+      <div class="parallel-grid">
+        <div class="reviewer-card">
+          <h3><span class="badge">R1</span> reviewer1</h3>
+          <p>方法论和实验审稿人。</p>
+          <ul>
+            <li>方法是否清楚</li>
+            <li>实验和对照是否充分</li>
+            <li>可复现性是否可靠</li>
+          </ul>
+        </div>
+        <div class="reviewer-card">
+          <h3><span class="badge">R2</span> reviewer2</h3>
+          <p>领域贡献和相关工作审稿人。</p>
+          <ul>
+            <li>贡献是否真实</li>
+            <li>与现有工作的差异</li>
+            <li>是否符合目标 venue</li>
+          </ul>
+        </div>
+        <div class="reviewer-card">
+          <h3><span class="badge">R3</span> reviewer3</h3>
+          <p>跨学科读者视角。</p>
+          <ul>
+            <li>表达是否清楚</li>
+            <li>假设是否合理</li>
+            <li>迁移性和边界条件</li>
+          </ul>
+        </div>
+        <div class="reviewer-card">
+          <h3><span class="badge">D</span> devils_advocate</h3>
+          <p>专门寻找最强反对意见。</p>
+          <ul>
+            <li>攻击核心 claim</li>
+            <li>找失败案例</li>
+            <li>提醒 AE 潜在风险</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>关键分支</h2>
+          <p>完整流程不是永远走到外审。解析失败、内容无效、编辑桌拒都会提前进入输出节点。</p>
+        </div>
+      </div>
+      <div class="route-grid">
+        <div class="route">
+          <strong>doc_parse → parse_fail_output</strong>
+          <p>文件无法解析时，不继续调用后续 LLM 审稿，直接生成解析失败说明。</p>
+        </div>
+        <div class="route">
+          <strong>content_check → invalid_file</strong>
+          <p>上传内容不像论文时，进入无效文件说明，避免把任意内容当论文审。</p>
+        </div>
+        <div class="route">
+          <strong>se_check / ae_check → desk_reject_output</strong>
+          <p>SE 或 AE 判断桌拒时，直接生成正式桌拒意见和改进建议。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>节点输入输出表</h2>
+          <p>这张表适合你以后加新节点时参考：节点通常读 state 里的几个字段，然后写回新的 stage output。</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>节点</th>
+              <th>主要读取</th>
+              <th>主要写入</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>doc_parse</code></td>
+              <td><code>paper_path</code></td>
+              <td><code>parsed_paper</code>, <code>paper_content</code>, <code>parse_error</code></td>
+              <td>唯一直接碰原始论文文件的主节点。</td>
+            </tr>
+            <tr>
+              <td><code>content_check</code></td>
+              <td><code>paper_content</code></td>
+              <td><code>intent</code>, <code>content_check</code></td>
+              <td>决定是不是继续进入审稿。</td>
+            </tr>
+            <tr>
+              <td><code>journal_req_collector</code></td>
+              <td><code>venue_domain</code>, <code>venue_collection</code>, <code>venue_code</code></td>
+              <td><code>journal_requirements</code>, <code>venue_profile</code></td>
+              <td>venue md 是唯一来源，不让用户自由上传投稿要求。</td>
+            </tr>
+            <tr>
+              <td><code>field_analyst</code></td>
+              <td><code>parsed_paper</code>, <code>venue_profile</code></td>
+              <td><code>field_analysis</code>, <code>field_info</code>, <code>reviewer_config</code></td>
+              <td>后续编辑和审稿人的共同背景。</td>
+            </tr>
+            <tr>
+              <td><code>se_check</code></td>
+              <td><code>field_info</code>, <code>journal_requirements</code></td>
+              <td><code>se_result</code>, <code>se_decision</code></td>
+              <td>FULL_REVIEW 才走，QUICK 和 SINGLE 都跳过。</td>
+            </tr>
+            <tr>
+              <td><code>ae_check</code></td>
+              <td><code>se_result</code>, <code>field_analysis</code></td>
+              <td><code>ae_result</code>, <code>ae_decision</code></td>
+              <td>通过后才进入外审分发。</td>
+            </tr>
+            <tr>
+              <td><code>reviewer*</code></td>
+              <td><code>paper_content</code>, <code>venue_profile</code>, <code>reviewer_config</code></td>
+              <td><code>reviewer_reports</code></td>
+              <td>四个节点并行追加到同一个 reviewer_reports 列表。</td>
+            </tr>
+            <tr>
+              <td><code>ae_final</code></td>
+              <td><code>reviewer_reports</code></td>
+              <td><code>ae_final</code>, <code>final_decision</code>, <code>decision_letter</code></td>
+              <td>最终决定在这里形成。</td>
+            </tr>
+            <tr>
+              <td><code>final_artifact_render</code></td>
+              <td><code>final_decision</code>, <code>decision_letter</code>, <code>reviewer_reports</code></td>
+              <td><code>final_report_md</code>, <code>rendered_artifacts</code></td>
+              <td>所有路径最后都收敛到这里。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>prompt、LLM 和产物的完整链路</h2>
+          <p>完整流程里每个智能体节点都遵循同一个模式：节点准备 context，PromptRepository 填模板，LLMRouter 找真实模型，service 落盘。</p>
+        </div>
+      </div>
+      <div class="two-col">
+        <pre class="code-block">node function
+  → get_review_nodes()
+  → ReviewNodes.xxx(...)
+  → PromptRepository.render(prompt_name, context)
+  → prompts/&lt;prompt_name&gt;.md
+  → LLMRouter.complete_json(...)
+  → configs/llm.yaml
+  → provider base_url/api_key from .env</pre>
+        <div class="callout">
+          <h3>为什么要这样分层</h3>
+          <p>LangGraph 节点只关心流程和 state。prompt、模型供应商、parser、venue 加载都藏在 runtime 和 infra 里。以后替换模型或 parser，不应该大改 graph。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>和 Single 模式的差别</h2>
+          <p>FULL_REVIEW 多出来的是编辑筛选和多角色外审，因此更接近真实审稿，但也更慢、更容易遇到供应商长文本错误。</p>
+        </div>
+      </div>
+      <div class="route-grid">
+        <div class="route">
+          <strong>Single</strong>
+          <p>field_analyst 后直接进入 single_reviewer，一次性生成综合审稿意见。</p>
+        </div>
+        <div class="route">
+          <strong>Quick</strong>
+          <p>跳过 SE/AE 初筛，但保留四路外审和 AE final。</p>
+        </div>
+        <div class="route">
+          <strong>Full</strong>
+          <p>完整走 SE、AE、四路外审、AE final，最重也最真实。</p>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer">
+      Source of truth: src/graphs/graph.py, src/graphs/state.py, src/graphs/runtime.py
+    </p>
+  </main>
+</body>
+</html>
