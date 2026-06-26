@@ -409,7 +409,9 @@ class LLMRouter:
         message = f"LLM route exhausted for {model_id}"
         if errors:
             message = f"{message}: {errors[-1].message}"
-        return ProviderTransientError(
+        error_cls = errors[-1].__class__ if errors else ProviderTransientError
+        # route exhausted 是“结果”，真实错误类型应该跟随最后一次失败原因，方便 batch 统计定位。
+        return error_cls(
             message,
             context=ErrorContext(
                 model=model_id,

@@ -10,6 +10,7 @@ from unittest.mock import patch
 from src.core.errors import (
     ConfigurationError,
     ErrorContext,
+    ModelOutputParseError,
     ModelOutputValidationError,
     ProviderFatalError,
     ProviderTransientError,
@@ -450,6 +451,160 @@ models:
             ["primary", "primary", "fallback"],
             [item["model"] for item in validation_contexts],
         )
+
+    def test_exhausted_validation_errors_preserve_validation_error_type(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "llm.yaml"
+            config_path.write_text(
+                """
+default_model: primary
+providers:
+  fake_provider:
+    type: openai_compatible
+    base_url_env: TEST_FAKE_BASE_URL
+    api_key_env: TEST_FAKE_API_KEY
+models:
+  primary:
+    provider: fake_provider
+    provider_model_id: provider-primary
+    max_attempts: 2
+    fallback_models:
+      - fallback
+  fallback:
+    provider: fake_provider
+    provider_model_id: provider-fallback
+    max_attempts: 1
+""",
+                encoding="utf-8",
+            )
+            os.environ["TEST_FAKE_BASE_URL"] = "https://example.test/v1"
+            os.environ["TEST_FAKE_API_KEY"] = "secret"
+            calls: list[dict[str, Any]] = []
+
+            def validator(value: dict[str, Any], *, context: ErrorContext) -> dict[str, Any]:
+                raise ModelOutputValidationError("scores: Field required", context=context)
+
+            config = load_llm_router_config(config_path)
+            router = LLMRouter(
+                config=config,
+                timeout_sec=3,
+                client_factory=lambda provider, base_url, api_key, timeout: _RecordingClient(
+                    calls,
+                    provider.name,
+                ),
+            )
+
+            with self.assertRaises(ModelOutputValidationError) as caught:
+                router.complete_json(
+                    system_prompt="system",
+                    user_prompt="user",
+                    prompt_name="reviewer1",
+                    model="primary",
+                    validator=validator,
+                )
+
+        self.assertIn("LLM route exhausted for primary", caught.exception.message)
+        self.assertIn("scores: Field required", caught.exception.message)
+        self.assertEqual(
+            ["provider-primary", "provider-primary", "provider-fallback"],
+            [call["model"] for call in calls],
+        )
+        self.assertEqual(
+            ["ModelOutputValidationError", "ModelOutputValidationError", "ModelOutputValidationError"],
+            [item["error_type"] for item in caught.exception.context.details["errors"]],
+        )
+
+    def test_exhausted_parse_errors_preserve_parse_error_type(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "llm.yaml"
+            config_path.write_text(
+                """
+default_model: primary
+providers:
+  fake_provider:
+    type: openai_compatible
+    base_url_env: TEST_FAKE_BASE_URL
+    api_key_env: TEST_FAKE_API_KEY
+models:
+  primary:
+    provider: fake_provider
+    provider_model_id: provider-primary
+    max_attempts: 2
+""",
+                encoding="utf-8",
+            )
+            os.environ["TEST_FAKE_BASE_URL"] = "https://example.test/v1"
+            os.environ["TEST_FAKE_API_KEY"] = "secret"
+            calls: list[dict[str, Any]] = []
+            failures = {
+                ("json", "provider-primary"): [
+                    ModelOutputParseError("invalid json"),
+                    ModelOutputParseError("repair failed"),
+                ]
+            }
+            config = load_llm_router_config(config_path)
+            router = LLMRouter(
+                config=config,
+                timeout_sec=3,
+                client_factory=lambda provider, base_url, api_key, timeout: _RecordingClient(
+                    calls,
+                    provider.name,
+                    failures,
+                ),
+            )
+
+            with self.assertRaises(ModelOutputParseError) as caught:
+                router.complete_json(system_prompt="system", user_prompt="user", model="primary")
+
+        self.assertIn("LLM route exhausted for primary", caught.exception.message)
+        self.assertIn("repair failed", caught.exception.message)
+        self.assertEqual(["provider-primary", "provider-primary"], [call["model"] for call in calls])
+
+    def test_exhausted_provider_errors_still_return_provider_transient_error(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "llm.yaml"
+            config_path.write_text(
+                """
+default_model: primary
+providers:
+  fake_provider:
+    type: openai_compatible
+    base_url_env: TEST_FAKE_BASE_URL
+    api_key_env: TEST_FAKE_API_KEY
+models:
+  primary:
+    provider: fake_provider
+    provider_model_id: provider-primary
+    max_attempts: 2
+""",
+                encoding="utf-8",
+            )
+            os.environ["TEST_FAKE_BASE_URL"] = "https://example.test/v1"
+            os.environ["TEST_FAKE_API_KEY"] = "secret"
+            calls: list[dict[str, Any]] = []
+            failures = {
+                ("json", "provider-primary"): [
+                    ProviderTransientError("temporary one"),
+                    ProviderTransientError("temporary two"),
+                ]
+            }
+            config = load_llm_router_config(config_path)
+            router = LLMRouter(
+                config=config,
+                timeout_sec=3,
+                client_factory=lambda provider, base_url, api_key, timeout: _RecordingClient(
+                    calls,
+                    provider.name,
+                    failures,
+                ),
+            )
+
+            with self.assertRaises(ProviderTransientError) as caught:
+                router.complete_json(system_prompt="system", user_prompt="user", model="primary")
+
+        self.assertIn("LLM route exhausted for primary", caught.exception.message)
+        self.assertIn("temporary two", caught.exception.message)
+        self.assertEqual(["provider-primary", "provider-primary"], [call["model"] for call in calls])
 
     def test_router_verbose_off_by_default(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
