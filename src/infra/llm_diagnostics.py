@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import threading
+from collections import Counter
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
@@ -38,6 +39,21 @@ class LLMCallCollector:
             "error_count": sum(1 for event in self.events if event.get("event") == "error"),
             "fallback_count": sum(1 for event in self.events if event.get("event") == "fallback"),
         }
+
+    def attempt_summary(self) -> dict[str, Any]:
+        """面向 diagnostics 的轻量重试摘要；完整逐次事件仍以 jsonl 保存。"""
+        error_events = [event for event in self.events if event.get("event") == "error"]
+        fallback_events = [event for event in self.events if event.get("event") == "fallback"]
+        summary: dict[str, Any] = {
+            "retry_error_count": sum(1 for event in error_events if _truthy(event.get("retryable"))),
+            "fallback_count": len(fallback_events),
+            "error_type_counts": dict(Counter(str(event.get("error_type") or "Unknown") for event in error_events)),
+        }
+        if error_events:
+            summary["last_error"] = _compact_event(error_events[-1])
+        if fallback_events:
+            summary["last_fallback"] = _compact_event(fallback_events[-1])
+        return summary
 
     def to_jsonl(self) -> str:
         return "\n".join(json.dumps(to_jsonable(event), ensure_ascii=False) for event in self.events)
@@ -97,10 +113,47 @@ def _safe_fields(fields: dict[str, Any]) -> dict[str, Any]:
         "user_chars",
         "elapsed_ms",
         "error_type",
+        "error_message",
         "retryable",
+        "next_action",
     }
     return {
-        key: value
+        key: _safe_text(value) if key == "error_message" else value
         for key, value in fields.items()
         if key in allowed and value not in ("", None)
     }
+
+
+def _compact_event(event: dict[str, Any]) -> dict[str, Any]:
+    keys = (
+        "event",
+        "prompt",
+        "requested_model",
+        "model",
+        "provider",
+        "provider_model",
+        "attempt",
+        "max_attempts",
+        "fallback",
+        "error_type",
+        "error_message",
+        "retryable",
+        "next_action",
+        "from_model",
+        "to_model",
+        "reason",
+    )
+    return {key: event[key] for key in keys if key in event}
+
+
+def _truthy(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+def _safe_text(value: Any, *, limit: int = 500) -> str:
+    text = str(value).replace("\n", " ").strip()
+    if len(text) <= limit:
+        return text
+    return text[: limit - 3].rstrip() + "..."

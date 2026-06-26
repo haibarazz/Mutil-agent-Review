@@ -19,6 +19,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.core.errors import ReviewAgentError  # noqa: E402
 from src.core.models import OutputLanguage, ReviewMode, ReviewRequest, VenueCollection, VenueDomain  # noqa: E402
 from src.services.review_service import build_workflow  # noqa: E402
 
@@ -188,6 +189,119 @@ def base_manifest_row(batch_id: str, item: BatchItem) -> dict[str, Any]:
     }
 
 
+def failure_diagnostics_fields(exc: Exception) -> dict[str, Any]:
+    """把失败 run 的诊断摘要提升到 batch 行，避免批量分析时再逐个翻目录。"""
+    fields: dict[str, Any] = {}
+    if isinstance(exc, ReviewAgentError):
+        fields.update(_fields_from_error_payload(exc.to_dict()))
+
+    artifact_dir = fields.get("artifact_dir")
+    if artifact_dir:
+        diagnostics = _read_diagnostics(Path(str(artifact_dir)))
+        if diagnostics:
+            fields.update(_fields_from_diagnostics(diagnostics))
+
+    return {
+        key: value
+        for key, value in fields.items()
+        if value not in ("", None, {}, [])
+    }
+
+
+def _fields_from_diagnostics(diagnostics: dict[str, Any]) -> dict[str, Any]:
+    fields: dict[str, Any] = {}
+    errors = diagnostics.get("errors")
+    if isinstance(errors, list) and errors:
+        first_error = errors[0]
+        if isinstance(first_error, dict):
+            fields.update(_fields_from_error_payload(first_error))
+
+    llm_calls = diagnostics.get("llm_calls")
+    if isinstance(llm_calls, dict):
+        fields.update(
+            {
+                "llm_event_count": llm_calls.get("event_count"),
+                "llm_call_count": llm_calls.get("call_count"),
+                "llm_error_count": llm_calls.get("error_count"),
+                "llm_fallback_count": llm_calls.get("fallback_count"),
+            }
+        )
+
+    llm_attempts = diagnostics.get("llm_attempts")
+    if isinstance(llm_attempts, dict):
+        fields["retry_error_count"] = llm_attempts.get("retry_error_count")
+        last_error = llm_attempts.get("last_error")
+        if isinstance(last_error, dict):
+            fields.update(_fields_from_llm_event(last_error))
+
+    return fields
+
+
+def _fields_from_error_payload(error: dict[str, Any]) -> dict[str, Any]:
+    fields: dict[str, Any] = {
+        "failed_node": error.get("node"),
+        "failed_prompt": error.get("prompt_name"),
+        "failed_provider": error.get("provider"),
+        "failed_model": error.get("model"),
+        "failed_attempt": error.get("attempt"),
+    }
+    details = error.get("details")
+    if isinstance(details, dict):
+        fields["run_id"] = details.get("run_id")
+        fields["artifact_dir"] = details.get("artifact_dir")
+        route_errors = details.get("errors")
+        if isinstance(route_errors, list) and route_errors:
+            fields["attempts_exhausted"] = len(route_errors)
+            last_route_error = route_errors[-1]
+            if isinstance(last_route_error, dict):
+                fields.update(_fields_from_route_error(last_route_error))
+    return fields
+
+
+def _fields_from_route_error(error: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "failed_prompt": error.get("prompt_name") or error.get("prompt"),
+        "failed_provider": error.get("provider"),
+        "failed_model": error.get("model"),
+        "failed_attempt": error.get("attempt"),
+        "last_retry_error_type": error.get("error_type"),
+        "last_retry_error_message": _short_text(error.get("message")),
+    }
+
+
+def _fields_from_llm_event(event: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "failed_prompt": event.get("prompt"),
+        "failed_provider": event.get("provider"),
+        "failed_model": event.get("model"),
+        "failed_attempt": event.get("attempt"),
+        "failed_max_attempts": event.get("max_attempts"),
+        "last_retry_error_type": event.get("error_type"),
+        "last_retry_error_message": _short_text(event.get("error_message")),
+        "last_retry_next_action": event.get("next_action"),
+    }
+
+
+def _read_diagnostics(run_dir: Path) -> dict[str, Any]:
+    path = run_dir / "diagnostics.json"
+    if not path.is_file():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _short_text(value: Any, *, limit: int = 500) -> str:
+    if value in ("", None):
+        return ""
+    text = str(value).replace("\n", " ").strip()
+    if len(text) <= limit:
+        return text
+    return text[: limit - 3].rstrip() + "..."
+
+
 def run_one_item(config: BatchConfig, batch_id: str, item: BatchItem, workflow_factory: Callable[[], Any]) -> dict[str, Any]:
     started = time.monotonic()
     row = base_manifest_row(batch_id, item)
@@ -201,6 +315,7 @@ def run_one_item(config: BatchConfig, batch_id: str, item: BatchItem, workflow_f
             "elapsed_sec": round(time.monotonic() - started, 3),
             "error_type": exc.__class__.__name__,
             "error_message": str(exc),
+            **failure_diagnostics_fields(exc),
         }
 
     final_decision = value_of(run.final_decision)
@@ -261,7 +376,7 @@ def run_batch(
             progress(f"[{position}/{len(items)}] running {item.paper_id} -> {item.paper_path.name}")
             row = run_one_item(config, batch_dir.name, item, workflow_factory)
             record_row(row)
-            progress(f"[{position}/{len(items)}] {row['status']} {item.paper_id} in {row['elapsed_sec']}s")
+            progress(_progress_message(position, len(items), row, item))
             if config.fail_fast and row.get("status") == "failed":
                 break
     else:
@@ -284,7 +399,7 @@ def run_batch(
                         "error_message": str(exc),
                     }
                 record_row(row)
-                progress(f"[{completed}/{len(items)}] {row['status']} {item.paper_id} in {row['elapsed_sec']}s")
+                progress(_progress_message(completed, len(items), row, item))
 
     write_final_decisions_csv(batch_dir / "final_decisions.csv", sorted(final_rows, key=lambda row: int(row["index"])))
     summary = {
@@ -303,6 +418,22 @@ def run_batch(
     write_json(batch_dir / "summary.json", summary)
     progress(json.dumps(summary, ensure_ascii=False, indent=2))
     return summary
+
+
+def _progress_message(position: int, total: int, row: dict[str, Any], item: BatchItem) -> str:
+    message = f"[{position}/{total}] {row['status']} {item.paper_id} in {row['elapsed_sec']}s"
+    if row.get("status") != "failed":
+        return message
+    details = []
+    if row.get("failed_node"):
+        details.append(f"node={row['failed_node']}")
+    if row.get("failed_prompt"):
+        details.append(f"prompt={row['failed_prompt']}")
+    if row.get("attempts_exhausted"):
+        details.append(f"attempts={row['attempts_exhausted']}")
+    if row.get("error_type"):
+        details.append(f"error={row['error_type']}")
+    return f"{message} {' '.join(details)}" if details else message
 
 
 def parse_args() -> argparse.Namespace:

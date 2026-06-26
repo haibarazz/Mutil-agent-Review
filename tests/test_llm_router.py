@@ -606,6 +606,65 @@ models:
         self.assertIn("temporary two", caught.exception.message)
         self.assertEqual(["provider-primary", "provider-primary"], [call["model"] for call in calls])
 
+    def test_router_records_retry_attempt_error_details(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "llm.yaml"
+            config_path.write_text(
+                """
+default_model: primary
+providers:
+  fake_provider:
+    type: openai_compatible
+    base_url_env: TEST_FAKE_BASE_URL
+    api_key_env: TEST_FAKE_API_KEY
+models:
+  primary:
+    provider: fake_provider
+    provider_model_id: provider-primary
+    max_attempts: 2
+""",
+                encoding="utf-8",
+            )
+            os.environ["TEST_FAKE_BASE_URL"] = "https://example.test/v1"
+            os.environ["TEST_FAKE_API_KEY"] = "secret"
+            calls: list[dict[str, Any]] = []
+
+            def validator(value: dict[str, Any], *, context: ErrorContext) -> dict[str, Any]:
+                raise ModelOutputValidationError("strengths.0: Input should be a valid string", context=context)
+
+            config = load_llm_router_config(config_path)
+            router = LLMRouter(
+                config=config,
+                timeout_sec=3,
+                client_factory=lambda provider, base_url, api_key, timeout: _RecordingClient(
+                    calls,
+                    provider.name,
+                ),
+            )
+
+            start_llm_call_collection("retry-attempts")
+            try:
+                with llm_diagnostics_run("retry-attempts"):
+                    with self.assertRaises(ModelOutputValidationError):
+                        router.complete_json(
+                            system_prompt="system",
+                            user_prompt="user",
+                            prompt_name="reviewer2",
+                            model="primary",
+                            validator=validator,
+                        )
+            finally:
+                collector = stop_llm_call_collection("retry-attempts")
+
+        error_events = [event for event in collector.events if event["event"] == "error"]
+        self.assertEqual(["provider-primary", "provider-primary"], [call["model"] for call in calls])
+        self.assertEqual(2, len(error_events))
+        self.assertEqual(1, error_events[0]["attempt"])
+        self.assertEqual("retry_same_model", error_events[0]["next_action"])
+        self.assertEqual(2, error_events[1]["attempt"])
+        self.assertEqual("exhausted", error_events[1]["next_action"])
+        self.assertEqual("strengths.0: Input should be a valid string", error_events[1]["error_message"])
+
     def test_router_verbose_off_by_default(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             config_path = Path(tmp) / "llm.yaml"

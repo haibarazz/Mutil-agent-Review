@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from scripts.batch_review import BatchConfig, run_batch
+from src.core.errors import ErrorContext, ModelOutputValidationError
 from src.core.models import FinalDecision, ReviewMode
 
 
@@ -59,6 +60,75 @@ class SlowTrackedWorkflow:
         finally:
             with self.tracker.lock:
                 self.tracker.active -= 1
+
+
+class DiagnosticFailingWorkflow:
+    def __init__(self, runs_dir: Path) -> None:
+        self.runs_dir = runs_dir
+
+    def run(self, request):
+        run_id = "diagnostic-fail-run"
+        run_dir = self.runs_dir / run_id
+        run_dir.mkdir(parents=True, exist_ok=True)
+        diagnostics = {
+            "status": "failed",
+            "errors": [
+                {
+                    "error_type": "ModelOutputValidationError",
+                    "node": "reviewer2",
+                    "model": "review-main-model",
+                    "details": {
+                        "run_id": run_id,
+                        "artifact_dir": str(run_dir),
+                        "errors": [
+                            {
+                                "error_type": "ModelOutputValidationError",
+                                "prompt_name": "reviewer2",
+                                "provider": "xunfeid",
+                                "model": "review-main-model",
+                                "attempt": 1,
+                                "message": "strengths.0: Input should be a valid string",
+                            },
+                            {
+                                "error_type": "ModelOutputValidationError",
+                                "prompt_name": "reviewer2",
+                                "provider": "xunfeid",
+                                "model": "review-main-model",
+                                "attempt": 2,
+                                "message": "strengths.1: Input should be a valid string",
+                            },
+                        ],
+                    },
+                }
+            ],
+            "llm_calls": {
+                "event_count": 4,
+                "call_count": 2,
+                "error_count": 2,
+                "fallback_count": 0,
+            },
+            "llm_attempts": {
+                "retry_error_count": 2,
+                "last_error": {
+                    "prompt": "reviewer2",
+                    "model": "review-main-model",
+                    "provider": "xunfeid",
+                    "attempt": 2,
+                    "error_type": "ModelOutputValidationError",
+                    "error_message": "strengths.1: Input should be a valid string",
+                    "next_action": "exhausted",
+                },
+            },
+        }
+        (run_dir / "diagnostics.json").write_text(json.dumps(diagnostics, ensure_ascii=False), encoding="utf-8")
+        raise ModelOutputValidationError(
+            "LLM route exhausted for review-main-model",
+            context=ErrorContext(
+                node="reviewer2",
+                model="review-main-model",
+                details={"run_id": run_id, "artifact_dir": str(run_dir), "errors": diagnostics["errors"][0]["details"]["errors"]},
+            ),
+        )
 
 
 def write_manifest(root: Path, rows: list[dict]) -> Path:
@@ -185,6 +255,40 @@ class BatchReviewScriptTests(unittest.TestCase):
             self.assertEqual({"succeeded": 4}, summary["status_counts"])
             self.assertEqual({"MINOR_REVISION": 4}, summary["decision_counts"])
             self.assertEqual(4, len(manifest_rows))
+
+    def test_failed_batch_row_includes_retry_diagnostics_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            paper = root / "papers" / "fail" / "paper.md"
+            paper.parent.mkdir(parents=True)
+            paper.write_text("paper", encoding="utf-8")
+            manifest = write_manifest(
+                root,
+                [{"paper_id": "fail", "title": "Fail Paper", "files": {"paper_md": "papers/fail/paper.md"}}],
+            )
+
+            summary = run_batch(
+                BatchConfig(
+                    manifest_path=manifest,
+                    batch_output_root=root / "batch_runs",
+                    batch_id="diagnostic-batch",
+                ),
+                workflow_factory=lambda: DiagnosticFailingWorkflow(root / "runs"),
+                progress=lambda _message: None,
+            )
+
+            failure = read_jsonl(root / "batch_runs" / "diagnostic-batch" / "failures.jsonl")[0]
+
+        self.assertEqual({"failed": 1}, summary["status_counts"])
+        self.assertEqual("ModelOutputValidationError", failure["error_type"])
+        self.assertEqual("reviewer2", failure["failed_node"])
+        self.assertEqual("reviewer2", failure["failed_prompt"])
+        self.assertEqual("review-main-model", failure["failed_model"])
+        self.assertEqual("xunfeid", failure["failed_provider"])
+        self.assertEqual(2, failure["attempts_exhausted"])
+        self.assertEqual(2, failure["llm_error_count"])
+        self.assertEqual(0, failure["llm_fallback_count"])
+        self.assertTrue(failure["artifact_dir"].endswith("diagnostic-fail-run"))
 
 
 if __name__ == "__main__":

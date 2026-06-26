@@ -178,6 +178,7 @@ class ReviewWorkflow:
             "errors": list(result.get("node_errors", [])),
             "fallback_events": list(result.get("fallback_events", [])),
             "llm_calls": llm_calls.summary(),
+            "llm_attempts": llm_calls.attempt_summary(),
         }
 
     def _write_failure_artifacts(
@@ -193,6 +194,7 @@ class ReviewWorkflow:
             "errors": [error.to_dict()],
             "fallback_events": [],
             "llm_calls": llm_calls.summary(),
+            "llm_attempts": llm_calls.attempt_summary(),
         }
         self.store.write_json(run_id, "request.json", request)
         self.store.write_json(run_id, "diagnostics.json", diagnostics)

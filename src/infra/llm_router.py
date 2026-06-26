@@ -290,6 +290,13 @@ class LLMRouter:
                     error = self._classify_call_error(exc, route, attempt, prompt_name)
                     errors.append(error)
                     last_route_error = error
+                    next_action = self._next_action(
+                        error=error,
+                        attempt=attempt,
+                        max_attempts=call_route.max_attempts,
+                        route_index=route_index,
+                        route_count=len(routes),
+                    )
                     _log_llm_event(
                         "error",
                         kind=kind,
@@ -303,7 +310,9 @@ class LLMRouter:
                         fallback=str(is_fallback).lower(),
                         elapsed_ms=elapsed_ms,
                         error_type=error.__class__.__name__,
+                        error_message=error.message,
                         retryable=str(error.retryable).lower(),
+                        next_action=next_action,
                     )
                     # 配置错误不是供应商波动，继续 retry/fallback 只会掩盖真实问题。
                     if isinstance(error, ConfigurationError):
@@ -313,6 +322,23 @@ class LLMRouter:
                     if attempt < call_route.max_attempts and route.retry_backoff_sec > 0:
                         time.sleep(route.retry_backoff_sec)
         raise self._exhausted_error(errors, model or self.config.default_model)
+
+    def _next_action(
+        self,
+        *,
+        error: ReviewAgentError,
+        attempt: int,
+        max_attempts: int,
+        route_index: int,
+        route_count: int,
+    ) -> str:
+        if isinstance(error, ConfigurationError):
+            return "raise_configuration_error"
+        if error.retryable and attempt < max_attempts:
+            return "retry_same_model"
+        if route_index + 1 < route_count:
+            return "fallback_model"
+        return "exhausted"
 
     def _routes_for(self, model: str | None) -> list[LLMCallRoute]:
         model_id = model or self.config.default_model
@@ -495,10 +521,12 @@ def _log_llm_event(event: str, **fields: object) -> None:
     record_llm_event(event, dict(fields))
     if not _llm_verbose_enabled():
         return
+    # 终端 verbose 只打印结构化摘要；错误消息可能很长，完整短摘要留给 llm_calls.jsonl。
+    hidden_verbose_fields = {"error_message"}
     parts = [
         f"{key}={_format_log_value(value)}"
         for key, value in fields.items()
-        if value not in ("", None)
+        if key not in hidden_verbose_fields and value not in ("", None)
     ]
     print(f"[llm-router:{event}] {' '.join(parts)}")
 
