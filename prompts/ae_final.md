@@ -1,6 +1,6 @@
 ---
 name: "ae_final"
-model: "deepseek/deepseek-v4-pro"
+model: "review-main-model"
 ---
 
 # System Prompt

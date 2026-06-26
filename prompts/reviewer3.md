@@ -1,6 +1,6 @@
 ---
 name: "reviewer3"
-model: "openrouter/glm-4.6"
+model: "review-main-model"
 ---
 
 # System Prompt

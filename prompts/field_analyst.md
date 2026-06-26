@@ -1,6 +1,6 @@
 ---
 name: "field_analyst"
-model: "sf/deepseek-v4-pro"
+model: "review-main-model"
 ---
 
 # System Prompt

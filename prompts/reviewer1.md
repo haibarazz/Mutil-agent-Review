@@ -1,6 +1,6 @@
 ---
 name: "reviewer1"
-model: "sf/deepseek-v4-pro"
+model: "review-main-model"
 ---
 
 # System Prompt

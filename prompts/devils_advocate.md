@@ -1,6 +1,6 @@
 ---
 name: "devils_advocate"
-model: "openrouter/gemini-2.5-flash-lite"
+model: "review-main-model"
 ---
 
 # System Prompt

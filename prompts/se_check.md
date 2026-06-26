@@ -1,6 +1,6 @@
 ---
 name: "se_check"
-model: "sf/deepseek-v4-pro"
+model: "review-main-model"
 ---
 
 # System Prompt

@@ -1,6 +1,6 @@
 ---
 name: "content_check"
-model: "sf/deepseek-v4-flash"
+model: "review-main-model"
 ---
 
 # System Prompt

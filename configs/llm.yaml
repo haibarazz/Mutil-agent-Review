@@ -1,12 +1,12 @@
 # 多供应商 LLM 路由配置
 #
 # 设计原则:
-# - prompts/*.md 只写节点想用的 model id。
-# - 这里登记 model id 属于哪个 provider，以及真实上游模型名。
+# - prompts/*.md 只写节点想用的稳定模型别名。
+# - 这里登记模型别名属于哪个 provider，以及真实上游模型名。
 # - .env 只保存 base_url/api_key 等敏感或环境相关信息。
 
 mode: router
-default_model: sf/deepseek-v4-pro
+default_model: review-main-model
 
 providers:
   siliconflow:
@@ -24,7 +24,23 @@ providers:
     base_url_env: LLM_OPENOUTER_BASE_URL
     api_key_env: LLM_OPENOUTER_API_KEY
 
+  xunfeid:
+    type: openai_compatible
+    base_url_env: LLM_XUNFEI_BASE_URL
+    api_key_env: LLM_XUNFEI_API_KEY
+
 models:
+  # 主审稿模型别名: prompts 只引用这个名字，后续切真实模型只改 provider_model_id。
+  review-main-model:
+    provider: xunfeid
+    provider_model_id: xopqwen36v35b
+    max_attempts: 2
+
+  xopqwen36v35b:
+    provider: xunfeid
+    provider_model_id: xopqwen36v35b
+    max_attempts: 2
+
   sf/deepseek-v4-pro:
     provider: siliconflow
     provider_model_id: deepseek-ai/DeepSeek-V4-Pro
@@ -132,6 +148,11 @@ prompts:
     temperature: 0.6
     top_p: 0.95
     max_tokens: 4000
+
+  single_reviewer:
+    temperature: 0.5
+    top_p: 0.95
+    max_tokens: 6000
 
   devils_advocate:
     temperature: 0.7
