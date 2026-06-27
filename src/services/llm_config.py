@@ -19,6 +19,7 @@ def build_llm_runtime_config(settings: Settings | None = None) -> dict[str, Any]
         "default_model": "",
         "providers": [],
         "models": [],
+        "nodes": [],
         "prompts": [],
         "error_type": "",
         "error_message": "",
@@ -34,6 +35,7 @@ def build_llm_runtime_config(settings: Settings | None = None) -> dict[str, Any]
     payload["default_model"] = config.default_model
     payload["providers"] = _provider_summaries(config)
     payload["models"] = _model_summaries(config)
+    payload["nodes"] = _node_summaries(config)
     payload["prompts"] = _prompt_summaries(settings.prompts_dir, config)
     return payload
 
@@ -62,6 +64,18 @@ def _model_summaries(config: LLMRouterConfig) -> list[dict[str, Any]]:
             "fallback_models": list(model.fallback_models),
         }
         for model in sorted(config.models.values(), key=lambda item: item.model_id)
+    ]
+
+
+def _node_summaries(config: LLMRouterConfig) -> list[dict[str, Any]]:
+    return [
+        {
+            "name": node.node_id,
+            "primary_model": node.primary_model,
+            "max_attempts": node.max_attempts,
+            "fallback_models": list(node.fallback_models),
+        }
+        for node in sorted(config.nodes.values(), key=lambda item: item.node_id)
     ]
 
 

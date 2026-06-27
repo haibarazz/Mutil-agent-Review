@@ -111,6 +111,11 @@ class ApiTests(unittest.TestCase):
         self.assertEqual("xunfeid", prompts["reviewer1"]["provider"])
         self.assertTrue(prompts["reviewer1"]["registered"])
 
+        nodes = {item["name"]: item for item in body["nodes"]}
+        self.assertEqual("review-main-model", nodes["reviewer1"]["primary_model"])
+        self.assertEqual(2, nodes["reviewer1"]["max_attempts"])
+        self.assertEqual(["deepseek/deepseek-v4-pro", "sf/qwen2.5-7b-instruct"], nodes["reviewer1"]["fallback_models"])
+
         self.assertNotIn("sk-secret-xunfei", response.text)
         self.assertNotIn("https://secret-xunfei.example/v1", response.text)
 

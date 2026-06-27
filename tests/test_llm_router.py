@@ -141,6 +141,96 @@ prompts:
             calls,
         )
 
+    def test_prompt_name_uses_node_policy_fallback_before_prompt_model(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "llm.yaml"
+            config_path.write_text(
+                """
+default_model: prompt-declared-model
+providers:
+  fake_provider:
+    type: openai_compatible
+    base_url_env: TEST_FAKE_BASE_URL
+    api_key_env: TEST_FAKE_API_KEY
+models:
+  prompt-declared-model:
+    provider: fake_provider
+    provider_model_id: provider-prompt-declared
+  node-primary:
+    provider: fake_provider
+    provider_model_id: provider-primary
+  node-fallback:
+    provider: fake_provider
+    provider_model_id: provider-fallback
+nodes:
+  reviewer2:
+    primary_model: node-primary
+    max_attempts: 2
+    fallback_models:
+      - node-fallback
+""",
+                encoding="utf-8",
+            )
+            os.environ["TEST_FAKE_BASE_URL"] = "https://example.test/v1"
+            os.environ["TEST_FAKE_API_KEY"] = "secret"
+            calls: list[dict[str, Any]] = []
+            failures = {
+                ("json", "provider-primary"): [
+                    ProviderTransientError("temporary one"),
+                    ProviderTransientError("temporary two"),
+                ]
+            }
+            config = load_llm_router_config(config_path)
+
+            router = LLMRouter(
+                config=config,
+                timeout_sec=3,
+                client_factory=lambda provider, base_url, api_key, timeout: _RecordingClient(
+                    calls,
+                    provider.name,
+                    failures,
+                ),
+            )
+            result = router.complete_json(
+                system_prompt="system",
+                user_prompt="user",
+                prompt_name="reviewer2",
+                model="prompt-declared-model",
+            )
+
+        self.assertEqual({"ok": True}, result)
+        self.assertEqual(
+            ["provider-primary", "provider-primary", "provider-fallback"],
+            [call["model"] for call in calls],
+        )
+
+    def test_unknown_node_fallback_model_fails_during_config_load(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "llm.yaml"
+            config_path.write_text(
+                """
+default_model: primary
+providers:
+  fake_provider:
+    type: openai_compatible
+    base_url_env: TEST_FAKE_BASE_URL
+    api_key_env: TEST_FAKE_API_KEY
+models:
+  primary:
+    provider: fake_provider
+    provider_model_id: provider-primary
+nodes:
+  reviewer2:
+    primary_model: primary
+    fallback_models:
+      - missing-fallback
+""",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "unknown models: missing-fallback"):
+                load_llm_router_config(config_path)
+
     def test_unknown_model_fails_fast(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             config_path = Path(tmp) / "llm.yaml"

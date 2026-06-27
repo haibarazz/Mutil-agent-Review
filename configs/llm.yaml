@@ -1,8 +1,8 @@
 # 多供应商 LLM 路由配置
 #
 # 设计原则:
-# - prompts/*.md 只写节点想用的稳定模型别名。
-# - 这里登记模型别名属于哪个 provider，以及真实上游模型名。
+# - models 只登记稳定模型别名属于哪个 provider，以及真实上游模型名。
+# - nodes 负责每个 LangGraph 节点的主模型、同模型重试次数和 fallback 链。
 # - .env 只保存 base_url/api_key 等敏感或环境相关信息。
 
 mode: router
@@ -30,36 +30,26 @@ providers:
     api_key_env: LLM_XUNFEI_API_KEY
 
 models:
-  # 主审稿模型别名: prompts 只引用这个名字，后续切真实模型只改 provider_model_id。
+  # 主审稿模型别名: 节点策略引用这个名字，后续切真实模型只改 provider_model_id。
   review-main-model:
     provider: xunfeid
     provider_model_id: xopqwen36v35b
-    max_attempts: 2
 
   xopqwen36v35b:
     provider: xunfeid
     provider_model_id: xopqwen36v35b
-    max_attempts: 2
 
   sf/deepseek-v4-pro:
     provider: siliconflow
     provider_model_id: deepseek-ai/DeepSeek-V4-Pro
-    max_attempts: 2
-    fallback_models:
-      - sf/deepseek-v4-flash
-      - sf/qwen2.5-7b-instruct
 
   sf/deepseek-v4-flash:
     provider: siliconflow
     provider_model_id: deepseek-ai/DeepSeek-V4-Flash
-    max_attempts: 2
-    fallback_models:
-      - sf/qwen2.5-7b-instruct
 
   sf/qwen2.5-7b-instruct:
     provider: siliconflow
     provider_model_id: Qwen/Qwen2.5-7B-Instruct
-    max_attempts: 1
 
   sf/deepseek-v3.2-pro:
     provider: siliconflow
@@ -76,18 +66,10 @@ models:
   deepseek/deepseek-v4-pro:
     provider: deepseek_official
     provider_model_id: deepseek-v4-pro
-    max_attempts: 2
-    fallback_models:
-      - sf/deepseek-v4-pro
-      - sf/qwen2.5-7b-instruct
 
   deepseek/deepseek-v4-flash:
     provider: deepseek_official
     provider_model_id: deepseek-v4-flash
-    max_attempts: 2
-    fallback_models:
-      - sf/deepseek-v4-pro
-      - sf/qwen2.5-7b-instruct
 
   openrouter/deepseek-v4-pro:
     provider: openrouter
@@ -96,10 +78,6 @@ models:
   openrouter/gemini-2.5-flash-lite:
     provider: openrouter
     provider_model_id: google/gemini-2.5-flash-lite
-    max_attempts: 2
-    fallback_models:
-      - deepseek/deepseek-v4-pro
-      - sf/qwen2.5-7b-instruct
 
   openrouter/kimi-k2.6:
     provider: openrouter
@@ -108,6 +86,74 @@ models:
   openrouter/glm-4.6:
     provider: openrouter
     provider_model_id: z-ai/glm-4.6
+
+nodes:
+  # 节点级策略: 主模型试 2 次；fallback 模型各试 1 次。
+  content_check:
+    primary_model: review-main-model
+    max_attempts: 2
+    fallback_models:
+      - deepseek/deepseek-v4-pro
+      - sf/qwen2.5-7b-instruct
+
+  field_analyst:
+    primary_model: review-main-model
+    max_attempts: 2
+    fallback_models:
+      - deepseek/deepseek-v4-pro
+      - sf/qwen2.5-7b-instruct
+
+  se_check:
+    primary_model: review-main-model
+    max_attempts: 2
+    fallback_models:
+      - deepseek/deepseek-v4-pro
+      - sf/qwen2.5-7b-instruct
+
+  ae_check:
+    primary_model: review-main-model
+    max_attempts: 2
+    fallback_models:
+      - deepseek/deepseek-v4-pro
+      - sf/qwen2.5-7b-instruct
+
+  reviewer1:
+    primary_model: review-main-model
+    max_attempts: 2
+    fallback_models:
+      - deepseek/deepseek-v4-pro
+      - sf/qwen2.5-7b-instruct
+
+  reviewer2:
+    primary_model: review-main-model
+    max_attempts: 2
+    fallback_models:
+      - deepseek/deepseek-v4-pro
+      - sf/qwen2.5-7b-instruct
+
+  reviewer3:
+    primary_model: review-main-model
+    max_attempts: 2
+    fallback_models:
+      - deepseek/deepseek-v4-pro
+      - sf/qwen2.5-7b-instruct
+
+  single_reviewer:
+    primary_model: review-main-model
+    max_attempts: 2
+    fallback_models:
+      - deepseek/deepseek-v4-pro
+      - sf/qwen2.5-7b-instruct
+
+  devils_advocate:
+    primary_model: review-main-model
+    max_attempts: 2
+    fallback_models:
+      - deepseek/deepseek-v4-pro
+      - sf/qwen2.5-7b-instruct
+
+  ae_final:
+    primary_model: review-main-model
     max_attempts: 2
     fallback_models:
       - deepseek/deepseek-v4-pro

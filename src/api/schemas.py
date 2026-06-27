@@ -36,6 +36,13 @@ class LLMModelConfigResponse(BaseModel):
     fallback_models: list[str] = Field(default_factory=list)
 
 
+class LLMNodeConfigResponse(BaseModel):
+    name: str
+    primary_model: str
+    max_attempts: int
+    fallback_models: list[str] = Field(default_factory=list)
+
+
 class LLMPromptRouteResponse(BaseModel):
     name: str
     model: str
@@ -51,6 +58,7 @@ class LLMRuntimeConfigResponse(BaseModel):
     default_model: str = ""
     providers: list[LLMProviderConfigResponse] = Field(default_factory=list)
     models: list[LLMModelConfigResponse] = Field(default_factory=list)
+    nodes: list[LLMNodeConfigResponse] = Field(default_factory=list)
     prompts: list[LLMPromptRouteResponse] = Field(default_factory=list)
     error_type: str = ""
     error_message: str = ""

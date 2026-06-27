@@ -26,7 +26,7 @@ class LLMProviderRoute:
 
 @dataclass(frozen=True)
 class LLMModelRoute:
-    """一个 prompt model id 到真实供应商模型名的映射。"""
+    """一个稳定模型 ID 到真实供应商模型名的映射。"""
 
     model_id: str
     provider: str
@@ -37,12 +37,23 @@ class LLMModelRoute:
 
 
 @dataclass(frozen=True)
+class LLMNodeRoute:
+    """节点级调用策略：节点决定主模型、重试次数和降级链。"""
+
+    node_id: str
+    primary_model: str
+    max_attempts: int
+    fallback_models: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class LLMRouterConfig:
     """LLMRouter 使用的完整模型注册表。"""
 
     default_model: str
     providers: dict[str, LLMProviderRoute]
     models: dict[str, LLMModelRoute]
+    nodes: dict[str, LLMNodeRoute]
     prompt_options: dict[str, dict[str, Any]]
 
 
@@ -68,9 +79,12 @@ def load_llm_router_config(path: Path) -> LLMRouterConfig:
 
     provider_items = data.get("providers") or {}
     model_items = data.get("models") or {}
+    node_items = data.get("nodes") or {}
     prompt_items = data.get("prompts") or {}
     if not isinstance(provider_items, dict) or not isinstance(model_items, dict):
         raise ValueError("LLM router config must contain providers and models mappings")
+    if not isinstance(node_items, dict):
+        raise ValueError("LLM router config nodes must be a mapping")
     if not isinstance(prompt_items, dict):
         raise ValueError("LLM router config prompts must be a mapping")
 
@@ -82,6 +96,10 @@ def load_llm_router_config(path: Path) -> LLMRouterConfig:
         model_id: _model_route(model_id, raw)
         for model_id, raw in model_items.items()
     }
+    nodes = {
+        node_id: _node_route(node_id, raw)
+        for node_id, raw in node_items.items()
+    }
 
     default_model = str(data.get("default_model") or "")
     if not default_model:
@@ -92,6 +110,9 @@ def load_llm_router_config(path: Path) -> LLMRouterConfig:
     missing_providers = sorted({route.provider for route in models.values()} - set(providers))
     if missing_providers:
         raise ValueError(f"LLM model routes reference unknown providers: {', '.join(missing_providers)}")
+    missing_node_models = _missing_node_models(nodes, models)
+    if missing_node_models:
+        raise ValueError(f"LLM node routes reference unknown models: {', '.join(missing_node_models)}")
 
     prompt_options: dict[str, dict[str, Any]] = {}
     for name, raw in prompt_items.items():
@@ -103,6 +124,7 @@ def load_llm_router_config(path: Path) -> LLMRouterConfig:
         default_model=default_model,
         providers=providers,
         models=models,
+        nodes=nodes,
         prompt_options=prompt_options,
     )
 
@@ -210,8 +232,7 @@ class LLMRouter:
         validator: JsonValidator | None = None,
     ) -> Any:
         errors: list[ReviewAgentError] = []
-        routes = self._routes_for(model)
-        requested_model_id = model or self.config.default_model
+        routes, requested_model_id = self._routes_for(model=model, prompt_name=prompt_name)
         last_route_error: ReviewAgentError | None = None
         for route_index, call_route in enumerate(routes):
             route = call_route.model
@@ -321,7 +342,7 @@ class LLMRouter:
                         break
                     if attempt < call_route.max_attempts and route.retry_backoff_sec > 0:
                         time.sleep(route.retry_backoff_sec)
-        raise self._exhausted_error(errors, model or self.config.default_model)
+        raise self._exhausted_error(errors, requested_model_id)
 
     def _next_action(
         self,
@@ -340,20 +361,48 @@ class LLMRouter:
             return "fallback_model"
         return "exhausted"
 
-    def _routes_for(self, model: str | None) -> list[LLMCallRoute]:
+    def _routes_for(self, *, model: str | None, prompt_name: str | None) -> tuple[list[LLMCallRoute], str]:
+        if prompt_name and prompt_name in self.config.nodes:
+            node = self.config.nodes[prompt_name]
+            return (
+                self._routes_from_model_ids(
+                    primary_model=node.primary_model,
+                    primary_max_attempts=node.max_attempts,
+                    fallback_models=node.fallback_models,
+                ),
+                prompt_name,
+            )
+
         model_id = model or self.config.default_model
         if model_id not in self.config.models:
             raise ConfigurationError(f"LLM model is not registered in configs/llm.yaml: {model_id}")
+        model_route = self.config.models[model_id]
+        return (
+            self._routes_from_model_ids(
+                primary_model=model_id,
+                primary_max_attempts=model_route.max_attempts,
+                fallback_models=model_route.fallback_models,
+            ),
+            model_id,
+        )
+
+    def _routes_from_model_ids(
+        self,
+        *,
+        primary_model: str,
+        primary_max_attempts: int,
+        fallback_models: tuple[str, ...],
+    ) -> list[LLMCallRoute]:
         routes: list[LLMCallRoute] = []
         seen: set[str] = set()
-        for index, item in enumerate((model_id, *self.config.models[model_id].fallback_models)):
+        for index, item in enumerate((primary_model, *fallback_models)):
             if item in seen:
                 continue
             if item not in self.config.models:
                 raise ConfigurationError(f"LLM fallback model is not registered in configs/llm.yaml: {item}")
             route = self.config.models[item]
             # 作为主模型时允许“同模型重试一次”；作为降级/兜底模型时只试一次。
-            max_attempts = route.max_attempts if index == 0 else 1
+            max_attempts = max(1, primary_max_attempts) if index == 0 else 1
             routes.append(LLMCallRoute(model=route, max_attempts=max_attempts))
             seen.add(item)
         return routes
@@ -484,6 +533,32 @@ def _model_route(model_id: str, raw: Any) -> LLMModelRoute:
         retry_backoff_sec=retry_backoff_sec,
         fallback_models=tuple(str(item) for item in fallback_models),
     )
+
+
+def _node_route(node_id: str, raw: Any) -> LLMNodeRoute:
+    if not isinstance(raw, dict):
+        raise ValueError(f"node route must be a mapping: {node_id}")
+    primary_model = str(raw.get("primary_model") or "")
+    max_attempts = max(1, int(raw.get("max_attempts", 1)))
+    fallback_models = raw.get("fallback_models") or ()
+    if not primary_model:
+        raise ValueError(f"node route must define primary_model: {node_id}")
+    if not isinstance(fallback_models, (list, tuple)):
+        raise ValueError(f"fallback_models must be a list: {node_id}")
+    return LLMNodeRoute(
+        node_id=node_id,
+        primary_model=primary_model,
+        max_attempts=max_attempts,
+        fallback_models=tuple(str(item) for item in fallback_models),
+    )
+
+
+def _missing_node_models(nodes: dict[str, LLMNodeRoute], models: dict[str, LLMModelRoute]) -> list[str]:
+    referenced: set[str] = set()
+    for node in nodes.values():
+        referenced.add(node.primary_model)
+        referenced.update(node.fallback_models)
+    return sorted(referenced - set(models))
 
 
 def _default_client_factory(

@@ -46,6 +46,19 @@ class PromptTests(unittest.TestCase):
 
         self.assertEqual([], missing)
 
+    def test_prompt_names_have_node_level_llm_policy(self) -> None:
+        settings = load_settings()
+        router_config = load_llm_router_config(settings.llm_config_path)
+        prompts = PromptRepository(settings.prompts_dir)
+
+        missing = []
+        for path in settings.prompts_dir.glob("*.md"):
+            prompt = prompts.load(path.stem)
+            if prompt.name not in router_config.nodes:
+                missing.append(prompt.name)
+
+        self.assertEqual([], missing)
+
 
 if __name__ == "__main__":
     unittest.main()
