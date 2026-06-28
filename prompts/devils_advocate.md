@@ -1,6 +1,6 @@
 ---
 name: "devils_advocate"
-model: "review-main-model"
+model: "xopqwen36v35b"
 ---
 
 # System Prompt

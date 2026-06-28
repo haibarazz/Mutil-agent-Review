@@ -1,6 +1,6 @@
 ---
 name: "reviewer2"
-model: "review-main-model"
+model: "xopqwen36v35b"
 ---
 
 # System Prompt

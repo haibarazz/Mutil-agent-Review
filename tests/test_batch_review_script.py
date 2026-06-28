@@ -76,7 +76,7 @@ class DiagnosticFailingWorkflow:
                 {
                     "error_type": "ModelOutputValidationError",
                     "node": "reviewer2",
-                    "model": "review-main-model",
+                    "model": "xopqwen36v35b",
                     "details": {
                         "run_id": run_id,
                         "artifact_dir": str(run_dir),
@@ -85,7 +85,7 @@ class DiagnosticFailingWorkflow:
                                 "error_type": "ModelOutputValidationError",
                                 "prompt_name": "reviewer2",
                                 "provider": "xunfeid",
-                                "model": "review-main-model",
+                                "model": "xopqwen36v35b",
                                 "attempt": 1,
                                 "message": "strengths.0: Input should be a valid string",
                             },
@@ -93,7 +93,7 @@ class DiagnosticFailingWorkflow:
                                 "error_type": "ModelOutputValidationError",
                                 "prompt_name": "reviewer2",
                                 "provider": "xunfeid",
-                                "model": "review-main-model",
+                                "model": "xopqwen36v35b",
                                 "attempt": 2,
                                 "message": "strengths.1: Input should be a valid string",
                             },
@@ -111,7 +111,7 @@ class DiagnosticFailingWorkflow:
                 "retry_error_count": 2,
                 "last_error": {
                     "prompt": "reviewer2",
-                    "model": "review-main-model",
+                    "model": "xopqwen36v35b",
                     "provider": "xunfeid",
                     "attempt": 2,
                     "error_type": "ModelOutputValidationError",
@@ -122,10 +122,10 @@ class DiagnosticFailingWorkflow:
         }
         (run_dir / "diagnostics.json").write_text(json.dumps(diagnostics, ensure_ascii=False), encoding="utf-8")
         raise ModelOutputValidationError(
-            "LLM route exhausted for review-main-model",
+            "LLM route exhausted for xopqwen36v35b",
             context=ErrorContext(
                 node="reviewer2",
-                model="review-main-model",
+                model="xopqwen36v35b",
                 details={"run_id": run_id, "artifact_dir": str(run_dir), "errors": diagnostics["errors"][0]["details"]["errors"]},
             ),
         )
@@ -283,7 +283,7 @@ class BatchReviewScriptTests(unittest.TestCase):
         self.assertEqual("ModelOutputValidationError", failure["error_type"])
         self.assertEqual("reviewer2", failure["failed_node"])
         self.assertEqual("reviewer2", failure["failed_prompt"])
-        self.assertEqual("review-main-model", failure["failed_model"])
+        self.assertEqual("xopqwen36v35b", failure["failed_model"])
         self.assertEqual("xunfeid", failure["failed_provider"])
         self.assertEqual(2, failure["attempts_exhausted"])
         self.assertEqual(2, failure["llm_error_count"])

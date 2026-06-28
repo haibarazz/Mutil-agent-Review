@@ -133,15 +133,15 @@ NodeFatalError
 
 ```yaml
 models:
-  deepseek/deepseek-v4-pro:
+  deepseek-v4-pro:
     provider: deepseek_official
     provider_model_id: deepseek-v4-pro
     timeout_sec: 600
     max_attempts: 2
     retry_backoff_sec: 2
     fallback_models:
-      - sf/deepseek-v4-pro
-      - openrouter/glm-4.6
+      - deepseek-ai/DeepSeek-V4-Pro
+      - z-ai/glm-4.6
     structured_output: json_object
 ```
 
@@ -312,7 +312,7 @@ FAILED_FATAL
 
 | Node | Status | Attempts | Model | Error |
 | --- | --- | --- | --- | --- |
-| reviewer2 | recovered_by_fallback | 2 | deepseek -> sf/deepseek | JSON validation failed |
+| reviewer2 | recovered_by_fallback | 2 | deepseek-v4-pro -> deepseek-ai/DeepSeek-V4-Pro | JSON validation failed |
 ```
 
 如果是 partial report：

@@ -97,7 +97,7 @@ class ApiTests(unittest.TestCase):
         body = response.json()
         self.assertEqual("loaded", body["status"])
         self.assertEqual("router", body["mode"])
-        self.assertEqual("review-main-model", body["default_model"])
+        self.assertEqual("xopqwen36v35b", body["default_model"])
 
         providers = {item["name"]: item for item in body["providers"]}
         self.assertIn("xunfeid", providers)
@@ -107,14 +107,17 @@ class ApiTests(unittest.TestCase):
         self.assertTrue(providers["xunfeid"]["api_key_configured"])
 
         prompts = {item["name"]: item for item in body["prompts"]}
-        self.assertEqual("review-main-model", prompts["reviewer1"]["model"])
+        self.assertEqual("xopqwen36v35b", prompts["reviewer1"]["model"])
         self.assertEqual("xunfeid", prompts["reviewer1"]["provider"])
         self.assertTrue(prompts["reviewer1"]["registered"])
 
         nodes = {item["name"]: item for item in body["nodes"]}
-        self.assertEqual("review-main-model", nodes["reviewer1"]["primary_model"])
-        self.assertEqual(2, nodes["reviewer1"]["max_attempts"])
-        self.assertEqual(["deepseek/deepseek-v4-pro", "sf/qwen2.5-7b-instruct"], nodes["reviewer1"]["fallback_models"])
+        self.assertEqual("xopqwen36v35b", nodes["reviewer1"]["primary_model"])
+        self.assertEqual(3, nodes["reviewer1"]["max_attempts"])
+        self.assertEqual(
+            ["deepseek-v4-flash", "deepseek-v4-pro", "deepseek-ai/DeepSeek-V4-Pro", "zai-org/GLM-5.2"],
+            nodes["reviewer1"]["fallback_models"],
+        )
 
         self.assertNotIn("sk-secret-xunfei", response.text)
         self.assertNotIn("https://secret-xunfei.example/v1", response.text)

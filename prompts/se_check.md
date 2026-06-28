@@ -1,6 +1,6 @@
 ---
 name: "se_check"
-model: "review-main-model"
+model: "xopqwen36v35b"
 ---
 
 # System Prompt

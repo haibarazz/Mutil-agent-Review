@@ -58,7 +58,7 @@ class NodeDiagnosticsTests(unittest.TestCase):
         def failing_node(state):
             raise ProviderTransientError(
                 "provider timed out",
-                context=ErrorContext(prompt_name="reviewer1", provider="sf", model="sf/deepseek-v4-pro"),
+                context=ErrorContext(prompt_name="reviewer1", provider="sf", model="deepseek-ai/DeepSeek-V4-Pro"),
             )
 
         wrapped = with_node_diagnostics("reviewer1", failing_node)
@@ -68,7 +68,7 @@ class NodeDiagnosticsTests(unittest.TestCase):
 
         self.assertEqual("reviewer1", caught.exception.context.node)
         self.assertEqual("sf", caught.exception.context.provider)
-        self.assertEqual("sf/deepseek-v4-pro", caught.exception.context.model)
+        self.assertEqual("deepseek-ai/DeepSeek-V4-Pro", caught.exception.context.model)
 
     def test_verbose_logs_node_error(self) -> None:
         def failing_node(state):

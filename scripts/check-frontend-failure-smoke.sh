@@ -75,7 +75,7 @@ wait_for_url() {
 
 cat >"${SMOKE_LLM_CONFIG}" <<'YAML'
 mode: router
-default_model: sf/deepseek-v4-flash
+default_model: failure-smoke-model
 
 providers:
   intentionally_missing:
@@ -84,7 +84,7 @@ providers:
     api_key_env: PAPER_REVIEW_FAILURE_SMOKE_API_KEY
 
 models:
-  sf/deepseek-v4-flash:
+  failure-smoke-model:
     provider: intentionally_missing
     provider_model_id: failure-smoke-model
     max_attempts: 1

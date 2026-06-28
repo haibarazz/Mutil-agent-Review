@@ -374,7 +374,7 @@ async def smoke_failure_path(browser: "BrowserSession") -> None:
     await browser.wait_for_text("DIAGNOSTICS", timeout_seconds=30, allow_failure_text=True)
     await browser.wait_for_text("LLM CALLS", timeout_seconds=30, allow_failure_text=True)
     await browser.wait_for_text("LLM TIMELINE", timeout_seconds=30, allow_failure_text=True)
-    await browser.wait_for_text("content_check · error · sf/deepseek-v4-flash", timeout_seconds=30, allow_failure_text=True)
+    await browser.wait_for_text("content_check · error · failure-smoke-model", timeout_seconds=30, allow_failure_text=True)
     await browser.wait_for_text("ConfigurationError", timeout_seconds=30, allow_failure_text=True)
 
 
@@ -405,7 +405,7 @@ async def smoke_preset_path(browser: "BrowserSession") -> None:
     )
     await browser.wait_for_text("SAVED PRESETS", timeout_seconds=30)
     await browser.wait_for_text("LLM ROUTING", timeout_seconds=30)
-    await browser.wait_for_text("sf/deepseek-v4-pro", timeout_seconds=30)
+    await browser.wait_for_text("deepseek-ai/DeepSeek-V4-Pro", timeout_seconds=30)
     await browser.wait_for_text("Quick Review · CS · AAAI", timeout_seconds=30)
     await browser.eval(
         """

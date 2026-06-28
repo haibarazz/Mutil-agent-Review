@@ -1,12 +1,12 @@
 # 多供应商 LLM 路由配置
 #
 # 设计原则:
-# - models 只登记稳定模型别名属于哪个 provider，以及真实上游模型名。
+# - models 只登记真实上游模型 ID；key 必须等于 provider_model_id，避免别名套娃。
 # - nodes 负责每个 LangGraph 节点的主模型、同模型重试次数和 fallback 链。
 # - .env 只保存 base_url/api_key 等敏感或环境相关信息。
 
 mode: router
-default_model: review-main-model
+default_model: xopqwen36v35b
 
 providers:
   siliconflow:
@@ -30,134 +30,153 @@ providers:
     api_key_env: LLM_XUNFEI_API_KEY
 
 models:
-  # 主审稿模型别名: 节点策略引用这个名字，后续切真实模型只改 provider_model_id。
-  review-main-model:
-    provider: xunfeid
-    provider_model_id: xopqwen36v35b
-
   xopqwen36v35b:
     provider: xunfeid
     provider_model_id: xopqwen36v35b
 
-  sf/deepseek-v4-pro:
+  deepseek-ai/DeepSeek-V4-Pro:
     provider: siliconflow
     provider_model_id: deepseek-ai/DeepSeek-V4-Pro
 
-  sf/deepseek-v4-flash:
+  deepseek-ai/DeepSeek-V4-Flash:
     provider: siliconflow
     provider_model_id: deepseek-ai/DeepSeek-V4-Flash
 
-  sf/qwen2.5-7b-instruct:
+  Qwen/Qwen2.5-7B-Instruct:
     provider: siliconflow
     provider_model_id: Qwen/Qwen2.5-7B-Instruct
 
-  sf/deepseek-v3.2-pro:
+  Pro/deepseek-ai/DeepSeek-V3.2:
     provider: siliconflow
     provider_model_id: Pro/deepseek-ai/DeepSeek-V3.2
 
-  sf/kimi-k2.6:
+  Pro/moonshotai/Kimi-K2.6:
     provider: siliconflow
     provider_model_id: Pro/moonshotai/Kimi-K2.6
 
-  sf/glm-5.1:
+  Pro/zai-org/GLM-5.1:
     provider: siliconflow
     provider_model_id: Pro/zai-org/GLM-5.1
 
-  deepseek/deepseek-v4-pro:
+  zai-org/GLM-5.2:
+    provider: siliconflow
+    provider_model_id: zai-org/GLM-5.2
+
+  deepseek-v4-pro:
     provider: deepseek_official
     provider_model_id: deepseek-v4-pro
 
-  deepseek/deepseek-v4-flash:
+  deepseek-v4-flash:
     provider: deepseek_official
     provider_model_id: deepseek-v4-flash
 
-  openrouter/deepseek-v4-pro:
+  deepseek/deepseek-v4-pro:
     provider: openrouter
     provider_model_id: deepseek/deepseek-v4-pro
 
-  openrouter/gemini-2.5-flash-lite:
+  google/gemini-2.5-flash-lite:
     provider: openrouter
     provider_model_id: google/gemini-2.5-flash-lite
 
-  openrouter/kimi-k2.6:
+  moonshotai/kimi-k2.6:
     provider: openrouter
     provider_model_id: moonshotai/kimi-k2.6
 
-  openrouter/glm-4.6:
+  z-ai/glm-4.6:
     provider: openrouter
     provider_model_id: z-ai/glm-4.6
 
 nodes:
-  # 节点级策略: 主模型试 2 次；fallback 模型各试 1 次。
+  # 节点级策略: 主模型试 3 次；当前 Router 中 fallback 模型各试 1 次。
   content_check:
-    primary_model: review-main-model
-    max_attempts: 2
+    primary_model: xopqwen36v35b
+    max_attempts: 3
     fallback_models:
-      - deepseek/deepseek-v4-pro
-      - sf/qwen2.5-7b-instruct
+      - deepseek-v4-flash
+      - deepseek-v4-pro
+      - deepseek-ai/DeepSeek-V4-Pro
+      - zai-org/GLM-5.2
 
   field_analyst:
-    primary_model: review-main-model
-    max_attempts: 2
+    primary_model: xopqwen36v35b
+    max_attempts: 3
     fallback_models:
-      - deepseek/deepseek-v4-pro
-      - sf/qwen2.5-7b-instruct
+      - deepseek-v4-flash
+      - deepseek-v4-pro
+      - deepseek-ai/DeepSeek-V4-Pro
+      - zai-org/GLM-5.2
 
   se_check:
-    primary_model: review-main-model
-    max_attempts: 2
+    primary_model: xopqwen36v35b
+    max_attempts: 3
     fallback_models:
-      - deepseek/deepseek-v4-pro
-      - sf/qwen2.5-7b-instruct
+      - deepseek-v4-flash
+      - deepseek-v4-pro
+      - deepseek-ai/DeepSeek-V4-Pro
+      - zai-org/GLM-5.2
 
   ae_check:
-    primary_model: review-main-model
-    max_attempts: 2
+    primary_model: xopqwen36v35b
+    max_attempts: 3
     fallback_models:
-      - deepseek/deepseek-v4-pro
-      - sf/qwen2.5-7b-instruct
+      - deepseek-v4-flash
+      - deepseek-v4-pro
+      - deepseek-ai/DeepSeek-V4-Pro
+      - zai-org/GLM-5.2
 
   reviewer1:
-    primary_model: review-main-model
-    max_attempts: 2
+    primary_model: xopqwen36v35b
+    max_attempts: 3
     fallback_models:
-      - deepseek/deepseek-v4-pro
-      - sf/qwen2.5-7b-instruct
+      - deepseek-v4-flash
+      - deepseek-v4-pro
+      - deepseek-ai/DeepSeek-V4-Pro
+      - zai-org/GLM-5.2
 
   reviewer2:
-    primary_model: review-main-model
-    max_attempts: 2
+    primary_model: xopqwen36v35b
+    max_attempts: 3
     fallback_models:
-      - deepseek/deepseek-v4-pro
-      - sf/qwen2.5-7b-instruct
+      - deepseek-v4-flash
+      - deepseek-v4-pro
+      - deepseek-ai/DeepSeek-V4-Pro
+      - zai-org/GLM-5.2
 
   reviewer3:
-    primary_model: review-main-model
-    max_attempts: 2
+    primary_model: xopqwen36v35b
+    max_attempts: 3
     fallback_models:
-      - deepseek/deepseek-v4-pro
-      - sf/qwen2.5-7b-instruct
+      - deepseek-v4-flash
+      - deepseek-v4-pro
+      - deepseek-ai/DeepSeek-V4-Pro
+      - zai-org/GLM-5.2
 
   single_reviewer:
-    primary_model: review-main-model
-    max_attempts: 2
+    primary_model: xopqwen36v35b
+    max_attempts: 3
     fallback_models:
-      - deepseek/deepseek-v4-pro
-      - sf/qwen2.5-7b-instruct
+      - deepseek-v4-flash
+      - deepseek-v4-pro
+      - deepseek-ai/DeepSeek-V4-Pro
+      - zai-org/GLM-5.2
 
   devils_advocate:
-    primary_model: review-main-model
-    max_attempts: 2
+    primary_model: xopqwen36v35b
+    max_attempts: 3
     fallback_models:
-      - deepseek/deepseek-v4-pro
-      - sf/qwen2.5-7b-instruct
+      - deepseek-v4-flash
+      - deepseek-v4-pro
+      - deepseek-ai/DeepSeek-V4-Pro
+      - zai-org/GLM-5.2
 
   ae_final:
-    primary_model: review-main-model
-    max_attempts: 2
+    primary_model: xopqwen36v35b
+    max_attempts: 3
     fallback_models:
-      - deepseek/deepseek-v4-pro
-      - sf/qwen2.5-7b-instruct
+      - deepseek-v4-flash
+      - deepseek-v4-pro
+      - deepseek-ai/DeepSeek-V4-Pro
+      - zai-org/GLM-5.2
 
 prompts:
   content_check:
