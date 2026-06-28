@@ -169,6 +169,7 @@ class ReviewWorkflow:
         for filename, content in artifacts.items():
             # 文件名来自 graph 内部 renderer；落盘前仍收敛成 basename，避免未来误传路径。
             self.store.write_text(run_id, Path(filename).name, str(content))
+        self._write_model_output_error_artifacts(run_id, llm_calls)
         self._write_llm_calls_artifact(run_id, llm_calls)
 
     def _success_diagnostics(self, result: dict, llm_calls: LLMCallCollector) -> dict:
@@ -179,6 +180,7 @@ class ReviewWorkflow:
             "fallback_events": list(result.get("fallback_events", [])),
             "llm_calls": llm_calls.summary(),
             "llm_attempts": llm_calls.attempt_summary(),
+            "model_output_errors": self._model_output_error_summary(llm_calls),
         }
 
     def _write_failure_artifacts(
@@ -195,11 +197,23 @@ class ReviewWorkflow:
             "fallback_events": [],
             "llm_calls": llm_calls.summary(),
             "llm_attempts": llm_calls.attempt_summary(),
+            "model_output_errors": self._model_output_error_summary(llm_calls),
         }
         self.store.write_json(run_id, "request.json", request)
         self.store.write_json(run_id, "diagnostics.json", diagnostics)
         self.store.write_text(run_id, "partial_report.md", self._render_partial_report(run_id, request, error))
+        self._write_model_output_error_artifacts(run_id, llm_calls)
         self._write_llm_calls_artifact(run_id, llm_calls)
+
+    def _write_model_output_error_artifacts(self, run_id: str, llm_calls: LLMCallCollector) -> None:
+        for item in llm_calls.model_output_errors:
+            self.store.write_json(run_id, str(item["path"]), item["payload"])
+
+    def _model_output_error_summary(self, llm_calls: LLMCallCollector) -> dict:
+        return {
+            "count": len(llm_calls.model_output_errors),
+            "files": [str(item["path"]) for item in llm_calls.model_output_errors],
+        }
 
     def _write_llm_calls_artifact(self, run_id: str, llm_calls: LLMCallCollector) -> None:
         if not llm_calls.events:

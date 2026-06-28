@@ -5,6 +5,7 @@ import re
 from typing import Any
 
 from src.core.errors import ErrorContext, ModelOutputParseError
+from src.infra.llm_diagnostics import record_model_output_error
 from src.ports import JsonValidator
 
 
@@ -314,6 +315,7 @@ class OpenAICompatibleLLMClient:
             parsed = self._repair_json_response(
                 invalid_content=str(content),
                 model=model,
+                prompt_name=prompt_name,
                 max_tokens=max_tokens,
             )
         return _apply_validator(
@@ -366,6 +368,7 @@ class OpenAICompatibleLLMClient:
         *,
         invalid_content: str,
         model: str | None,
+        prompt_name: str | None,
         max_tokens: int | None,
     ) -> dict[str, Any]:
         # 真实模型偶尔会少逗号或包裹解释；失败时用同一路模型做一次纯 JSON 修复。
@@ -389,8 +392,26 @@ class OpenAICompatibleLLMClient:
         try:
             return extract_json_object(repaired_content)
         except (json.JSONDecodeError, ValueError) as repair_error:
+            context = ErrorContext(prompt_name=prompt_name or "", model=model or self.default_model)
+            details = record_model_output_error(
+                "parse_error",
+                {
+                    "kind": "json",
+                    "prompt": prompt_name or "",
+                    "model": model or self.default_model,
+                    "error_type": "ModelOutputParseError",
+                    "error_message": "LLM response JSON parse failed, and one repair attempt also failed",
+                },
+                {
+                    "raw_output": invalid_content,
+                    "repair_output": str(repaired_content),
+                },
+            )
+            if details:
+                context = ErrorContext(prompt_name=context.prompt_name, model=context.model, details=details)
             raise ModelOutputParseError(
-                "LLM response JSON parse failed, and one repair attempt also failed"
+                "LLM response JSON parse failed, and one repair attempt also failed",
+                context=context,
             ) from repair_error
 
 

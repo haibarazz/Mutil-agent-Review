@@ -25,10 +25,12 @@ class _RecordingClient:
         calls: list[dict[str, Any]],
         provider: str,
         failures: dict[tuple[str, str], list[Exception]] | None = None,
+        json_result: dict[str, Any] | None = None,
     ) -> None:
         self.calls = calls
         self.provider = provider
         self.failures = failures or {}
+        self.json_result = {"ok": True} if json_result is None else json_result
 
     def complete_text(
         self,
@@ -72,7 +74,7 @@ class _RecordingClient:
             "max_tokens": max_tokens,
         })
         self._maybe_fail("json", str(model))
-        return {"ok": True}
+        return dict(self.json_result)
 
     def _maybe_fail(self, kind: str, model: str) -> None:
         failures = self.failures.get((kind, model), [])
@@ -650,6 +652,66 @@ models:
         self.assertIn("repair failed", caught.exception.message)
         self.assertEqual(["provider-primary", "provider-primary"], [call["model"] for call in calls])
 
+    def test_router_copies_model_output_error_ref_from_parse_error_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "llm.yaml"
+            config_path.write_text(
+                """
+default_model: primary
+providers:
+  fake_provider:
+    type: openai_compatible
+    base_url_env: TEST_FAKE_BASE_URL
+    api_key_env: TEST_FAKE_API_KEY
+models:
+  primary:
+    provider: fake_provider
+    provider_model_id: provider-primary
+    max_attempts: 1
+""",
+                encoding="utf-8",
+            )
+            os.environ["TEST_FAKE_BASE_URL"] = "https://example.test/v1"
+            os.environ["TEST_FAKE_API_KEY"] = "secret"
+            calls: list[dict[str, Any]] = []
+            failures = {
+                ("json", "provider-primary"): [
+                    ModelOutputParseError(
+                        "invalid json",
+                        context=ErrorContext(
+                            details={
+                                "model_output_error_kind": "parse_error",
+                                "model_output_error_ref": "model_output_errors/parse_error_001.json",
+                                "model_output_preview": "{\"raw_output\":\"not json\"}",
+                            }
+                        ),
+                    )
+                ]
+            }
+            config = load_llm_router_config(config_path)
+            router = LLMRouter(
+                config=config,
+                timeout_sec=3,
+                client_factory=lambda provider, base_url, api_key, timeout: _RecordingClient(
+                    calls,
+                    provider.name,
+                    failures,
+                ),
+            )
+
+            start_llm_call_collection("parse-error-ref")
+            try:
+                with llm_diagnostics_run("parse-error-ref"):
+                    with self.assertRaises(ModelOutputParseError):
+                        router.complete_json(system_prompt="system", user_prompt="user", model="primary")
+            finally:
+                collector = stop_llm_call_collection("parse-error-ref")
+
+        error_events = [event for event in collector.events if event["event"] == "error"]
+        self.assertEqual(1, len(error_events))
+        self.assertEqual("parse_error", error_events[0]["model_output_error_kind"])
+        self.assertEqual("model_output_errors/parse_error_001.json", error_events[0]["model_output_error_ref"])
+
     def test_exhausted_provider_errors_still_return_provider_transient_error(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             config_path = Path(tmp) / "llm.yaml"
@@ -718,6 +780,7 @@ models:
             os.environ["TEST_FAKE_BASE_URL"] = "https://example.test/v1"
             os.environ["TEST_FAKE_API_KEY"] = "secret"
             calls: list[dict[str, Any]] = []
+            invalid_output = {"summary": "bad", "strengths": [{"text": "not a string"}]}
 
             def validator(value: dict[str, Any], *, context: ErrorContext) -> dict[str, Any]:
                 raise ModelOutputValidationError("strengths.0: Input should be a valid string", context=context)
@@ -729,6 +792,7 @@ models:
                 client_factory=lambda provider, base_url, api_key, timeout: _RecordingClient(
                     calls,
                     provider.name,
+                    json_result=invalid_output,
                 ),
             )
 
@@ -754,6 +818,11 @@ models:
         self.assertEqual(2, error_events[1]["attempt"])
         self.assertEqual("exhausted", error_events[1]["next_action"])
         self.assertEqual("strengths.0: Input should be a valid string", error_events[1]["error_message"])
+        self.assertEqual("validation_error", error_events[0]["model_output_error_kind"])
+        self.assertEqual("model_output_errors/validation_error_001.json", error_events[0]["model_output_error_ref"])
+        self.assertIn("\"strengths\"", error_events[0]["model_output_preview"])
+        self.assertEqual(2, len(collector.model_output_errors))
+        self.assertEqual(invalid_output, collector.model_output_errors[0]["payload"]["invalid_output"])
 
     def test_router_verbose_off_by_default(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

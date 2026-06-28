@@ -18,6 +18,7 @@ class LocalArtifactStore:
 
     def write_json(self, run_id: str, name: str, payload: Any) -> Path:
         path = self.run_dir(run_id) / name
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(
             json.dumps(to_jsonable(payload), ensure_ascii=False, indent=2),
             encoding="utf-8",
@@ -26,5 +27,6 @@ class LocalArtifactStore:
 
     def write_text(self, run_id: str, name: str, text: str) -> Path:
         path = self.run_dir(run_id) / name
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
         return path
