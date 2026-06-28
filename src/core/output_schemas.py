@@ -57,6 +57,35 @@ class RevisionRoadmapOutput(BaseModel):
     nice_to_fix: list[Any]
 
 
+class AEDecisionOutput(BaseModel):
+    """AE decision 节点只负责裁决，不允许混入报告正文。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    final_decision: FinalDecision
+    decision_rationale: str = Field(min_length=1)
+    consensus_disagreement: dict[str, Any]
+    critical_issues: list[Any]
+
+    @field_validator("final_decision", mode="before")
+    @classmethod
+    def reject_desk_reject_for_ae_decision(cls, value: Any) -> Any:
+        if str(value) == FinalDecision.DESK_REJECT.value:
+            raise ValueError("ae_decision must not return DESK_REJECT")
+        return value
+
+
+class AEReportOutput(BaseModel):
+    """AE report 节点只写作者反馈，不允许重新做最终决定。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    decision_letter: str = Field(min_length=1)
+    revision_checklist: list[Any] = Field(min_length=3)
+    rr_traceability_matrix: list[Any] = Field(min_length=1)
+    revision_roadmap: RevisionRoadmapOutput
+
+
 class AEFinalOutput(BaseModel):
     """AE final 的结构化输出协议。"""
 
@@ -79,6 +108,16 @@ class AEFinalOutput(BaseModel):
 def validate_reviewer_output(value: dict[str, Any], *, context: ErrorContext | None = None) -> dict[str, Any]:
     """校验 reviewer 输出，不改变原始 dict，方便后续继续保留 raw_result。"""
     return _validate_output(ReviewerOutput, value, context=context)
+
+
+def validate_ae_decision_output(value: dict[str, Any], *, context: ErrorContext | None = None) -> dict[str, Any]:
+    """校验 AE decision 输出，确保裁决节点不会写报告字段。"""
+    return _validate_output(AEDecisionOutput, value, context=context)
+
+
+def validate_ae_report_output(value: dict[str, Any], *, context: ErrorContext | None = None) -> dict[str, Any]:
+    """校验 AE report 输出，确保报告节点不会重新裁决。"""
+    return _validate_output(AEReportOutput, value, context=context)
 
 
 def validate_ae_final_output(value: dict[str, Any], *, context: ErrorContext | None = None) -> dict[str, Any]:
