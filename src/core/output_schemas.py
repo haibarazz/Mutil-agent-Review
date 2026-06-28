@@ -47,6 +47,19 @@ class ReviewerOutput(BaseModel):
         return self
 
 
+class SingleReviewerOutput(ReviewerOutput):
+    """单 Agent 审稿可以给审稿决定，但不能代替入口节点判断文件是否合法。"""
+
+    final_decision: FinalDecision
+
+    @field_validator("final_decision", mode="before")
+    @classmethod
+    def reject_non_review_decisions(cls, value: Any) -> Any:
+        if str(value) in {FinalDecision.DESK_REJECT.value, FinalDecision.INVALID_SUBMISSION.value}:
+            raise ValueError("single_reviewer must not return DESK_REJECT or INVALID_SUBMISSION")
+        return value
+
+
 class RevisionRoadmapOutput(BaseModel):
     """AE final 里的返修路线图。"""
 
@@ -70,8 +83,8 @@ class AEDecisionOutput(BaseModel):
     @field_validator("final_decision", mode="before")
     @classmethod
     def reject_desk_reject_for_ae_decision(cls, value: Any) -> Any:
-        if str(value) == FinalDecision.DESK_REJECT.value:
-            raise ValueError("ae_decision must not return DESK_REJECT")
+        if str(value) in {FinalDecision.DESK_REJECT.value, FinalDecision.INVALID_SUBMISSION.value}:
+            raise ValueError("ae_decision must not return DESK_REJECT or INVALID_SUBMISSION")
         return value
 
 
@@ -100,14 +113,19 @@ class AEFinalOutput(BaseModel):
     @field_validator("final_decision", mode="before")
     @classmethod
     def reject_desk_reject_for_ae_final(cls, value: Any) -> Any:
-        if str(value) == FinalDecision.DESK_REJECT.value:
-            raise ValueError("ae_final must not return DESK_REJECT")
+        if str(value) in {FinalDecision.DESK_REJECT.value, FinalDecision.INVALID_SUBMISSION.value}:
+            raise ValueError("ae_final must not return DESK_REJECT or INVALID_SUBMISSION")
         return value
 
 
 def validate_reviewer_output(value: dict[str, Any], *, context: ErrorContext | None = None) -> dict[str, Any]:
     """校验 reviewer 输出，不改变原始 dict，方便后续继续保留 raw_result。"""
     return _validate_output(ReviewerOutput, value, context=context)
+
+
+def validate_single_reviewer_output(value: dict[str, Any], *, context: ErrorContext | None = None) -> dict[str, Any]:
+    """校验单 Agent 审稿输出，避免模型把入口文件类型判断混进审稿决定。"""
+    return _validate_output(SingleReviewerOutput, value, context=context)
 
 
 def validate_ae_decision_output(value: dict[str, Any], *, context: ErrorContext | None = None) -> dict[str, Any]:

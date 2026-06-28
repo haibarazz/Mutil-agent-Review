@@ -158,6 +158,17 @@ class OutputSchemaTests(unittest.TestCase):
         self.assertIn("final_decision", error["message"])
         self.assertIn("decision_letter", error["message"])
 
+    def test_ae_decision_and_ae_final_reject_invalid_submission_decision(self) -> None:
+        ae_decision = _valid_ae_decision_output()
+        ae_decision["final_decision"] = "INVALID_SUBMISSION"
+        ae_final = _valid_ae_final_output()
+        ae_final["final_decision"] = "INVALID_SUBMISSION"
+
+        with self.assertRaises(ModelOutputValidationError):
+            validate_ae_decision_output(ae_decision, context=ErrorContext(prompt_name="ae_decision"))
+        with self.assertRaises(ModelOutputValidationError):
+            validate_ae_final_output(ae_final, context=ErrorContext(prompt_name="ae_final"))
+
     def test_valid_ae_report_output_passes(self) -> None:
         payload = _valid_ae_report_output()
 

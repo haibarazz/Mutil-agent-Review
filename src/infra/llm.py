@@ -290,6 +290,7 @@ class MockLLMClient:
             "rating": 5,
             "rating_justification": "The framework path works, but provider-backed review quality is not yet validated.",
             "recommendation": "MAJOR_REVISION",
+            "final_decision": "MAJOR_REVISION",
             "evidence_citations": ["framework bootstrap", "final_report.md renderer path"],
             "strategic_advice": {
                 "priority_fixes": ["Validate every reviewer node with provider-backed structured outputs."],

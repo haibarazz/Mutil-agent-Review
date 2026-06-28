@@ -5,10 +5,10 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from src.core.errors import ConfigurationError, ErrorContext
+from src.core.errors import ConfigurationError, ErrorContext, ModelOutputValidationError
 from src.services.review_service import ReviewSubmissionError
 from src.services.review_service import ReviewWorkflow, build_workflow
-from src.core.models import OutputLanguage, ParsedPaper, ReviewMode, ReviewRequest, VenueCollection, VenueDomain
+from src.core.models import FinalDecision, OutputLanguage, ParsedPaper, ReviewMode, ReviewRequest, VenueCollection, VenueDomain
 from src.graphs.nodes.final_artifact_render_node import final_artifact_render_node
 from src.graphs.runtime import get_review_nodes
 from src.infra.llm_diagnostics import record_llm_event, record_model_output_error
@@ -127,6 +127,129 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(["single_reviewer"], [report.reviewer_key for report in run.reviewer_reports])
         self.assertTrue((Path(run.artifact_dir) / "final_report.md").exists())
         self.assertTrue((Path(run.artifact_dir) / "single_reviewer.json").exists())
+
+    def test_non_paper_markdown_routes_to_invalid_submission(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            paper = Path(tmp) / "recipe.md"
+            paper.write_text(
+                "# 周末番茄牛肉面\n\n"
+                "今天的计划是先炒番茄，再加入牛肉和面条。"
+                "配料包括番茄、牛肉、葱姜蒜和盐。"
+                "这是一份家庭菜谱，不包含摘要、方法、实验或参考文献。",
+                encoding="utf-8",
+            )
+            workflow = build_workflow()
+            run = workflow.run(
+                ReviewRequest(
+                    paper_path=str(paper),
+                    review_mode=ReviewMode.SINGLE_AGENT_REVIEW,
+                    venue_domain=VenueDomain.CS,
+                    venue_collection=VenueCollection.CCFA,
+                    venue_code="AAAI",
+                )
+            )
+
+        self.assertEqual("INVALID_SUBMISSION", run.final_decision.value)
+        self.assertIn("content_check", run.stage_outputs)
+        self.assertIn("invalid_file", run.stage_outputs)
+        self.assertIn("final_artifact_render", run.stage_outputs)
+        self.assertNotIn("journal_req_collector", run.stage_outputs)
+        self.assertNotIn("field_analysis", run.stage_outputs)
+        self.assertNotIn("single_reviewer", run.stage_outputs)
+        self.assertEqual([], run.reviewer_reports)
+        final_report = Path(run.artifact_dir) / "final_report.md"
+        report_text = final_report.read_text(encoding="utf-8")
+        self.assertIn("上传内容不是学术论文", report_text)
+        self.assertNotIn("MAJOR_REVISION", report_text)
+        self.assertNotIn("DESK_REJECT", report_text)
+
+    def test_non_paper_tex_routes_to_invalid_submission(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            paper = Path(tmp) / "diary.tex"
+            paper.write_text(
+                "\\section{今天的心情}\n"
+                "今天去咖啡店写日记，记录天气、早餐和旅行计划。"
+                "这不是论文手稿，也没有摘要、研究问题、实验或参考文献。",
+                encoding="utf-8",
+            )
+            run = build_workflow().run(
+                ReviewRequest(
+                    paper_path=str(paper),
+                    review_mode=ReviewMode.SINGLE_AGENT_REVIEW,
+                    venue_domain=VenueDomain.CS,
+                    venue_collection=VenueCollection.CCFA,
+                    venue_code="AAAI",
+                )
+            )
+
+        self.assertEqual(FinalDecision.INVALID_SUBMISSION, run.final_decision)
+        self.assertIn("content_check", run.stage_outputs)
+        self.assertIn("invalid_file", run.stage_outputs)
+        self.assertNotIn("single_reviewer", run.stage_outputs)
+
+    def test_non_paper_pdf_parse_result_routes_to_invalid_submission(self) -> None:
+        class FakePDFParser:
+            def parse(self, path):
+                return ParsedPaper(
+                    source_path=str(path),
+                    title="旅行攻略",
+                    abstract="",
+                    full_text=(
+                        "旅行攻略\n\n"
+                        "第一天安排酒店入住和晚餐，第二天安排景点参观。"
+                        "这是一份行程安排和旅游攻略，不是学术论文。"
+                    ),
+                    sections=[],
+                    pages=[],
+                )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paper = Path(tmp) / "travel.pdf"
+            paper.write_bytes(b"%PDF-1.4 fake pdf placeholder")
+            nodes = get_review_nodes()
+            original_parser = nodes.parser
+            nodes.parser = FakePDFParser()
+            try:
+                run = build_workflow().run(
+                    ReviewRequest(
+                        paper_path=str(paper),
+                        review_mode=ReviewMode.SINGLE_AGENT_REVIEW,
+                        venue_domain=VenueDomain.CS,
+                        venue_collection=VenueCollection.CCFA,
+                        venue_code="AAAI",
+                    )
+                )
+            finally:
+                nodes.parser = original_parser
+
+        self.assertEqual(FinalDecision.INVALID_SUBMISSION, run.final_decision)
+        self.assertIn("content_check", run.stage_outputs)
+        self.assertIn("invalid_file", run.stage_outputs)
+        self.assertNotIn("single_reviewer", run.stage_outputs)
+
+    def test_content_check_rejects_non_boolean_is_paper_output(self) -> None:
+        class BadContentCheckLLM:
+            def complete_json(self, **kwargs):
+                return {"is_paper": "true", "reason": "字符串 true 不是布尔值。"}
+
+            def complete_text(self, **kwargs):
+                return ""
+
+        nodes = get_review_nodes()
+        original_llm = nodes.llm
+        nodes.llm = BadContentCheckLLM()
+        try:
+            with self.assertRaises(ModelOutputValidationError):
+                nodes.content_check(
+                    ParsedPaper(
+                        source_path="paper.md",
+                        title="Paper",
+                        abstract="Abstract",
+                        full_text="Title\n\nAbstract\nThis paper studies a machine learning method.\n\n1 Introduction\nContent.",
+                    )
+                )
+        finally:
+            nodes.llm = original_llm
 
     def test_rejects_mismatched_venue_selection_before_graph(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

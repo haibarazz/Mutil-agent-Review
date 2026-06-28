@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
+from src.core.errors import ErrorContext, ModelOutputValidationError
 from src.core.models import ParsedPaper, ReviewComment, ReviewerReport, VenueProfile
 from src.core.models import FinalDecision, ReviewFinding
 from src.core.output_schemas import (
@@ -10,6 +12,7 @@ from src.core.output_schemas import (
     validate_ae_final_output,
     validate_ae_report_output,
     validate_reviewer_output,
+    validate_single_reviewer_output,
 )
 from src.core.prompts import PromptRepository
 from src.ports import DocumentParser, JsonValidator, LLMClient, SearchClient
@@ -37,18 +40,84 @@ class ReviewNodes:
 
     def content_check(self, paper: ParsedPaper, *, output_language: str = "zh") -> dict[str, Any]:
         """内容审查：判断解析出来的文本是否像一篇学术论文。"""
+        non_paper_reason = self._obvious_non_paper_reason(paper.full_text, output_language=output_language)
+        if non_paper_reason:
+            return {
+                "intent": "NOT_PAPER",
+                "intent_detail": non_paper_reason,
+                "raw_result": {"is_paper": False, "reason": non_paper_reason, "source": "deterministic_precheck"},
+            }
+
         result = self._complete_json(
             "content_check",
             {"content_preview": paper.full_text[:2000]},
             output_language=output_language,
         )
-        is_paper = bool(result.get("is_paper", True))
+        is_paper = result.get("is_paper")
+        if not isinstance(is_paper, bool):
+            raise ModelOutputValidationError(
+                "content_check output field `is_paper` must be a boolean.",
+                context=ErrorContext(
+                    prompt_name="content_check",
+                    details={
+                        "invalid_field": "is_paper",
+                        "actual_type": type(is_paper).__name__,
+                        "actual_value": str(is_paper),
+                    },
+                ),
+            )
         reason = str(result.get("reason", ""))
         return {
             "intent": "VALID_PAPER" if is_paper else "NOT_PAPER",
             "intent_detail": reason,
             "raw_result": result,
         }
+
+    def _obvious_non_paper_reason(self, text: str, *, output_language: str = "zh") -> str:
+        """只拦截非常明显的非论文；边界样本仍交给 LLM 判断，避免误杀正常论文。"""
+        normalized = " ".join(str(text or "").split())
+        if not normalized:
+            return "上传内容为空，无法识别为论文。" if output_language != "en" else "The uploaded content is empty."
+
+        lower = normalized.lower()
+        has_academic_structure = bool(
+            re.search(
+                r"(?im)^\s*(?:#+\s*)?(?:abstract|introduction|methods?|experiments?|conclusion|references|摘要|引言|方法|实验|结论|参考文献)\b",
+                text,
+            )
+        )
+        junk_markers = [
+            "菜谱",
+            "配料",
+            "食材",
+            "做法",
+            "番茄",
+            "牛肉",
+            "面条",
+            "日记",
+            "心情",
+            "旅游攻略",
+            "行程安排",
+            "合同",
+            "甲方",
+            "乙方",
+        ]
+        junk_marker_count = sum(1 for marker in junk_markers if marker in lower)
+        if not has_academic_structure and junk_marker_count >= 2:
+            return (
+                "上传内容更像菜谱、日记、合同或其他普通文档，不是学术论文。"
+                if output_language != "en"
+                else "The uploaded content looks like a recipe, diary, contract, or general document rather than an academic manuscript."
+            )
+
+        if not has_academic_structure and len(normalized) < 120:
+            return (
+                "上传内容过短，且没有摘要、引言、方法、实验或参考文献等论文特征。"
+                if output_language != "en"
+                else "The uploaded content is too short and lacks manuscript markers such as abstract, introduction, methods, experiments, or references."
+            )
+
+        return ""
 
     def field_analyst(
         self,
@@ -357,7 +426,9 @@ class ReviewNodes:
         )
 
     def _validator_for_prompt(self, prompt_name: str) -> JsonValidator | None:
-        if prompt_name in {"reviewer1", "reviewer2", "reviewer3", "devils_advocate", "single_reviewer"}:
+        if prompt_name == "single_reviewer":
+            return validate_single_reviewer_output
+        if prompt_name in {"reviewer1", "reviewer2", "reviewer3", "devils_advocate"}:
             return validate_reviewer_output
         if prompt_name == "ae_decision":
             return validate_ae_decision_output

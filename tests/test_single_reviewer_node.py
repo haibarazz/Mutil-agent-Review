@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from src.core.errors import ModelOutputValidationError
 from src.core.models import ParsedPaper, VenueProfile
 from src.graphs.nodes.single_reviewer_node import single_reviewer_node
 from src.graphs.runtime import get_review_nodes
@@ -46,6 +47,53 @@ class SingleReviewerNodeTests(unittest.TestCase):
         self.assertGreaterEqual(len(report.major_comments), 3)
         self.assertGreaterEqual(len(report.minor_comments), 2)
         self.assertIn("single_reviewer", result["stage_outputs"])
+
+    def test_single_reviewer_cannot_return_invalid_submission_decision(self) -> None:
+        class BadSingleReviewerLLM:
+            def complete_json(self, **kwargs):
+                comment = {
+                    "title": "Comment",
+                    "comment": "问题说明",
+                    "evidence": "Section 1",
+                    "severity": "major",
+                    "suggested_fix": "补充实验。",
+                }
+                payload = {
+                    "summary": "论文摘要。",
+                    "strengths": ["优点一", "优点二"],
+                    "major_comments": [comment, comment, comment],
+                    "minor_comments": [comment, comment],
+                    "questions_for_authors": ["问题一？", "问题二？"],
+                    "scores": {"rating": 6},
+                    "final_decision": "INVALID_SUBMISSION",
+                    "decision_letter": "不应该由 single_reviewer 判定非论文。",
+                }
+                validator = kwargs.get("validator")
+                if validator:
+                    payload = validator(payload)
+                return payload
+
+            def complete_text(self, **kwargs):
+                return ""
+
+        nodes = get_review_nodes()
+        original_llm = nodes.llm
+        nodes.llm = BadSingleReviewerLLM()
+        try:
+            with self.assertRaises(ModelOutputValidationError):
+                nodes.single_reviewer(
+                    paper=ParsedPaper(
+                        source_path="paper.md",
+                        title="Paper",
+                        abstract="Abstract",
+                        full_text="Abstract\nA test paper.\n\n1 Introduction\nContent.",
+                    ),
+                    journal_requirements="AAAI requirements",
+                    venue_profile=None,
+                    field_info={},
+                )
+        finally:
+            nodes.llm = original_llm
 
 
 if __name__ == "__main__":

@@ -23,6 +23,13 @@ class ReviewArtifactRenderer:
         decision = self._decision_value(final_decision)
         title = self._paper_title(parsed_paper)
         language = self._normalize_language(output_language)
+        if decision == FinalDecision.INVALID_SUBMISSION.value:
+            return self._render_invalid_submission_report(
+                title=title,
+                decision_letter=decision_letter,
+                stage_outputs=stage_outputs,
+                language=language,
+            )
         if decision == FinalDecision.DESK_REJECT.value:
             return self._render_desk_reject_report(
                 title=title,
@@ -41,6 +48,38 @@ class ReviewArtifactRenderer:
             stage_outputs=stage_outputs,
             language=language,
         )
+
+    def _render_invalid_submission_report(
+        self,
+        *,
+        title: str,
+        decision_letter: str,
+        stage_outputs: dict[str, Any],
+        language: str,
+    ) -> str:
+        labels = self._labels(language)
+        invalid_output = dict(stage_outputs.get("invalid_file") or {})
+        message = decision_letter or str(invalid_output.get("message") or "").strip()
+        if not message:
+            message = labels["invalid_submission_default"]
+
+        lines = [
+            f"# {labels['invalid_submission_report']}: {title}",
+            "",
+            f"{labels['final_decision']}: **{FinalDecision.INVALID_SUBMISSION.value}**",
+            "",
+            f"## {labels['submission_status']}",
+            "",
+            message,
+            "",
+            f"## {labels['next_steps']}",
+            "",
+            f"- {labels['invalid_step_upload_manuscript']}",
+            f"- {labels['invalid_step_check_structure']}",
+            f"- {labels['invalid_step_retry']}",
+            "",
+        ]
+        return self._join(lines)
 
     def _render_review_report(
         self,
@@ -533,6 +572,13 @@ class ReviewArtifactRenderer:
                 "desk_reject_reasons": "Desk Reject Reasons",
                 "main_concerns": "Main Concerns",
                 "revision_advice": "Revision Advice",
+                "invalid_submission_report": "Invalid Submission Report",
+                "submission_status": "Submission Status",
+                "next_steps": "Next Steps",
+                "invalid_submission_default": "The uploaded content is not an academic manuscript.",
+                "invalid_step_upload_manuscript": "Upload an academic manuscript instead of a general document.",
+                "invalid_step_check_structure": "Check that the file contains manuscript structure such as title, abstract, introduction, methods, experiments, conclusion, or references.",
+                "invalid_step_retry": "Retry the review after replacing the input file.",
                 "editorial_screening_stopped": "The manuscript was stopped during editorial screening.",
                 "desk_rejected": "The manuscript was desk rejected.",
                 "desk_advice_venue": "Re-check the target venue fit before resubmission.",
@@ -606,6 +652,13 @@ class ReviewArtifactRenderer:
             "desk_reject_reasons": "Desk Reject Reasons",
             "main_concerns": "Main Concerns",
             "revision_advice": "Revision Advice",
+            "invalid_submission_report": "上传内容不是学术论文",
+            "submission_status": "提交状态",
+            "next_steps": "下一步",
+            "invalid_submission_default": "上传内容不是学术论文。",
+            "invalid_step_upload_manuscript": "请上传学术论文或论文手稿，而不是普通文档。",
+            "invalid_step_check_structure": "请确认文件包含标题、摘要、引言、方法、实验、结论或参考文献等论文结构。",
+            "invalid_step_retry": "替换输入文件后重新发起审稿。",
             "editorial_screening_stopped": "稿件在编辑初筛阶段被停止。",
             "desk_rejected": "稿件已被桌拒。",
             "desk_advice_venue": "重新检查目标 venue 是否匹配。",
