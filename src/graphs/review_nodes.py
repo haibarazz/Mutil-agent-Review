@@ -5,7 +5,12 @@ from typing import Any
 
 from src.core.models import ParsedPaper, ReviewComment, ReviewerReport, VenueProfile
 from src.core.models import FinalDecision, ReviewFinding
-from src.core.output_schemas import validate_ae_final_output, validate_reviewer_output
+from src.core.output_schemas import (
+    validate_ae_decision_output,
+    validate_ae_final_output,
+    validate_ae_report_output,
+    validate_reviewer_output,
+)
 from src.core.prompts import PromptRepository
 from src.ports import DocumentParser, JsonValidator, LLMClient, SearchClient
 
@@ -263,6 +268,72 @@ class ReviewNodes:
             "raw_result": result,
         }
 
+    def ae_decision(
+        self,
+        *,
+        paper: ParsedPaper,
+        journal_requirements: str,
+        venue_profile: VenueProfile | None,
+        ae_result: dict[str, Any],
+        reviewer_reports: list[ReviewerReport],
+        output_language: str = "zh",
+    ) -> dict[str, Any]:
+        """AE 裁决：只冻结最终决定和仲裁理由，不生成作者报告。"""
+        result = self._complete_json(
+            "ae_decision",
+            self._ae_review_context(
+                paper=paper,
+                journal_requirements=journal_requirements,
+                venue_profile=venue_profile,
+                ae_result=ae_result,
+                reviewer_reports=reviewer_reports,
+            ),
+            output_language=output_language,
+        )
+        return {
+            "final_decision": self._final_decision(result.get("final_decision", "MAJOR_REVISION")).value,
+            "decision_rationale": result.get("decision_rationale", ""),
+            "consensus_disagreement": result.get("consensus_disagreement", {}),
+            "critical_issues": result.get("critical_issues", []),
+            "raw_result": result,
+        }
+
+    def ae_report(
+        self,
+        *,
+        paper: ParsedPaper,
+        journal_requirements: str,
+        venue_profile: VenueProfile | None,
+        ae_result: dict[str, Any],
+        ae_decision: dict[str, Any],
+        reviewer_reports: list[ReviewerReport],
+        output_language: str = "zh",
+    ) -> dict[str, Any]:
+        """AE 报告：基于已冻结裁决整理给作者的决定信和返修路线。"""
+        context = self._ae_review_context(
+            paper=paper,
+            journal_requirements=journal_requirements,
+            venue_profile=venue_profile,
+            ae_result=ae_result,
+            reviewer_reports=reviewer_reports,
+        )
+        context.update(
+            {
+                "final_decision": ae_decision.get("final_decision", "MAJOR_REVISION"),
+                "decision_rationale": ae_decision.get("decision_rationale", ""),
+                "consensus_disagreement": self._json(ae_decision.get("consensus_disagreement", {})),
+                "critical_issues": self._json(ae_decision.get("critical_issues", [])),
+            }
+        )
+        result = self._complete_json("ae_report", context, output_language=output_language)
+        return {
+            "decision_letter": result.get("decision_letter", ""),
+            "revision_checklist": result.get("revision_checklist", []),
+            "rr_traceability_matrix": result.get("rr_traceability_matrix", []),
+            "revision_roadmap": result.get("revision_roadmap", {}),
+            "raw_result": result,
+        }
+
     def _complete_json(
         self,
         prompt_name: str,
@@ -288,9 +359,36 @@ class ReviewNodes:
     def _validator_for_prompt(self, prompt_name: str) -> JsonValidator | None:
         if prompt_name in {"reviewer1", "reviewer2", "reviewer3", "devils_advocate", "single_reviewer"}:
             return validate_reviewer_output
+        if prompt_name == "ae_decision":
+            return validate_ae_decision_output
+        if prompt_name == "ae_report":
+            return validate_ae_report_output
         if prompt_name == "ae_final":
             return validate_ae_final_output
         return None
+
+    def _ae_review_context(
+        self,
+        *,
+        paper: ParsedPaper,
+        journal_requirements: str,
+        venue_profile: VenueProfile | None,
+        ae_result: dict[str, Any],
+        reviewer_reports: list[ReviewerReport],
+    ) -> dict[str, Any]:
+        """整理 AE 终审相关 prompt 共享上下文，避免两个新节点各自拼字段。"""
+        report_by_key = {report.reviewer_key: report.raw_result for report in reviewer_reports}
+        return {
+            "paper_content": paper.full_text,
+            "journal_requirements": journal_requirements,
+            "venue_profile_text": venue_profile.profile_text if venue_profile else "未提供目标期刊画像。",
+            "ae_assessment": ae_result.get("ae_assessment", ""),
+            "review1_result": self._json(report_by_key.get("reviewer1", {})),
+            "review2_result": self._json(report_by_key.get("reviewer2", {})),
+            "review3_result": self._json(report_by_key.get("reviewer3", {})),
+            "da_result": self._json(report_by_key.get("devils_advocate", {})),
+            "paper_rubric": self._json(ae_result.get("paper_rubric", {})),
+        }
 
     def _normalize_language(self, value: str) -> str:
         return "en" if str(value).lower() in {"en", "english"} else "zh"

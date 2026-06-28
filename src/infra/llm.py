@@ -121,6 +121,73 @@ class MockLLMClient:
                 "desk_reject_types": [],
                 "rejection_letter": "",
             }, validator, context=ErrorContext(prompt_name=prompt_name or role, model=model or "mock"))
+        if role == "ae_decision":
+            return _apply_validator({
+                "final_decision": "MAJOR_REVISION",
+                "decision_rationale": (
+                    "Mock AE 裁决认为稿件存在可修复但影响结论可信度的核心问题，因此不能直接接收；"
+                    "同时问题主要集中在证据补强和实验验证，尚未达到必须拒稿的程度。"
+                ),
+                "consensus_disagreement": {
+                    "consensus": [
+                        {
+                            "issue": "真实 provider 输出仍需验证",
+                            "reviewers": ["reviewer1", "reviewer2", "devils_advocate"],
+                            "summary": "多位审稿角色都指出当前结果更像框架验证，不足以证明审稿质量。",
+                            "impact_on_decision": "该共识支持大修而非小修或接收。",
+                        }
+                    ],
+                    "disagreement": [],
+                    "da_critical_flagged": False,
+                    "da_critical_impact": "无",
+                },
+                "critical_issues": [
+                    {
+                        "issue_id": "AE-01",
+                        "source": "reviewer1",
+                        "severity": "major",
+                        "summary": "需要用真实 LLM 响应验证每个节点的结构化输出。",
+                        "evidence": "mock reviewer reports",
+                        "salvageability": "可修",
+                        "impact_on_decision": "该问题使最终决定停留在 MAJOR_REVISION。",
+                    }
+                ],
+            }, validator, context=ErrorContext(prompt_name=prompt_name or role, model=model or "mock"))
+        if role == "ae_report":
+            decision_letter = "Mock AE report: authors must complete a major revision before the paper can be reconsidered."
+            checklist = [
+                "Validate every node with provider-backed LLM responses.",
+                "Strengthen evidence links for reviewer comments.",
+                "Render major comments, minor comments, author questions, and scores consistently.",
+            ]
+            if wants_zh:
+                decision_letter = "尊敬的作者：当前稿件需要大修后再考虑接收。请优先验证真实模型输出，补强审稿意见与论文证据之间的对应关系，并确保最终报告能够稳定呈现主要意见、次要意见、作者问题和评分。"
+                checklist = [
+                    "使用真实 LLM 响应验证每一个审稿节点的结构化输出。",
+                    "补强审稿意见和论文章节证据之间的对应关系。",
+                    "稳定展示 Major Comments、Minor Comments、Questions for Authors 和 Scores。",
+                ]
+            return _apply_validator({
+                "decision_letter": decision_letter,
+                "revision_checklist": checklist,
+                "rr_traceability_matrix": [
+                    {
+                        "issue_id": "AE-01",
+                        "source": "AE",
+                        "category": "方法论",
+                        "description": "需要验证真实 provider 输出是否稳定满足结构化审稿协议。",
+                        "salvageability": "可修",
+                        "author_must_address": True,
+                        "verification_criteria": "完整流程在真实 LLM 下生成合法 JSON 和可读最终报告。",
+                    }
+                ],
+                "revision_roadmap": {
+                    "must_fix": ["Validate every node with a provider-backed LLM response."],
+                    "should_fix": ["Add artifact checks for evidence grounding."],
+                    "nice_to_fix": ["Improve frontend progress streaming."],
+                    "rebuttal_strategy": "先证明结构化输出稳定，再讨论审稿质量。",
+                },
+            }, validator, context=ErrorContext(prompt_name=prompt_name or role, model=model or "mock"))
         if role == "ae_final":
             decision_letter = "Mock AE final decision: major revision required before acceptance."
             checklist = ["Rerun with provider-backed LLM responses."]
@@ -239,6 +306,10 @@ class MockLLMClient:
             return "field_analyst"
         if "最终编辑决定" in text or "ae终审" in lowered or "r&r" in lowered:
             return "ae_final"
+        if "唯一任务是做出最终编辑决定" in text:
+            return "ae_decision"
+        if "写作助手" in text or "已经冻结的决定" in text:
+            return "ae_report"
         if "associate editor" in lowered or "责任编辑" in text:
             return "ae_check"
         if "field" in lowered or "领域" in text:

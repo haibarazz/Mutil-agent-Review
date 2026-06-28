@@ -178,6 +178,24 @@ nodes:
       - deepseek-ai/DeepSeek-V4-Pro
       - zai-org/GLM-5.2
 
+  ae_decision:
+    primary_model: xopqwen36v35b
+    max_attempts: 3
+    fallback_models:
+      - deepseek-v4-flash
+      - deepseek-v4-pro
+      - deepseek-ai/DeepSeek-V4-Pro
+      - zai-org/GLM-5.2
+
+  ae_report:
+    primary_model: xopqwen36v35b
+    max_attempts: 3
+    fallback_models:
+      - deepseek-v4-flash
+      - deepseek-v4-pro
+      - deepseek-ai/DeepSeek-V4-Pro
+      - zai-org/GLM-5.2
+
 prompts:
   content_check:
     temperature: 0
@@ -225,6 +243,16 @@ prompts:
     max_tokens: 6000
 
   ae_final:
+    temperature: 0.3
+    top_p: 0.95
+    max_tokens: 5000
+
+  ae_decision:
+    temperature: 0.2
+    top_p: 0.95
+    max_tokens: 2500
+
+  ae_report:
     temperature: 0.3
     top_p: 0.95
     max_tokens: 5000

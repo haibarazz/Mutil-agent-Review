@@ -74,7 +74,9 @@ _FULL_REVIEW_PROGRESS_PATH = [
     "reviewer2",
     "reviewer3",
     "devils_advocate",
-    "ae_final",
+    "ae_decision",
+    "ae_report",
+    "ae_finalize",
     "final_artifact_render",
 ]
 _QUICK_REVIEW_PROGRESS_PATH = [
@@ -87,7 +89,9 @@ _QUICK_REVIEW_PROGRESS_PATH = [
     "reviewer2",
     "reviewer3",
     "devils_advocate",
-    "ae_final",
+    "ae_decision",
+    "ae_report",
+    "ae_finalize",
     "final_artifact_render",
 ]
 _SINGLE_AGENT_REVIEW_PROGRESS_PATH = [
