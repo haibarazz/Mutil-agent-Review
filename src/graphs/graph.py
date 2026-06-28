@@ -4,7 +4,10 @@ from langgraph.graph import END, StateGraph
 
 from src.graphs.node_diagnostics import with_node_diagnostics
 from src.graphs.nodes.ae_check_node import ae_check_node
+from src.graphs.nodes.ae_decision_node import ae_decision_node
 from src.graphs.nodes.ae_final_node import ae_final_node
+from src.graphs.nodes.ae_finalize_node import ae_finalize_node
+from src.graphs.nodes.ae_report_node import ae_report_node
 from src.graphs.nodes.content_check_node import content_check_node
 from src.graphs.nodes.desk_reject_output_node import desk_reject_output_node
 from src.graphs.nodes.devils_advocate_node import devils_advocate_node
@@ -88,8 +91,14 @@ add_diagnosed_node("reviewer3", reviewer3_node)
 add_diagnosed_node("devils_advocate", devils_advocate_node)
 # single_reviewer: 单 Agent 综合审稿人，直接输出一份完整审稿意见和最终建议。
 add_diagnosed_node("single_reviewer", single_reviewer_node)
-# ae_final: AE 终审，综合所有审稿意见生成最终决定和返修路线。
+# ae_final: 旧版 AE 终审节点，暂时保留但不接入主流程，方便回滚和对照。
 add_diagnosed_node("ae_final", ae_final_node)
+# ae_decision: AE 裁决，只负责冻结最终决定和仲裁理由。
+add_diagnosed_node("ae_decision", ae_decision_node)
+# ae_report: AE 报告，只负责基于冻结裁决写决定信和返修路线。
+add_diagnosed_node("ae_report", ae_report_node)
+# ae_finalize: 非 LLM 合并节点，把 AE 裁决和报告合成最终 ae_final 结构。
+add_diagnosed_node("ae_finalize", ae_finalize_node)
 # desk_reject_output: SE/AE 桌拒时生成正式拒稿说明和改进建议。
 add_diagnosed_node("desk_reject_output", desk_reject_output_node)
 # final_artifact_render: 统一把完整审稿、桌拒、无效输入等路径渲染成最终报告。
@@ -144,10 +153,12 @@ builder.add_edge("review_dispatch", "reviewer1")
 builder.add_edge("review_dispatch", "reviewer2")
 builder.add_edge("review_dispatch", "reviewer3")
 builder.add_edge("review_dispatch", "devils_advocate")
-# 四路审稿全部完成后汇总到 AE 终审。
-builder.add_edge(["reviewer1", "reviewer2", "reviewer3", "devils_advocate"], "ae_final")
+# 四路审稿全部完成后先做 AE 裁决，再写作者报告，最后确定性合并。
+builder.add_edge(["reviewer1", "reviewer2", "reviewer3", "devils_advocate"], "ae_decision")
+builder.add_edge("ae_decision", "ae_report")
+builder.add_edge("ae_report", "ae_finalize")
 # 所有终止路径最后都进入统一渲染节点，service 只负责把内容写成文件。
-builder.add_edge("ae_final", "final_artifact_render")
+builder.add_edge("ae_finalize", "final_artifact_render")
 builder.add_edge("single_reviewer", "final_artifact_render")
 builder.add_edge("final_artifact_render", END)
 

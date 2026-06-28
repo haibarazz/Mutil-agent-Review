@@ -11,7 +11,7 @@ from src.services.review_service import ReviewWorkflow, build_workflow
 from src.core.models import OutputLanguage, ParsedPaper, ReviewMode, ReviewRequest, VenueCollection, VenueDomain
 from src.graphs.nodes.final_artifact_render_node import final_artifact_render_node
 from src.graphs.runtime import get_review_nodes
-from src.infra.llm_diagnostics import record_llm_event
+from src.infra.llm_diagnostics import record_llm_event, record_model_output_error
 from src.infra.storage import LocalArtifactStore
 from src.core.venue_catalog import VenueCatalogRepository
 
@@ -67,8 +67,14 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn("content_check", run.stage_outputs)
         self.assertIn("se_check", run.stage_outputs)
         self.assertIn("ae_check", run.stage_outputs)
-        self.assertIn("ae_final", run.stage_outputs)
+        self.assertIn("ae_decision", run.stage_outputs)
+        self.assertIn("ae_report", run.stage_outputs)
+        self.assertIn("ae_finalize", run.stage_outputs)
+        self.assertNotIn("ae_final", run.stage_outputs)
         self.assertIn("final_artifact_render", run.stage_outputs)
+        self.assertTrue((Path(run.artifact_dir) / "ae_decision.json").exists())
+        self.assertTrue((Path(run.artifact_dir) / "ae_report.json").exists())
+        self.assertTrue((Path(run.artifact_dir) / "ae_finalize.json").exists())
         final_report = Path(run.artifact_dir) / "final_report.md"
         report_text = final_report.read_text(encoding="utf-8")
         self.assertIn("Review Report", report_text)
@@ -286,6 +292,32 @@ class WorkflowTests(unittest.TestCase):
                         "elapsed_ms": 42,
                     },
                 )
+                invalid_output_fields = record_model_output_error(
+                    "validation_error",
+                    {
+                        "kind": "json",
+                        "prompt": "reviewer2",
+                        "provider": "fake_provider",
+                        "model": "fake_model",
+                        "attempt": 1,
+                        "error_type": "ModelOutputValidationError",
+                        "error_message": "strengths.0: Input should be a valid string",
+                    },
+                    {"invalid_output": {"summary": "bad", "strengths": [{"text": "not a string"}]}},
+                )
+                record_llm_event(
+                    "error",
+                    {
+                        "kind": "json",
+                        "prompt": "reviewer2",
+                        "provider": "fake_provider",
+                        "model": "fake_model",
+                        "attempt": 1,
+                        "error_type": "ModelOutputValidationError",
+                        "error_message": "strengths.0: Input should be a valid string",
+                        **invalid_output_fields,
+                    },
+                )
                 return {
                     "parsed_paper": ParsedPaper(
                         source_path=initial_state["paper_path"],
@@ -322,10 +354,17 @@ class WorkflowTests(unittest.TestCase):
 
             diagnostics = json.loads((Path(run.artifact_dir) / "diagnostics.json").read_text(encoding="utf-8"))
             llm_lines = (Path(run.artifact_dir) / "llm_calls.jsonl").read_text(encoding="utf-8").splitlines()
+            validation_error = json.loads(
+                (Path(run.artifact_dir) / "model_output_errors" / "validation_error_001.json").read_text(
+                    encoding="utf-8"
+                )
+            )
 
         self.assertEqual("succeeded", diagnostics["status"])
-        self.assertEqual({"event_count": 2, "call_count": 1, "error_count": 0, "fallback_count": 0}, diagnostics["llm_calls"])
-        self.assertEqual(2, len(llm_lines))
+        self.assertEqual({"event_count": 3, "call_count": 1, "error_count": 1, "fallback_count": 0}, diagnostics["llm_calls"])
+        self.assertEqual(1, diagnostics["model_output_errors"]["count"])
+        self.assertEqual(["model_output_errors/validation_error_001.json"], diagnostics["model_output_errors"]["files"])
+        self.assertEqual(3, len(llm_lines))
         first_event = json.loads(llm_lines[0])
         self.assertEqual("start", first_event["event"])
         self.assertEqual("reviewer1", first_event["prompt"])
@@ -334,6 +373,10 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(34, first_event["user_chars"])
         self.assertNotIn("unsafe_prompt", first_event)
         self.assertNotIn("must not be written", "\n".join(llm_lines))
+        error_event = json.loads(llm_lines[2])
+        self.assertEqual("validation_error", error_event["model_output_error_kind"])
+        self.assertEqual("model_output_errors/validation_error_001.json", error_event["model_output_error_ref"])
+        self.assertEqual({"summary": "bad", "strengths": [{"text": "not a string"}]}, validation_error["invalid_output"])
 
     def test_workflow_writes_llm_call_events_when_graph_fails(self) -> None:
         class FailingLLMEventGraph:

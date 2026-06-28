@@ -5,6 +5,7 @@ from typing import Any
 
 from src.core.errors import ModelOutputParseError
 from src.infra.llm import OpenAICompatibleLLMClient, extract_json_object
+from src.infra.llm_diagnostics import llm_diagnostics_run, start_llm_call_collection, stop_llm_call_collection
 
 
 class RepairingClient(OpenAICompatibleLLMClient):
@@ -55,3 +56,25 @@ class LLMJsonRepairTest(unittest.TestCase):
 
         with self.assertRaises(ModelOutputParseError):
             client.complete_json(system_prompt="system", user_prompt="user")
+
+    def test_complete_json_records_parse_error_raw_output(self) -> None:
+        client = BrokenRepairClient()
+
+        start_llm_call_collection("parse-error")
+        try:
+            with llm_diagnostics_run("parse-error"):
+                with self.assertRaises(ModelOutputParseError) as caught:
+                    client.complete_json(system_prompt="system", user_prompt="user", prompt_name="reviewer2")
+        finally:
+            collector = stop_llm_call_collection("parse-error")
+
+        self.assertEqual(1, len(collector.model_output_errors))
+        output_error = collector.model_output_errors[0]
+        self.assertEqual("parse_error", output_error["kind"])
+        self.assertEqual("model_output_errors/parse_error_001.json", output_error["path"])
+        self.assertEqual("not json at all", output_error["payload"]["raw_output"])
+        self.assertEqual("not json at all", output_error["payload"]["repair_output"])
+        self.assertEqual(
+            "model_output_errors/parse_error_001.json",
+            caught.exception.context.details["model_output_error_ref"],
+        )

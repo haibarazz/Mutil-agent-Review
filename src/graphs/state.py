@@ -53,6 +53,8 @@ class GlobalState(TypedDict, total=False):
     reviewer_reports: Annotated[list[Any], add]
 
     # ========== 最终输出 ==========
+    ae_decision_result: dict[str, Any] # AE 最终裁决节点输出，只包含决定和仲裁信息
+    ae_report: dict[str, Any]      # AE 报告节点输出，只包含决定信、修改清单和路线图
     ae_final: dict[str, Any]       # AE 最终综合报告
     final_decision: str            # 最终决定: ACCEPT / MINOR_REVISION / MAJOR_REVISION / REJECT / DESK_REJECT
     decision_letter: str           # 最终决定的正式通知信

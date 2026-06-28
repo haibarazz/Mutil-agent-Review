@@ -8,9 +8,16 @@ from typing import Any, Callable
 
 import yaml
 
-from src.core.errors import ConfigurationError, ErrorContext, ProviderFatalError, ProviderTransientError, ReviewAgentError
+from src.core.errors import (
+    ConfigurationError,
+    ErrorContext,
+    ModelOutputValidationError,
+    ProviderFatalError,
+    ProviderTransientError,
+    ReviewAgentError,
+)
 from src.infra.llm import OpenAICompatibleLLMClient
-from src.infra.llm_diagnostics import record_llm_event
+from src.infra.llm_diagnostics import record_llm_event, record_model_output_error
 from src.ports import JsonValidator, LLMClient
 
 
@@ -249,6 +256,7 @@ class LLMRouter:
             for attempt in range(1, call_route.max_attempts + 1):
                 started = time.perf_counter()
                 provider_model_id = ""
+                raw_json_result: dict[str, Any] | None = None
                 try:
                     client, provider_model_id = self._resolve(route.model_id)
                     _log_llm_event(
@@ -279,7 +287,7 @@ class LLMRouter:
                             max_tokens=max_tokens,
                         )
                     else:
-                        result = client.complete_json(
+                        raw_json_result = client.complete_json(
                             system_prompt=system_prompt,
                             user_prompt=user_prompt,
                             prompt_name=prompt_name,
@@ -289,7 +297,7 @@ class LLMRouter:
                             max_tokens=max_tokens,
                         )
                         result = self._apply_validator(
-                            result,
+                            raw_json_result,
                             validator,
                             route=route,
                             attempt=attempt,
@@ -318,6 +326,25 @@ class LLMRouter:
                         route_index=route_index,
                         route_count=len(routes),
                     )
+                    model_output_error_fields = _model_output_error_fields(error)
+                    if isinstance(error, ModelOutputValidationError) and raw_json_result is not None:
+                        model_output_error_fields = record_model_output_error(
+                            "validation_error",
+                            {
+                                "kind": kind,
+                                "prompt": _display_prompt(prompt_name),
+                                "requested_model": requested_model_id,
+                                "model": route.model_id,
+                                "provider": route.provider,
+                                "provider_model": provider_model_id,
+                                "attempt": attempt,
+                                "max_attempts": call_route.max_attempts,
+                                "fallback": str(is_fallback).lower(),
+                                "error_type": error.__class__.__name__,
+                                "error_message": error.message,
+                            },
+                            {"invalid_output": raw_json_result},
+                        )
                     _log_llm_event(
                         "error",
                         kind=kind,
@@ -334,6 +361,7 @@ class LLMRouter:
                         error_message=error.message,
                         retryable=str(error.retryable).lower(),
                         next_action=next_action,
+                        **model_output_error_fields,
                     )
                     # 配置错误不是供应商波动，继续 retry/fallback 只会掩盖真实问题。
                     if isinstance(error, ConfigurationError):
@@ -597,7 +625,7 @@ def _log_llm_event(event: str, **fields: object) -> None:
     if not _llm_verbose_enabled():
         return
     # 终端 verbose 只打印结构化摘要；错误消息可能很长，完整短摘要留给 llm_calls.jsonl。
-    hidden_verbose_fields = {"error_message"}
+    hidden_verbose_fields = {"error_message", "model_output_preview"}
     parts = [
         f"{key}={_format_log_value(value)}"
         for key, value in fields.items()
@@ -609,6 +637,12 @@ def _log_llm_event(event: str, **fields: object) -> None:
 def _format_log_value(value: object) -> str:
     text = str(value).replace("\n", " ").strip()
     return text if text else "-"
+
+
+def _model_output_error_fields(error: ReviewAgentError) -> dict[str, str]:
+    details = error.context.details or {}
+    keys = ("model_output_error_kind", "model_output_error_ref", "model_output_preview")
+    return {key: str(details[key]) for key in keys if details.get(key) not in ("", None)}
 
 
 def _display_prompt(prompt_name: str | None) -> str:
