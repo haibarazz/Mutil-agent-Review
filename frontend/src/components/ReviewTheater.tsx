@@ -1,7 +1,7 @@
 import type { ReviewJobResponse, ReviewNodeEvent } from "../api/client";
 
 type PixelAgentId = "parser" | "checker" | "collector" | "analyst" | "se" | "ae" | "r1" | "r2" | "r3" | "da" | "solo" | "final";
-type AgentId = PixelAgentId | "parse_fail" | "invalid" | "dispatch" | "desk_reject" | "renderer";
+type AgentId = Exclude<PixelAgentId, "final"> | "parse_fail" | "invalid" | "dispatch" | "desk_reject" | "solo" | "ae_decision" | "ae_report" | "ae_finalize" | "renderer";
 type TheaterStatus = "pending" | "running" | "done" | "failed" | "skipped";
 type VerdictKind = "ok" | "warn" | "err" | "info";
 
@@ -37,7 +37,9 @@ const agents: TheaterAgent[] = [
   { id: "r3", pixelId: "r3", node: "reviewer3", name: "Reviewer · R3", zh: "跨学科审稿人", role: "Cross-disc", read: "清晰度与可迁移性", ponder: ["clear?", "assumption?", "transfer?"], mark: "✓", verdict: "表达评审", verdictSub: "clarity", kind: "ok" },
   { id: "da", pixelId: "da", node: "devils_advocate", name: "Devil's Advocate", zh: "反方辩护人", role: "Adversarial", read: "寻找最强反对意见", ponder: ["weakness?", "counter?", "failure?"], mark: "✕", verdict: "反例检查", verdictSub: "edge cases", kind: "err" },
   { id: "solo", pixelId: "solo", node: "single_reviewer", name: "Solo Reviewer", zh: "综合审稿人", role: "Contribution · method · venue fit", read: "综合评估贡献、方法、实验与 venue fit", ponder: ["contribution?", "method?", "experiment?", "venue fit?", "revision risk?", "decision?"], mark: "★", verdict: "综合评审", verdictSub: "single reviewer", kind: "warn" },
-  { id: "final", pixelId: "final", node: "ae_final", name: "AE · Final", zh: "终审编辑", role: "Decision letter", read: "汇总 4 份报告 · 权衡分歧", ponder: ["MAJOR?", "MINOR?", "ACCEPT?", "REJECT?"], mark: "±", verdict: "终审决定", verdictSub: "decision letter", kind: "warn" },
+  { id: "ae_decision", pixelId: "final", node: "ae_decision", name: "AE · Decision", zh: "终审裁决", role: "Final decision", read: "汇总外审意见 · 冻结最终决定", ponder: ["ACCEPT?", "MINOR?", "MAJOR?", "REJECT?"], mark: "±", verdict: "裁决完成", verdictSub: "decision frozen", kind: "warn" },
+  { id: "ae_report", pixelId: "final", node: "ae_report", name: "AE · Report", zh: "决定信撰写", role: "Author letter", read: "整理决定信 · 修改清单 · 返修路线", ponder: ["letter", "checklist", "roadmap"], mark: "◆", verdict: "决定信完成", verdictSub: "author report", kind: "info" },
+  { id: "ae_finalize", pixelId: "final", node: "ae_finalize", name: "AE · Finalize", zh: "终审合并", role: "Merge · validate", read: "合并裁决与报告 · 校验最终结构", ponder: ["merge", "validate", "freeze"], mark: "✓", verdict: "终审结构完成", verdictSub: "final payload", kind: "ok" },
   { id: "renderer", pixelId: "final", node: "final_artifact_render", name: "Report Renderer", zh: "报告生成器", role: "Artifacts", read: "渲染 Markdown 报告、诊断信息与下载产物", ponder: ["markdown", "artifacts", "ready?"], mark: "◆", verdict: "产物完成", verdictSub: "artifacts ready", kind: "ok" },
 ];
 
@@ -328,7 +330,7 @@ function nodeLabel(node: string): string {
 
 function isSkipped(agent: TheaterAgent, job: ReviewJobResponse): boolean {
   if (job.request.review_mode === "SINGLE_AGENT_REVIEW") {
-    return ["se", "ae", "dispatch", "r1", "r2", "r3", "da", "final", "desk_reject"].includes(agent.id);
+    return ["se", "ae", "dispatch", "r1", "r2", "r3", "da", "ae_decision", "ae_report", "ae_finalize", "desk_reject"].includes(agent.id);
   }
   if (job.request.review_mode === "QUICK_REVIEW") {
     return agent.id === "se" || agent.id === "ae" || agent.id === "solo";
