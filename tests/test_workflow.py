@@ -75,11 +75,19 @@ class WorkflowTests(unittest.TestCase):
         self.assertTrue((Path(run.artifact_dir) / "ae_decision.json").exists())
         self.assertTrue((Path(run.artifact_dir) / "ae_report.json").exists())
         self.assertTrue((Path(run.artifact_dir) / "ae_finalize.json").exists())
+        self.assertTrue((Path(run.artifact_dir) / "author_report.md").exists())
+        self.assertTrue((Path(run.artifact_dir) / "internal_audit.md").exists())
         final_report = Path(run.artifact_dir) / "final_report.md"
         report_text = final_report.read_text(encoding="utf-8")
         self.assertIn("审稿报告", report_text)
         self.assertNotIn("Decision Letter", report_text)
         self.assertNotIn("Dear Author(s)", report_text)
+        self.assertNotIn("AE 终审综合意见", report_text)
+        self.assertNotIn("R&R 可追踪矩阵", report_text)
+        internal_audit = (Path(run.artifact_dir) / "internal_audit.md").read_text(encoding="utf-8")
+        self.assertIn("内部审计报告", internal_audit)
+        self.assertIn("AE 终审综合意见", internal_audit)
+        self.assertIn("R&R 可追踪矩阵", internal_audit)
         self.assertLess(report_text.index("### 审稿人 1：方法与实验"), report_text.index("### 反方辩护人"))
         self.assertIn("##### 主要意见", report_text)
         self.assertIn("##### 次要意见", report_text)
@@ -304,6 +312,8 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn("venue_fit", report)
         self.assertIn("Venue fit is weak.", report)
         self.assertIn("final_report.md", result["rendered_artifacts"])
+        self.assertIn("author_report.md", result["rendered_artifacts"])
+        self.assertIn("internal_audit.md", result["rendered_artifacts"])
 
     def test_final_artifact_render_supports_english_output(self) -> None:
         result = final_artifact_render_node(

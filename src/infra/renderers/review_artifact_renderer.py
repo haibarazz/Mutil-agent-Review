@@ -49,6 +49,44 @@ class ReviewArtifactRenderer:
             language=language,
         )
 
+    def render_internal_audit_markdown(
+        self,
+        *,
+        parsed_paper: ParsedPaper | None,
+        venue_profile: VenueProfile | None,
+        final_decision: str | FinalDecision,
+        reviewer_reports: list[ReviewerReport],
+        ae_final: dict[str, Any],
+        stage_outputs: dict[str, Any],
+        output_language: str = "zh",
+    ) -> str:
+        """渲染系统内部审计报告；不面向作者，保留节点和可追踪矩阵信息。"""
+        decision = self._decision_value(final_decision)
+        title = self._paper_title(parsed_paper)
+        language = self._normalize_language(output_language)
+        labels = self._labels(language)
+        lines = [
+            f"# {labels['internal_audit_report']}: {title}",
+            "",
+            f"{labels['final_decision']}: **{decision}**",
+        ]
+        lines.extend(self._venue_lines(venue_profile, language))
+        lines.append("")
+
+        if ae_final:
+            lines.extend(self._ae_final_lines(ae_final, language))
+
+        if reviewer_reports:
+            lines.extend([f"## {labels['reviewer_artifact_index']}", ""])
+            for report in self._sorted_reports(reviewer_reports):
+                lines.append(f"- {self._reviewer_title(report, language)}: {report.recommendation} / {report.rating}")
+            lines.append("")
+
+        if stage_outputs:
+            lines.extend(self._stage_snapshot_lines(stage_outputs, language))
+
+        return self._join(lines)
+
     def _render_invalid_submission_report(
         self,
         *,
@@ -106,7 +144,7 @@ class ReviewArtifactRenderer:
             lines.extend([f"## {labels['decision_letter']}", "", self._decision_letter(decision_letter, language), ""])
 
         if ae_final:
-            lines.extend(self._ae_final_lines(ae_final, language))
+            lines.extend(self._author_revision_lines(ae_final, language))
 
         if reviewer_reports:
             lines.extend([f"## {labels['reviewer_reports']}", ""])
@@ -198,6 +236,22 @@ class ReviewArtifactRenderer:
         traceability = self._as_items(ae_final.get("rr_traceability_matrix"))
         if traceability:
             lines.extend(self._traceability_lines(traceability, language))
+
+        roadmap = self._dict(ae_final.get("revision_roadmap"))
+        if roadmap:
+            lines.extend(self._roadmap_lines(roadmap, language))
+
+        return lines
+
+    def _author_revision_lines(self, ae_final: dict[str, Any], language: str) -> list[str]:
+        labels = self._labels(language)
+        lines: list[str] = []
+
+        revision_checklist = self._as_list(ae_final.get("revision_checklist"))
+        if revision_checklist:
+            lines.extend([f"## {labels['revision_checklist']}", ""])
+            lines.extend(f"- {item}" for item in revision_checklist)
+            lines.append("")
 
         roadmap = self._dict(ae_final.get("revision_roadmap"))
         if roadmap:
@@ -570,6 +624,8 @@ class ReviewArtifactRenderer:
                 "missing_strengths": "No strengths were returned.",
                 "missing_advice": "No strategic advice was returned.",
                 "stage_outputs": "Stage Outputs",
+                "internal_audit_report": "Internal Audit Report",
+                "reviewer_artifact_index": "Reviewer Artifact Index",
                 "editorial_assessment": "Editorial Assessment",
                 "desk_reject_reasons": "Desk Reject Reasons",
                 "main_concerns": "Main Concerns",
@@ -651,6 +707,8 @@ class ReviewArtifactRenderer:
             "missing_strengths": "未返回优点。",
             "missing_advice": "未返回策略性建议。",
             "stage_outputs": "阶段输出",
+            "internal_audit_report": "内部审计报告",
+            "reviewer_artifact_index": "审稿产物索引",
             "editorial_assessment": "编辑初筛意见",
             "desk_reject_reasons": "桌拒原因",
             "main_concerns": "主要问题",
