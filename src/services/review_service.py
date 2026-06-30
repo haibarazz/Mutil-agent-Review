@@ -188,6 +188,7 @@ class ReviewWorkflow:
             "fallback_events": list(result.get("fallback_events", [])),
             "llm_calls": llm_calls.summary(),
             "llm_attempts": llm_calls.attempt_summary(),
+            "llm_retry_timeline": llm_calls.retry_timeline(),
             "usage": self._compact_usage_summary(usage_summary),
             "model_output_errors": self._model_output_error_summary(llm_calls),
         }
@@ -207,6 +208,7 @@ class ReviewWorkflow:
             "fallback_events": [],
             "llm_calls": llm_calls.summary(),
             "llm_attempts": llm_calls.attempt_summary(),
+            "llm_retry_timeline": llm_calls.retry_timeline(),
             "usage": self._compact_usage_summary(usage_summary),
             "model_output_errors": self._model_output_error_summary(llm_calls),
         }

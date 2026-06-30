@@ -56,6 +56,20 @@ class LLMCallCollector:
             summary["last_fallback"] = _compact_event(fallback_events[-1])
         return summary
 
+    def retry_timeline(self, *, limit: int = 100) -> dict[str, Any]:
+        """把 retry/fallback 串成稳定摘要，方便批量分析不用反解析 jsonl。"""
+        retry_events = [
+            _compact_event(event)
+            for event in self.events
+            if event.get("event") in {"error", "fallback"}
+        ]
+        truncated_count = max(0, len(retry_events) - limit)
+        return {
+            "event_count": len(retry_events),
+            "truncated_count": truncated_count,
+            "events": retry_events[-limit:],
+        }
+
     def to_jsonl(self) -> str:
         return "\n".join(json.dumps(to_jsonable(event), ensure_ascii=False) for event in self.events)
 
