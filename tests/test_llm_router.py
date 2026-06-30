@@ -26,11 +26,14 @@ class _RecordingClient:
         provider: str,
         failures: dict[tuple[str, str], list[Exception]] | None = None,
         json_result: dict[str, Any] | None = None,
+        usage: dict[str, int] | None = None,
     ) -> None:
         self.calls = calls
         self.provider = provider
         self.failures = failures or {}
         self.json_result = {"ok": True} if json_result is None else json_result
+        self.usage = usage or {}
+        self.last_usage: dict[str, int] = {}
 
     def complete_text(
         self,
@@ -52,6 +55,7 @@ class _RecordingClient:
             "max_tokens": max_tokens,
         })
         self._maybe_fail("text", str(model))
+        self.last_usage = dict(self.usage)
         return "ok"
 
     def complete_json(
@@ -74,6 +78,7 @@ class _RecordingClient:
             "max_tokens": max_tokens,
         })
         self._maybe_fail("json", str(model))
+        self.last_usage = dict(self.usage)
         return dict(self.json_result)
 
     def _maybe_fail(self, kind: str, model: str) -> None:
@@ -205,6 +210,48 @@ nodes:
             ["provider-primary", "provider-primary", "provider-fallback"],
             [call["model"] for call in calls],
         )
+
+    def test_done_event_records_safe_token_usage(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "llm.yaml"
+            config_path.write_text(
+                """
+default_model: prompt-default
+providers:
+  fake_provider:
+    type: openai_compatible
+    base_url_env: TEST_FAKE_BASE_URL
+    api_key_env: TEST_FAKE_API_KEY
+models:
+  prompt-default:
+    provider: fake_provider
+    provider_model_id: provider-default
+""",
+                encoding="utf-8",
+            )
+            os.environ["TEST_FAKE_BASE_URL"] = "https://example.test/v1"
+            os.environ["TEST_FAKE_API_KEY"] = "secret"
+            config = load_llm_router_config(config_path)
+            calls: list[dict[str, Any]] = []
+            router = LLMRouter(
+                config=config,
+                timeout_sec=3,
+                client_factory=lambda provider, base_url, api_key, timeout: _RecordingClient(
+                    calls,
+                    provider.name,
+                    usage={"input_tokens": 123, "output_tokens": 45, "total_tokens": 168},
+                ),
+            )
+            start_llm_call_collection("run-usage")
+            with llm_diagnostics_run("run-usage"):
+                router.complete_json(system_prompt="system", user_prompt="user", prompt_name="reviewer1")
+            collector = stop_llm_call_collection("run-usage")
+
+        done_events = [event for event in collector.events if event.get("event") == "done"]
+        self.assertEqual(1, len(done_events))
+        self.assertEqual(123, done_events[0]["input_tokens"])
+        self.assertEqual(45, done_events[0]["output_tokens"])
+        self.assertEqual(168, done_events[0]["total_tokens"])
 
     def test_unknown_node_fallback_model_fails_during_config_load(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -195,12 +195,77 @@ export type ReviewLLMCallEvent = {
   retryable?: string | null;
   system_chars?: number | null;
   user_chars?: number | null;
+  input_tokens?: number | null;
+  output_tokens?: number | null;
+  total_tokens?: number | null;
+  estimated_cost_usd?: number | null;
+  pricing_source?: string | null;
 };
 
 export type ReviewLLMCallsResponse = {
   job_id: string;
   count: number;
   events: ReviewLLMCallEvent[];
+};
+
+export type ReviewUsageGroup = {
+  calls?: number;
+  input_tokens?: number;
+  output_tokens?: number;
+  total_tokens?: number;
+  estimated_cost_usd?: number;
+  elapsed_ms?: number;
+  provider?: string;
+  models?: string[];
+};
+
+export type ReviewUsageCall = {
+  prompt?: string;
+  provider?: string;
+  model?: string;
+  provider_model?: string;
+  attempt?: number | null;
+  elapsed_ms?: number;
+  input_tokens?: number;
+  output_tokens?: number;
+  total_tokens?: number;
+  estimated_cost_usd?: number;
+  pricing_source?: string;
+};
+
+export type ReviewUsageSummary = {
+  schema: string;
+  run_id: string;
+  currency: string;
+  known_usage: boolean;
+  total_calls: number;
+  successful_calls: number;
+  error_calls: number;
+  fallback_count: number;
+  retry_error_count: number;
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+  estimated_cost_usd: number;
+  elapsed_ms: number;
+  by_provider: Record<string, ReviewUsageGroup>;
+  by_model: Record<string, ReviewUsageGroup>;
+  by_prompt: Record<string, ReviewUsageGroup>;
+  slowest_call?: {
+    prompt?: string;
+    provider?: string;
+    model?: string;
+    provider_model?: string;
+    elapsed_ms?: number;
+  };
+  missing_usage_count: number;
+  missing_pricing_count: number;
+  calls: ReviewUsageCall[];
+};
+
+export type ReviewUsageSummaryResponse = {
+  job_id: string;
+  usage: ReviewUsageSummary;
 };
 
 export type ReviewJobsResponse = {
@@ -509,6 +574,10 @@ export async function getReviewJobDiagnostics(jobId: string): Promise<ReviewDiag
 
 export async function getReviewJobLLMCalls(jobId: string): Promise<ReviewLLMCallsResponse> {
   return fetchJson(`/api/jobs/${encodeURIComponent(jobId)}/llm-calls`);
+}
+
+export async function getReviewJobUsage(jobId: string): Promise<ReviewUsageSummaryResponse> {
+  return fetchJson(`/api/jobs/${encodeURIComponent(jobId)}/usage`);
 }
 
 export function getReviewArtifactDownloadUrl(jobId: string, artifactName: string): string {

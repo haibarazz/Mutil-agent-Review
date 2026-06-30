@@ -23,6 +23,7 @@ class MockLLMClient:
         top_p: float | None = None,
         max_tokens: int | None = None,
     ) -> str:
+        self.last_usage = {}
         return (
             "## 通用学术期刊审稿标准\n\n"
             "1. 原创性与问题重要性需要清晰。\n"
@@ -43,6 +44,7 @@ class MockLLMClient:
         max_tokens: int | None = None,
         validator: JsonValidator | None = None,
     ) -> dict[str, Any]:
+        self.last_usage = {}
         role = prompt_name or self._infer_role(system_prompt) or self._infer_role(user_prompt) or "reviewer"
         wants_zh = "自然语言字段必须使用中文" in user_prompt
         if role == "se_check":
@@ -336,6 +338,7 @@ class OpenAICompatibleLLMClient:
         self.api_key = api_key
         self.default_model = default_model
         self.timeout_sec = timeout_sec
+        self.last_usage: dict[str, int] = {}
 
     def complete_text(
         self,
@@ -357,6 +360,7 @@ class OpenAICompatibleLLMClient:
             max_tokens=max_tokens,
             json_mode=False,
         )
+        self.last_usage = _usage_from_payload(payload.get("usage"))
         return str(payload["choices"][0]["message"]["content"]).strip()
 
     def complete_json(
@@ -380,6 +384,7 @@ class OpenAICompatibleLLMClient:
             max_tokens=max_tokens,
             json_mode=True,
         )
+        self.last_usage = _usage_from_payload(payload.get("usage"))
         content = payload["choices"][0]["message"]["content"]
         try:
             parsed = extract_json_object(content)
@@ -460,6 +465,7 @@ class OpenAICompatibleLLMClient:
             max_tokens=max_tokens,
             json_mode=True,
         )
+        self.last_usage = _combine_usage(self.last_usage, _usage_from_payload(repair_payload.get("usage")))
         repaired_content = repair_payload["choices"][0]["message"]["content"]
         try:
             return extract_json_object(repaired_content)
@@ -522,3 +528,46 @@ def _apply_validator(
     if validator is None:
         return value
     return validator(value, context=context)
+
+
+def _usage_from_payload(raw_usage: Any) -> dict[str, int]:
+    if not isinstance(raw_usage, dict):
+        return {}
+    input_tokens = _int_or_none(raw_usage.get("input_tokens"))
+    if input_tokens is None:
+        input_tokens = _int_or_none(raw_usage.get("prompt_tokens"))
+    output_tokens = _int_or_none(raw_usage.get("output_tokens"))
+    if output_tokens is None:
+        output_tokens = _int_or_none(raw_usage.get("completion_tokens"))
+    total_tokens = _int_or_none(raw_usage.get("total_tokens"))
+    usage: dict[str, int] = {}
+    if input_tokens is not None:
+        usage["input_tokens"] = input_tokens
+    if output_tokens is not None:
+        usage["output_tokens"] = output_tokens
+    if total_tokens is not None:
+        usage["total_tokens"] = total_tokens
+    if "total_tokens" not in usage and usage:
+        usage["total_tokens"] = usage.get("input_tokens", 0) + usage.get("output_tokens", 0)
+    return usage
+
+
+def _combine_usage(first: dict[str, int], second: dict[str, int]) -> dict[str, int]:
+    if not first:
+        return dict(second)
+    if not second:
+        return dict(first)
+    return {
+        "input_tokens": int(first.get("input_tokens", 0)) + int(second.get("input_tokens", 0)),
+        "output_tokens": int(first.get("output_tokens", 0)) + int(second.get("output_tokens", 0)),
+        "total_tokens": int(first.get("total_tokens", 0)) + int(second.get("total_tokens", 0)),
+    }
+
+
+def _int_or_none(value: Any) -> int | None:
+    if value in (None, ""):
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None

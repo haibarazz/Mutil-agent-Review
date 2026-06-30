@@ -144,6 +144,7 @@ class ApiTests(unittest.TestCase):
             "ReviewReportResponse",
             "ReviewDiagnosticsResponse",
             "ReviewLLMCallsResponse",
+            "ReviewUsageSummaryResponse",
             "LibraryResponse",
         ]:
             self.assertIn(schema_name, schemas)
@@ -168,6 +169,8 @@ class ApiTests(unittest.TestCase):
         self.assertEqual("#/components/schemas/ReviewDiagnosticsResponse", diagnostics_schema["$ref"])
         llm_calls_schema = body["paths"]["/api/jobs/{job_id}/llm-calls"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
         self.assertEqual("#/components/schemas/ReviewLLMCallsResponse", llm_calls_schema["$ref"])
+        usage_schema = body["paths"]["/api/jobs/{job_id}/usage"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+        self.assertEqual("#/components/schemas/ReviewUsageSummaryResponse", usage_schema["$ref"])
 
     def test_presets_are_saved_locally_and_listed(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -460,12 +463,14 @@ class ApiTests(unittest.TestCase):
                 report_response = client.get(f"/api/jobs/{job_id}/report")
                 diagnostics_response = client.get(f"/api/jobs/{job_id}/diagnostics")
                 llm_calls_response = client.get(f"/api/jobs/{job_id}/llm-calls")
+                usage_response = client.get(f"/api/jobs/{job_id}/usage")
                 download_response = client.get(f"/api/jobs/{job_id}/artifacts/final_report.md")
 
         self.assertEqual(200, artifacts_response.status_code, artifacts_response.text)
         artifacts = artifacts_response.json()
         artifact_names = {item["name"] for item in artifacts["artifacts"]}
         self.assertIn("final_report.md", artifact_names)
+        self.assertIn("usage_summary.json", artifact_names)
 
         self.assertEqual(200, report_response.status_code, report_response.text)
         report = report_response.json()
@@ -480,6 +485,12 @@ class ApiTests(unittest.TestCase):
 
         self.assertEqual(200, llm_calls_response.status_code, llm_calls_response.text)
         self.assertEqual(0, llm_calls_response.json()["count"])
+
+        self.assertEqual(200, usage_response.status_code, usage_response.text)
+        usage = usage_response.json()
+        self.assertEqual(job_id, usage["job_id"])
+        self.assertEqual("review_usage_summary_v1", usage["usage"]["schema"])
+        self.assertEqual(0, usage["usage"]["total_calls"])
 
         self.assertEqual(200, download_response.status_code, download_response.text)
         self.assertIn("attachment", download_response.headers["content-disposition"])
@@ -530,6 +541,7 @@ class ApiTests(unittest.TestCase):
                 report_response = client.get(f"/api/jobs/{job_id}/report")
                 diagnostics_response = client.get(f"/api/jobs/{job_id}/diagnostics")
                 llm_calls_response = client.get(f"/api/jobs/{job_id}/llm-calls")
+                usage_response = client.get(f"/api/jobs/{job_id}/usage")
                 library_response = client.get("/api/library")
 
         self.assertEqual(200, status_response.status_code, status_response.text)
@@ -543,6 +555,7 @@ class ApiTests(unittest.TestCase):
         artifact_names = {item["name"] for item in artifacts_response.json()["artifacts"]}
         self.assertIn("diagnostics.json", artifact_names)
         self.assertIn("llm_calls.jsonl", artifact_names)
+        self.assertIn("usage_summary.json", artifact_names)
         self.assertIn("partial_report.md", artifact_names)
 
         self.assertEqual(200, report_response.status_code, report_response.text)
@@ -565,6 +578,12 @@ class ApiTests(unittest.TestCase):
         self.assertEqual("error", llm_calls["events"][0]["event"])
         self.assertEqual("reviewer1", llm_calls["events"][0]["prompt"])
         self.assertEqual("ProviderTransientError", llm_calls["events"][0]["error_type"])
+
+        self.assertEqual(200, usage_response.status_code, usage_response.text)
+        usage = usage_response.json()
+        self.assertEqual(job_id, usage["job_id"])
+        self.assertEqual(1, usage["usage"]["error_calls"])
+        self.assertEqual(1, usage["usage"]["retry_error_count"])
 
         self.assertEqual(200, library_response.status_code, library_response.text)
         library_artifacts = library_response.json()["artifacts"]
@@ -985,6 +1004,14 @@ class ApiTests(unittest.TestCase):
             with patch.dict(os.environ, {"DATA_DIR": str(Path(tmp) / "data"), "LLM_PROVIDER": "mock"}):
                 client = TestClient(create_app())
                 response = client.get("/api/jobs/missing/diagnostics")
+
+        self.assertEqual(404, response.status_code)
+
+    def test_missing_job_usage_returns_404(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            with patch.dict(os.environ, {"DATA_DIR": str(Path(tmp) / "data"), "LLM_PROVIDER": "mock"}):
+                client = TestClient(create_app())
+                response = client.get("/api/jobs/missing/usage")
 
         self.assertEqual(404, response.status_code)
 

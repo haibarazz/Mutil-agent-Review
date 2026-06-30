@@ -312,6 +312,7 @@ class LLMRouter:
                         provider_model=provider_model_id,
                         attempt=attempt,
                         elapsed_ms=_elapsed_ms(started),
+                        **_usage_fields_from_client(client),
                     )
                     return result
                 except Exception as exc:
@@ -632,6 +633,26 @@ def _log_llm_event(event: str, **fields: object) -> None:
         if key not in hidden_verbose_fields and value not in ("", None)
     ]
     print(f"[llm-router:{event}] {' '.join(parts)}")
+
+
+def _usage_fields_from_client(client: LLMClient) -> dict[str, int]:
+    raw = getattr(client, "last_usage", None)
+    if not isinstance(raw, dict):
+        return {}
+    fields: dict[str, int] = {}
+    for source_key, target_key in (
+        ("input_tokens", "input_tokens"),
+        ("prompt_tokens", "input_tokens"),
+        ("output_tokens", "output_tokens"),
+        ("completion_tokens", "output_tokens"),
+        ("total_tokens", "total_tokens"),
+    ):
+        value = _optional_int(raw.get(source_key))
+        if value is not None:
+            fields[target_key] = value
+    if "total_tokens" not in fields and ("input_tokens" in fields or "output_tokens" in fields):
+        fields["total_tokens"] = fields.get("input_tokens", 0) + fields.get("output_tokens", 0)
+    return fields
 
 
 def _format_log_value(value: object) -> str:

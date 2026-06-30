@@ -1050,6 +1050,17 @@
             ],
             "title": "Error Type"
           },
+          "estimated_cost_usd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Cost Usd"
+          },
           "event": {
             "title": "Event",
             "type": "string"
@@ -1075,6 +1086,17 @@
               }
             ],
             "title": "From Model"
+          },
+          "input_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Tokens"
           },
           "kind": {
             "anyOf": [
@@ -1108,6 +1130,28 @@
               }
             ],
             "title": "Model"
+          },
+          "output_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Tokens"
+          },
+          "pricing_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pricing Source"
           },
           "prompt": {
             "anyOf": [
@@ -1201,6 +1245,17 @@
               }
             ],
             "title": "To Model"
+          },
+          "total_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Tokens"
           },
           "user_chars": {
             "anyOf": [
@@ -1585,6 +1640,24 @@
           "artifact_dir"
         ],
         "title": "ReviewRunResponse",
+        "type": "object"
+      },
+      "ReviewUsageSummaryResponse": {
+        "properties": {
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "usage": {
+            "additionalProperties": true,
+            "title": "Usage",
+            "type": "object"
+          }
+        },
+        "required": [
+          "job_id"
+        ],
+        "title": "ReviewUsageSummaryResponse",
         "type": "object"
       },
       "RunDeleteCreate": {
@@ -2300,6 +2373,45 @@
           }
         },
         "summary": "Retry Job"
+      }
+    },
+    "/api/jobs/{job_id}/usage": {
+      "get": {
+        "operationId": "get_job_usage_api_jobs__job_id__usage_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewUsageSummaryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Job Usage"
       }
     },
     "/api/library": {

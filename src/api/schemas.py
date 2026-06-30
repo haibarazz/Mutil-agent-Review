@@ -301,12 +301,22 @@ class ReviewLLMCallEventResponse(BaseModel):
     retryable: str | None = None
     system_chars: int | None = None
     user_chars: int | None = None
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    total_tokens: int | None = None
+    estimated_cost_usd: float | None = None
+    pricing_source: str | None = None
 
 
 class ReviewLLMCallsResponse(BaseModel):
     job_id: str
     count: int
     events: list[ReviewLLMCallEventResponse]
+
+
+class ReviewUsageSummaryResponse(BaseModel):
+    job_id: str
+    usage: dict[str, Any] = Field(default_factory=dict)
 
 
 class LibraryArtifactResponse(ReviewArtifactResponse):

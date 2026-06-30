@@ -11,6 +11,7 @@ from src.core.models import FinalDecision, OutputLanguage, ParsedPaper, ReviewRe
 from src.core.venue_catalog import VenueCatalogRepository
 from src.graphs.graph import main_graph
 from src.infra.llm_diagnostics import LLMCallCollector, llm_diagnostics_run, start_llm_call_collection, stop_llm_call_collection
+from src.infra.llm_usage import build_usage_summary, load_pricing_config
 from src.infra.settings import Settings, load_settings
 
 
@@ -70,7 +71,8 @@ class ReviewWorkflow:
         else:
             llm_calls = stop_llm_call_collection(run_id)
 
-        diagnostics = self._success_diagnostics(result, llm_calls)
+        usage_summary = self._usage_summary(run_id, llm_calls)
+        diagnostics = self._success_diagnostics(result, llm_calls, usage_summary)
         stage_outputs = dict(result.get("stage_outputs", {}))
         reviewer_reports = self._sort_reports(list(result.get("reviewer_reports", [])))
         parsed_paper = result.get("parsed_paper") or ParsedPaper(
@@ -98,6 +100,7 @@ class ReviewWorkflow:
             final_report_md=final_report_md,
             rendered_artifacts=rendered_artifacts,
             diagnostics=diagnostics,
+            usage_summary=usage_summary,
             llm_calls=llm_calls,
         )
 
@@ -128,12 +131,14 @@ class ReviewWorkflow:
         final_report_md: str,
         rendered_artifacts: dict[str, str],
         diagnostics: dict,
+        usage_summary: dict[str, Any],
         llm_calls: LLMCallCollector,
     ) -> None:
         self.store.write_json(run_id, "request.json", request)
         self.store.write_json(run_id, "parsed_paper.json", parsed_paper)
         self.store.write_json(run_id, "venue_profile.json", venue_profile)
         self.store.write_json(run_id, "diagnostics.json", diagnostics)
+        self.store.write_json(run_id, "usage_summary.json", usage_summary)
 
         artifact_names = {
             "doc_parse": "doc_parse.json",
@@ -175,7 +180,7 @@ class ReviewWorkflow:
         self._write_model_output_error_artifacts(run_id, llm_calls)
         self._write_llm_calls_artifact(run_id, llm_calls)
 
-    def _success_diagnostics(self, result: dict, llm_calls: LLMCallCollector) -> dict:
+    def _success_diagnostics(self, result: dict, llm_calls: LLMCallCollector, usage_summary: dict[str, Any]) -> dict:
         # diagnostics.json 放汇总；完整逐行事件写在 llm_calls.jsonl，避免主诊断文件膨胀。
         return {
             "status": "succeeded",
@@ -183,6 +188,7 @@ class ReviewWorkflow:
             "fallback_events": list(result.get("fallback_events", [])),
             "llm_calls": llm_calls.summary(),
             "llm_attempts": llm_calls.attempt_summary(),
+            "usage": self._compact_usage_summary(usage_summary),
             "model_output_errors": self._model_output_error_summary(llm_calls),
         }
 
@@ -194,16 +200,19 @@ class ReviewWorkflow:
         llm_calls: LLMCallCollector,
     ) -> None:
         error = self._attach_failure_run_context(run_id, error)
+        usage_summary = self._usage_summary(run_id, llm_calls)
         diagnostics = {
             "status": "failed",
             "errors": [error.to_dict()],
             "fallback_events": [],
             "llm_calls": llm_calls.summary(),
             "llm_attempts": llm_calls.attempt_summary(),
+            "usage": self._compact_usage_summary(usage_summary),
             "model_output_errors": self._model_output_error_summary(llm_calls),
         }
         self.store.write_json(run_id, "request.json", request)
         self.store.write_json(run_id, "diagnostics.json", diagnostics)
+        self.store.write_json(run_id, "usage_summary.json", usage_summary)
         self.store.write_text(run_id, "partial_report.md", self._render_partial_report(run_id, request, error))
         self._write_model_output_error_artifacts(run_id, llm_calls)
         self._write_llm_calls_artifact(run_id, llm_calls)
@@ -222,6 +231,35 @@ class ReviewWorkflow:
         if not llm_calls.events:
             return
         self.store.write_text(run_id, "llm_calls.jsonl", llm_calls.to_jsonl() + "\n")
+
+    def _usage_summary(self, run_id: str, llm_calls: LLMCallCollector) -> dict[str, Any]:
+        # 观测配置不能影响审稿主流程；价格缺失时仍记录 token 和缺失计数。
+        pricing_path = load_settings().project_root / "configs" / "llm_pricing.yaml"
+        try:
+            pricing = load_pricing_config(pricing_path)
+            summary = build_usage_summary(run_id, llm_calls.events, pricing=pricing)
+        except Exception as exc:
+            summary = build_usage_summary(run_id, llm_calls.events, pricing={"currency": "USD", "models": {}})
+            summary["pricing_error"] = f"{exc.__class__.__name__}: {exc}"
+        return summary
+
+    def _compact_usage_summary(self, usage_summary: dict[str, Any]) -> dict[str, Any]:
+        keys = (
+            "schema",
+            "known_usage",
+            "total_calls",
+            "successful_calls",
+            "error_calls",
+            "fallback_count",
+            "retry_error_count",
+            "input_tokens",
+            "output_tokens",
+            "total_tokens",
+            "estimated_cost_usd",
+            "missing_usage_count",
+            "missing_pricing_count",
+        )
+        return {key: usage_summary[key] for key in keys if key in usage_summary}
 
     def _attach_failure_run_context(self, run_id: str, error: ReviewAgentError) -> ReviewAgentError:
         # 失败 run 也会有本地产物目录；把目录挂到错误上下文，job 层才能继续暴露 partial_report。

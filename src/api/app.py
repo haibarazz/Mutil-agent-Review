@@ -35,6 +35,7 @@ from src.api.schemas import (
     ReviewPresetsResponse,
     ReviewReportResponse,
     ReviewRunResponse,
+    ReviewUsageSummaryResponse,
     RunDeleteCreate,
     RunDeleteResponse,
     VenueCatalogResponse,
@@ -463,6 +464,18 @@ def create_app():
         try:
             events = runner.read_llm_calls(job_id)
             return {"job_id": job_id, "count": len(events), "events": events}
+        except ReviewJobNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=f"job not found: {job_id}") from exc
+        except ReviewJobArtifactsUnavailableError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except ReviewJobArtifactNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=f"artifact not found: {exc}") from exc
+
+    @app.get("/api/jobs/{job_id}/usage", response_model=ReviewUsageSummaryResponse)
+    def get_job_usage(job_id: str) -> dict[str, object]:
+        runner = build_job_runner()
+        try:
+            return {"job_id": job_id, "usage": runner.read_usage_summary(job_id)}
         except ReviewJobNotFoundError as exc:
             raise HTTPException(status_code=404, detail=f"job not found: {job_id}") from exc
         except ReviewJobArtifactsUnavailableError as exc:
