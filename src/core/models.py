@@ -31,6 +31,7 @@ class FinalDecision(str, Enum):
     MAJOR_REVISION = "MAJOR_REVISION"
     REJECT = "REJECT"
     DESK_REJECT = "DESK_REJECT"
+    INVALID_SUBMISSION = "INVALID_SUBMISSION"
 
 
 class OutputLanguage(str, Enum):

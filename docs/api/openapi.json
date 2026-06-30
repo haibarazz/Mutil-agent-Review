@@ -204,7 +204,8 @@
           "MINOR_REVISION",
           "MAJOR_REVISION",
           "REJECT",
-          "DESK_REJECT"
+          "DESK_REJECT",
+          "INVALID_SUBMISSION"
         ],
         "title": "FinalDecision",
         "type": "string"
@@ -268,6 +269,36 @@
           "max_attempts"
         ],
         "title": "LLMModelConfigResponse",
+        "type": "object"
+      },
+      "LLMNodeConfigResponse": {
+        "properties": {
+          "fallback_models": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Fallback Models",
+            "type": "array"
+          },
+          "max_attempts": {
+            "title": "Max Attempts",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "primary_model": {
+            "title": "Primary Model",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "primary_model",
+          "max_attempts"
+        ],
+        "title": "LLMNodeConfigResponse",
         "type": "object"
       },
       "LLMPromptRouteResponse": {
@@ -371,6 +402,13 @@
               "$ref": "#/components/schemas/LLMModelConfigResponse"
             },
             "title": "Models",
+            "type": "array"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/LLMNodeConfigResponse"
+            },
+            "title": "Nodes",
             "type": "array"
           },
           "prompts": {
