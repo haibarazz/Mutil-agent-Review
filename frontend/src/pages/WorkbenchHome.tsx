@@ -168,7 +168,9 @@ const agents = [
       ["r3", "Reviewer 3", "跨学科读者", "Clarity · assumptions · transferability."],
       ["da", "Devil's Advocate", "反方辩护人", "Strongest objections and failure cases."],
       ["solo", "Solo Reviewer", "综合审稿人", "Contribution · method · venue fit · decision."],
-      ["final", "AE Final", "终审编辑", "Decision letter · roadmap · artifacts."],
+      ["aeDecision", "AE Decision", "终审裁决", "Final decision · rationale."],
+      ["aeReport", "AE Report", "决定信撰写", "Decision letter · revision roadmap."],
+      ["aeFinalize", "AE Finalize", "终审合并", "Merge · validate · freeze output."],
     ],
   },
   {
@@ -191,8 +193,10 @@ const agentNodeMap: Record<string, string[]> = {
   r3: ["reviewer3"],
   da: ["devils_advocate"],
   solo: ["single_reviewer"],
-  renderer: ["final_artifact_render"],
-  final: ["ae_final", "final_artifact_render", "desk_reject_output", "parse_fail_output", "invalid_file"],
+  aeDecision: ["ae_decision"],
+  aeReport: ["ae_report"],
+  aeFinalize: ["ae_finalize"],
+  renderer: ["final_artifact_render", "desk_reject_output", "parse_fail_output", "invalid_file"],
 };
 
 export function WorkbenchHome() {
@@ -405,7 +409,7 @@ export function WorkbenchHome() {
   const queueStatusLabel = jobSummaryLabel(jobsSummary);
   const railAgentLabel = railModeLabel(displayReviewMode);
   const railReviewerCount = displayReviewMode === "SINGLE_AGENT_REVIEW" ? 1 : 4;
-  const railEditorCount = displayReviewMode === "FULL_REVIEW" ? 3 : displayReviewMode === "SINGLE_AGENT_REVIEW" ? 0 : 1;
+  const railEditorCount = displayReviewMode === "FULL_REVIEW" ? 5 : displayReviewMode === "SINGLE_AGENT_REVIEW" ? 0 : 3;
   const visibleAgentGroups = agents
     .map((group) => ({
       ...group,
@@ -2855,8 +2859,8 @@ function shortReviewMode(mode: ReviewMode | string): string {
 
 function reviewModeAgentCount(mode: ReviewMode): string {
   if (mode === "SINGLE_AGENT_REVIEW") return "1 reviewer";
-  if (mode === "QUICK_REVIEW") return "7 agents";
-  return "11 agents";
+  if (mode === "QUICK_REVIEW") return "11 agents";
+  return "13 agents";
 }
 
 function reviewModeEstimate(mode: ReviewMode): string {
@@ -2867,13 +2871,13 @@ function reviewModeEstimate(mode: ReviewMode): string {
 
 function railModeLabel(mode: ReviewMode | string): string {
   if (mode === "SINGLE_AGENT_REVIEW") return "SINGLE AGENT · SOLO REVIEWER";
-  if (mode === "QUICK_REVIEW") return "QUICK REVIEW · 7 AGENTS";
-  return "FULL REVIEW · 11 AGENTS";
+  if (mode === "QUICK_REVIEW") return "QUICK REVIEW · 11 AGENTS";
+  return "FULL REVIEW · 13 AGENTS";
 }
 
 function isRosterAgentHidden(agentId: string, mode: ReviewMode | string): boolean {
   if (mode === "SINGLE_AGENT_REVIEW") {
-    return ["se", "ae", "r1", "r2", "r3", "da", "final"].includes(agentId);
+    return ["se", "ae", "r1", "r2", "r3", "da", "aeDecision", "aeReport", "aeFinalize"].includes(agentId);
   }
   return ["solo", "renderer"].includes(agentId);
 }
@@ -2896,7 +2900,9 @@ function nodeDisplayName(nodeName: string): string {
     reviewer3: "Reviewer 3",
     devils_advocate: "Devil's Advocate",
     single_reviewer: "Solo Reviewer",
-    ae_final: "AE Final",
+    ae_decision: "AE Decision",
+    ae_report: "AE Report",
+    ae_finalize: "AE Finalize",
     final_artifact_render: "Artifact Renderer",
     invalid_file: "Invalid File Output",
     desk_reject_output: "Desk Reject Output",
