@@ -475,7 +475,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(200, report_response.status_code, report_response.text)
         report = report_response.json()
         self.assertEqual("final_report.md", report["name"])
-        self.assertIn("Review Report", report["content"])
+        self.assertIn("审稿报告", report["content"])
 
         self.assertEqual(200, diagnostics_response.status_code, diagnostics_response.text)
         diagnostics = diagnostics_response.json()
@@ -494,7 +494,7 @@ class ApiTests(unittest.TestCase):
 
         self.assertEqual(200, download_response.status_code, download_response.text)
         self.assertIn("attachment", download_response.headers["content-disposition"])
-        self.assertIn("Review Report", download_response.text)
+        self.assertIn("审稿报告", download_response.text)
 
     def test_failed_job_exposes_partial_report(self) -> None:
         class FailingGraph:
