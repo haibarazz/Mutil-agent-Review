@@ -1956,6 +1956,87 @@ button {
   border-top: 1px solid var(--line-1);
 }
 
+.usage-panel {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-1);
+}
+
+.usage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.usage-grid div,
+.usage-breakdown div,
+.usage-model-table div {
+  min-width: 0;
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-sm);
+  background: var(--bg-1);
+  padding: 8px;
+}
+
+.usage-grid small,
+.usage-model-table small {
+  display: block;
+  color: var(--ink-500);
+  font: 600 9px/1.2 var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.usage-grid span,
+.usage-breakdown b,
+.usage-model-table span {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-900);
+  font: 600 11px/1.2 var(--f-sans);
+  overflow-wrap: anywhere;
+}
+
+.usage-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.usage-flags span {
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-sm);
+  background: var(--bg-1);
+  color: var(--ink-600);
+  padding: 3px 6px;
+  font: 600 9px/1.2 var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.usage-breakdown,
+.usage-model-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.usage-breakdown span,
+.usage-panel p {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-600);
+  font: 500 10px/1.4 var(--f-sans);
+  overflow-wrap: anywhere;
+}
+
+.usage-panel p {
+  margin: 10px 0 0;
+}
+
 .diagnostics-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -1,0 +1,64 @@
+# Local estimated LLM pricing used for run-level cost summaries.
+#
+# Units are USD per 1M tokens. Keep this file as an estimate, not a billing
+# source of truth. Set a model to 0 when the current quota/free-trial makes it
+# effectively free for local testing.
+currency: USD
+models:
+  # xunfeid is currently used through a temporary free/high-quota pool in this project.
+  # Update this entry when the provider starts billing this model.
+  xopqwen36v35b:
+    input_per_1m: 0
+    output_per_1m: 0
+
+  deepseek-v4-flash:
+    input_per_1m: 0.14
+    output_per_1m: 0.28
+
+  deepseek-v4-pro:
+    input_per_1m: 0.435
+    output_per_1m: 0.87
+
+  deepseek-ai/DeepSeek-V4-Flash:
+    input_per_1m: 0.13
+    output_per_1m: 0.28
+
+  deepseek-ai/DeepSeek-V4-Pro:
+    input_per_1m: 1.6
+    output_per_1m: 3.135
+
+  Qwen/Qwen2.5-7B-Instruct:
+    input_per_1m: 0.05
+    output_per_1m: 0.05
+
+  Pro/deepseek-ai/DeepSeek-V3.2:
+    input_per_1m: 0.27
+    output_per_1m: 0.42
+
+  Pro/moonshotai/Kimi-K2.6:
+    input_per_1m: 0.95
+    output_per_1m: 4.0
+
+  Pro/zai-org/GLM-5.1:
+    input_per_1m: 1.19
+    output_per_1m: 4.3
+
+  zai-org/GLM-5.2:
+    input_per_1m: 1.4
+    output_per_1m: 4.4
+
+  deepseek/deepseek-v4-pro:
+    input_per_1m: 0.435
+    output_per_1m: 0.87
+
+  google/gemini-2.5-flash-lite:
+    input_per_1m: 0.10
+    output_per_1m: 0.40
+
+  moonshotai/kimi-k2.6:
+    input_per_1m: 0.95
+    output_per_1m: 4.0
+
+  z-ai/glm-4.6:
+    input_per_1m: 0.6
+    output_per_1m: 2.2

@@ -428,6 +428,16 @@ class ReviewJobRunner:
                 events.append(item)
         return events
 
+    def read_usage_summary(self, job_id: str) -> dict[str, Any]:
+        artifact_dir = _artifact_dir_for(self.get_job(job_id))
+        usage_path = artifact_dir / "usage_summary.json"
+        if not usage_path.exists() or not usage_path.is_file():
+            raise ReviewJobArtifactNotFoundError("usage_summary.json")
+        usage = json.loads(usage_path.read_text(encoding="utf-8"))
+        if not isinstance(usage, dict):
+            return {"schema": "review_usage_summary_v1", "raw": usage}
+        return usage
+
     def run_job(self, job_id: str) -> None:
         # 后台任务只写状态，不把异常重新抛给 HTTP 层；前端通过 GET /api/jobs/{id} 查看失败原因。
         try:

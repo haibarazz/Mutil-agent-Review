@@ -37,6 +37,22 @@ class BrokenRepairClient(OpenAICompatibleLLMClient):
         return {"choices": [{"message": {"content": "not json at all"}}]}
 
 
+class UsageClient(OpenAICompatibleLLMClient):
+    def __init__(self) -> None:
+        super().__init__(
+            base_url="https://example.invalid",
+            api_key="test",
+            default_model="test-model",
+            timeout_sec=1,
+        )
+
+    def _chat_completion(self, **kwargs: Any) -> dict[str, Any]:
+        return {
+            "choices": [{"message": {"content": '{"ok": true}'}}],
+            "usage": {"prompt_tokens": 12, "completion_tokens": 3, "total_tokens": 15},
+        }
+
+
 class LLMJsonRepairTest(unittest.TestCase):
     def test_extract_json_object_repairs_missing_comma_locally(self) -> None:
         result = extract_json_object('{"summary": "ok" "rating": 6}')
@@ -77,4 +93,15 @@ class LLMJsonRepairTest(unittest.TestCase):
         self.assertEqual(
             "model_output_errors/parse_error_001.json",
             caught.exception.context.details["model_output_error_ref"],
+        )
+
+    def test_complete_json_exposes_openai_compatible_usage(self) -> None:
+        client = UsageClient()
+
+        result = client.complete_json(system_prompt="system", user_prompt="user")
+
+        self.assertEqual({"ok": True}, result)
+        self.assertEqual(
+            {"input_tokens": 12, "output_tokens": 3, "total_tokens": 15},
+            client.last_usage,
         )

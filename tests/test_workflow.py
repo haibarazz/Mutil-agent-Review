@@ -413,6 +413,9 @@ class WorkflowTests(unittest.TestCase):
                         "model": "fake_model",
                         "attempt": 1,
                         "elapsed_ms": 42,
+                        "input_tokens": 100,
+                        "output_tokens": 20,
+                        "total_tokens": 120,
                     },
                 )
                 invalid_output_fields = record_model_output_error(
@@ -476,6 +479,7 @@ class WorkflowTests(unittest.TestCase):
                 )
 
             diagnostics = json.loads((Path(run.artifact_dir) / "diagnostics.json").read_text(encoding="utf-8"))
+            usage_summary = json.loads((Path(run.artifact_dir) / "usage_summary.json").read_text(encoding="utf-8"))
             llm_lines = (Path(run.artifact_dir) / "llm_calls.jsonl").read_text(encoding="utf-8").splitlines()
             validation_error = json.loads(
                 (Path(run.artifact_dir) / "model_output_errors" / "validation_error_001.json").read_text(
@@ -485,6 +489,13 @@ class WorkflowTests(unittest.TestCase):
 
         self.assertEqual("succeeded", diagnostics["status"])
         self.assertEqual({"event_count": 3, "call_count": 1, "error_count": 1, "fallback_count": 0}, diagnostics["llm_calls"])
+        self.assertEqual("review_usage_summary_v1", usage_summary["schema"])
+        self.assertEqual(run.run_id, usage_summary["run_id"])
+        self.assertEqual(100, usage_summary["input_tokens"])
+        self.assertEqual(20, usage_summary["output_tokens"])
+        self.assertEqual(120, usage_summary["total_tokens"])
+        self.assertEqual(1, usage_summary["missing_pricing_count"])
+        self.assertEqual(usage_summary["total_tokens"], diagnostics["usage"]["total_tokens"])
         self.assertEqual(1, diagnostics["model_output_errors"]["count"])
         self.assertEqual(["model_output_errors/validation_error_001.json"], diagnostics["model_output_errors"]["files"])
         self.assertEqual(3, len(llm_lines))
@@ -496,6 +507,9 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(34, first_event["user_chars"])
         self.assertNotIn("unsafe_prompt", first_event)
         self.assertNotIn("must not be written", "\n".join(llm_lines))
+        done_event = json.loads(llm_lines[1])
+        self.assertEqual(100, done_event["input_tokens"])
+        self.assertEqual(20, done_event["output_tokens"])
         error_event = json.loads(llm_lines[2])
         self.assertEqual("validation_error", error_event["model_output_error_kind"])
         self.assertEqual("model_output_errors/validation_error_001.json", error_event["model_output_error_ref"])
@@ -545,10 +559,14 @@ class WorkflowTests(unittest.TestCase):
 
             run_dir = next(runs_dir.iterdir())
             diagnostics = json.loads((run_dir / "diagnostics.json").read_text(encoding="utf-8"))
+            usage_summary = json.loads((run_dir / "usage_summary.json").read_text(encoding="utf-8"))
             llm_lines = (run_dir / "llm_calls.jsonl").read_text(encoding="utf-8").splitlines()
 
         self.assertEqual("failed", diagnostics["status"])
         self.assertEqual({"event_count": 1, "call_count": 0, "error_count": 1, "fallback_count": 0}, diagnostics["llm_calls"])
+        self.assertEqual("review_usage_summary_v1", usage_summary["schema"])
+        self.assertEqual(1, usage_summary["error_calls"])
+        self.assertEqual(1, usage_summary["retry_error_count"])
         self.assertEqual(1, len(llm_lines))
         error_event = json.loads(llm_lines[0])
         self.assertEqual("error", error_event["event"])

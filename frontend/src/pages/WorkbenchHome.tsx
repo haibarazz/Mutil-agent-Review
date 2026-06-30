@@ -30,6 +30,7 @@ import {
   getReviewJobArtifacts,
   getReviewJobDiagnostics,
   getReviewJobLLMCalls,
+  getReviewJobUsage,
   getReviewArtifactDownloadUrl,
   getReviewJobReport,
   getReviewJob,
@@ -54,6 +55,7 @@ import {
   type ReviewDiagnosticsResponse,
   type ReviewLLMCallEvent,
   type ReviewLLMCallsResponse,
+  type ReviewUsageSummaryResponse,
   type ReviewJobsSummaryResponse,
   type ReviewJobsFilter,
   type ReviewJobResponse,
@@ -240,6 +242,7 @@ export function WorkbenchHome() {
   const [reportDetailReport, setReportDetailReport] = useState<ReviewReportResponse | null>(null);
   const [reportDetailDiagnostics, setReportDetailDiagnostics] = useState<ReviewDiagnosticsResponse | null>(null);
   const [reportDetailLLMCalls, setReportDetailLLMCalls] = useState<ReviewLLMCallsResponse | null>(null);
+  const [reportDetailUsage, setReportDetailUsage] = useState<ReviewUsageSummaryResponse | null>(null);
   const [reportDetailStatus, setReportDetailStatus] = useState<AsyncViewStatus>("idle");
   const [reportDetailError, setReportDetailError] = useState("");
   const [commandOpen, setCommandOpen] = useState(false);
@@ -546,6 +549,7 @@ export function WorkbenchHome() {
       setReportDetailReport(null);
       setReportDetailDiagnostics(null);
       setReportDetailLLMCalls(null);
+      setReportDetailUsage(null);
     }
     try {
       const job = await getReviewJob(jobId);
@@ -556,21 +560,24 @@ export function WorkbenchHome() {
           setReportDetailReport(null);
           setReportDetailDiagnostics(null);
           setReportDetailLLMCalls(null);
+          setReportDetailUsage(null);
         }
         setReportDetailStatus("ready");
         return;
       }
       try {
-        const [artifacts, report, diagnostics, llmCalls] = await Promise.all([
+        const [artifacts, report, diagnostics, llmCalls, usage] = await Promise.all([
           getReviewJobArtifacts(jobId),
           getReviewJobReport(jobId),
           getReviewJobDiagnostics(jobId),
           getReviewJobLLMCalls(jobId),
+          getReviewJobUsage(jobId),
         ]);
         setReportDetailArtifacts(artifacts.artifacts);
         setReportDetailReport(report);
         setReportDetailDiagnostics(diagnostics);
         setReportDetailLLMCalls(llmCalls);
+        setReportDetailUsage(usage);
       } catch (artifactError) {
         if (job.status === "SUCCEEDED") {
           throw artifactError;
@@ -580,6 +587,7 @@ export function WorkbenchHome() {
         setReportDetailReport(null);
         setReportDetailDiagnostics(null);
         setReportDetailLLMCalls(null);
+        setReportDetailUsage(null);
       }
       setReportDetailStatus("ready");
     } catch (error) {
@@ -1048,6 +1056,7 @@ export function WorkbenchHome() {
             report={reportDetailReport}
             diagnostics={reportDetailDiagnostics}
             llmCalls={reportDetailLLMCalls}
+            usage={reportDetailUsage}
             status={reportDetailStatus}
             error={reportDetailError}
             autoRefreshing={reportDetailAutoRefreshing}
@@ -2089,6 +2098,7 @@ function ReportDetailView(props: {
   report: ReviewReportResponse | null;
   diagnostics: ReviewDiagnosticsResponse | null;
   llmCalls: ReviewLLMCallsResponse | null;
+  usage: ReviewUsageSummaryResponse | null;
   status: AsyncViewStatus;
   error: string;
   autoRefreshing: boolean;
@@ -2172,6 +2182,7 @@ function ReportDetailView(props: {
                 ))}
               </div>
 
+              <UsagePanel usage={props.usage} />
               <DiagnosticsPanel diagnostics={props.diagnostics} llmCalls={props.llmCalls} job={job} />
 
               <div className="workflow-side-section">
@@ -2264,6 +2275,74 @@ function MarkdownReport({ content }: { content: string }) {
       >
         {content}
       </ReactMarkdown>
+    </div>
+  );
+}
+
+function UsagePanel({ usage }: { usage: ReviewUsageSummaryResponse | null }) {
+  const summary = usage?.usage;
+  if (!summary) {
+    return null;
+  }
+  const providerRows = Object.entries(summary.by_provider || {})
+    .sort((a, b) => Number(b[1].total_tokens || 0) - Number(a[1].total_tokens || 0))
+    .slice(0, 4);
+  const modelRows = Object.entries(summary.by_model || {})
+    .sort((a, b) => Number(b[1].total_tokens || 0) - Number(a[1].total_tokens || 0))
+    .slice(0, 5);
+  return (
+    <div className="usage-panel">
+      <div className="runs-section-title">Usage</div>
+      <div className="usage-grid">
+        <div>
+          <small>Estimated cost</small>
+          <span>{formatCost(summary.estimated_cost_usd, summary.currency)}</span>
+        </div>
+        <div>
+          <small>Total tokens</small>
+          <span>{formatTokenCount(summary.total_tokens)}</span>
+        </div>
+        <div>
+          <small>Input / Output</small>
+          <span>{formatTokenCount(summary.input_tokens)} / {formatTokenCount(summary.output_tokens)}</span>
+        </div>
+        <div>
+          <small>Calls</small>
+          <span>{summary.successful_calls}/{summary.total_calls}</span>
+        </div>
+      </div>
+      <div className="usage-flags">
+        {summary.fallback_count > 0 ? <span>{summary.fallback_count} fallback</span> : null}
+        {summary.retry_error_count > 0 ? <span>{summary.retry_error_count} retry error</span> : null}
+        {summary.missing_usage_count > 0 ? <span>{summary.missing_usage_count} missing usage</span> : null}
+        {summary.missing_pricing_count > 0 ? <span>{summary.missing_pricing_count} missing price</span> : null}
+        {!summary.known_usage && summary.successful_calls > 0 ? <span>partial usage</span> : null}
+      </div>
+      {providerRows.length > 0 ? (
+        <div className="usage-breakdown" aria-label="Provider usage breakdown">
+          {providerRows.map(([provider, item]) => (
+            <div key={provider}>
+              <b>{provider}</b>
+              <span>{item.calls || 0} calls · {formatTokenCount(item.total_tokens || 0)} · {formatCost(item.estimated_cost_usd || 0, summary.currency)}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {modelRows.length > 0 ? (
+        <div className="usage-model-table" aria-label="Model usage breakdown">
+          {modelRows.map(([model, item]) => (
+            <div key={model}>
+              <span>{model}</span>
+              <small>{item.provider || "-"} · {item.calls || 0} calls · {formatElapsedMs(item.elapsed_ms || 0)}</small>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {summary.slowest_call?.prompt ? (
+        <p>
+          Slowest: {summary.slowest_call.prompt} · {summary.slowest_call.model || summary.slowest_call.provider_model || "-"} · {formatElapsedMs(summary.slowest_call.elapsed_ms || 0)}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -2868,6 +2947,8 @@ function llmEventMeta(event: ReviewLLMCallEvent): string {
     event.provider || "",
     event.provider_model || "",
     event.attempt ? `attempt ${event.attempt}` : "",
+    event.total_tokens ? `${formatTokenCount(event.total_tokens)} tokens` : "",
+    event.estimated_cost_usd ? formatCost(event.estimated_cost_usd, "USD") : "",
     event.error_type || "",
   ].filter(Boolean);
   return parts.length > 0 ? parts.join(" · ") : "safe summary only";
@@ -2897,6 +2978,19 @@ function numberFromUnknown(value: unknown): string {
 function formatElapsedMs(value: number): string {
   if (value >= 1000) return `${(value / 1000).toFixed(1)}s`;
   return `${Math.round(value)}ms`;
+}
+
+function formatTokenCount(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return "0";
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(value >= 10_000 ? 0 : 1)}K`;
+  return String(Math.round(value));
+}
+
+function formatCost(value: number, currency = "USD"): string {
+  if (!Number.isFinite(value) || value <= 0) return `${currency} 0.00`;
+  if (value < 0.01) return `${currency} ${value.toFixed(4)}`;
+  return `${currency} ${value.toFixed(2)}`;
 }
 
 function formatRunTime(value: string): string {
