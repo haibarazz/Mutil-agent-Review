@@ -169,6 +169,15 @@ class ApiTests(unittest.TestCase):
         self.assertEqual("#/components/schemas/ReviewDiagnosticsResponse", diagnostics_schema["$ref"])
         llm_calls_schema = body["paths"]["/api/jobs/{job_id}/llm-calls"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
         self.assertEqual("#/components/schemas/ReviewLLMCallsResponse", llm_calls_schema["$ref"])
+        llm_event_fields = schemas["ReviewLLMCallEventResponse"]["properties"]
+        for field in [
+            "error_message",
+            "next_action",
+            "model_output_error_kind",
+            "model_output_error_ref",
+            "model_output_preview",
+        ]:
+            self.assertIn(field, llm_event_fields)
         usage_schema = body["paths"]["/api/jobs/{job_id}/usage"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
         self.assertEqual("#/components/schemas/ReviewUsageSummaryResponse", usage_schema["$ref"])
 
@@ -509,7 +518,12 @@ class ApiTests(unittest.TestCase):
                         "attempt": 1,
                         "elapsed_ms": 42,
                         "error_type": "ProviderTransientError",
+                        "error_message": "provider overloaded",
                         "retryable": "true",
+                        "next_action": "fallback_model",
+                        "model_output_error_kind": "parse_error",
+                        "model_output_error_ref": "model_output_errors/parse_error_001.json",
+                        "model_output_preview": "{\"bad\": true}",
                     },
                 )
                 raise ConfigurationError(
@@ -578,6 +592,11 @@ class ApiTests(unittest.TestCase):
         self.assertEqual("error", llm_calls["events"][0]["event"])
         self.assertEqual("reviewer1", llm_calls["events"][0]["prompt"])
         self.assertEqual("ProviderTransientError", llm_calls["events"][0]["error_type"])
+        self.assertEqual("provider overloaded", llm_calls["events"][0]["error_message"])
+        self.assertEqual("fallback_model", llm_calls["events"][0]["next_action"])
+        self.assertEqual("parse_error", llm_calls["events"][0]["model_output_error_kind"])
+        self.assertEqual("model_output_errors/parse_error_001.json", llm_calls["events"][0]["model_output_error_ref"])
+        self.assertEqual("{\"bad\": true}", llm_calls["events"][0]["model_output_preview"])
 
         self.assertEqual(200, usage_response.status_code, usage_response.text)
         usage = usage_response.json()

@@ -192,7 +192,12 @@ export type ReviewLLMCallEvent = {
   reason?: string | null;
   elapsed_ms?: number | null;
   error_type?: string | null;
+  error_message?: string | null;
   retryable?: string | null;
+  next_action?: string | null;
+  model_output_error_kind?: string | null;
+  model_output_error_ref?: string | null;
+  model_output_preview?: string | null;
   system_chars?: number | null;
   user_chars?: number | null;
   input_tokens?: number | null;

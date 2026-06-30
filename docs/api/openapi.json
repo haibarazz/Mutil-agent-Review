@@ -1039,6 +1039,17 @@
             ],
             "title": "Elapsed Ms"
           },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
           "error_type": {
             "anyOf": [
               {
@@ -1130,6 +1141,50 @@
               }
             ],
             "title": "Model"
+          },
+          "model_output_error_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Output Error Kind"
+          },
+          "model_output_error_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Output Error Ref"
+          },
+          "model_output_preview": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Output Preview"
+          },
+          "next_action": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Action"
           },
           "output_tokens": {
             "anyOf": [

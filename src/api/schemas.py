@@ -298,7 +298,12 @@ class ReviewLLMCallEventResponse(BaseModel):
     reason: str | None = None
     elapsed_ms: int | None = None
     error_type: str | None = None
+    error_message: str | None = None
     retryable: str | None = None
+    next_action: str | None = None
+    model_output_error_kind: str | None = None
+    model_output_error_ref: str | None = None
+    model_output_preview: str | None = None
     system_chars: int | None = None
     user_chars: int | None = None
     input_tokens: int | None = None
