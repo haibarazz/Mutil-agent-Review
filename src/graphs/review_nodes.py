@@ -21,6 +21,10 @@ from src.ports import DocumentParser, JsonValidator, LLMClient, SearchClient
 _UNTRUSTED_PAPER_KEYS = {"paper_content", "content_preview"}
 _UNTRUSTED_BEGIN = "BEGIN_UNTRUSTED_PAPER_CONTENT"
 _UNTRUSTED_END = "END_UNTRUSTED_PAPER_CONTENT"
+_PAPER_PROMPT_CHAR_LIMIT = 24_000
+_PAPER_PROMPT_SECTION_LIMIT = 8
+_PAPER_PROMPT_SECTION_CHAR_LIMIT = 2_800
+_PAPER_PROMPT_ABSTRACT_LIMIT = 3_000
 
 
 class ReviewNodes:
@@ -124,6 +128,61 @@ class ReviewNodes:
 
         return ""
 
+    def _paper_prompt_brief(self, paper: ParsedPaper) -> str:
+        """生成给 LLM 的论文简报；本地 artifact 仍保存完整 ParsedPaper。"""
+        truncated = False
+        sections = [
+            section
+            for section in paper.sections
+            if not self._is_reference_like_heading(section.heading)
+        ]
+        lines = [
+            "# Paper Brief For Review",
+            f"Title: {paper.title or 'Untitled'}",
+            "",
+            "Abstract:",
+            self._truncate_text(paper.abstract or "No abstract extracted.", _PAPER_PROMPT_ABSTRACT_LIMIT),
+        ]
+
+        if sections:
+            lines.append("\nSelected manuscript sections:")
+            for section in sections[:_PAPER_PROMPT_SECTION_LIMIT]:
+                section_text, was_truncated = self._truncate_text_with_flag(
+                    section.text,
+                    _PAPER_PROMPT_SECTION_CHAR_LIMIT,
+                )
+                truncated = truncated or was_truncated
+                lines.append(f"\n## {section.heading}\n{section_text}")
+            truncated = truncated or len(sections) > _PAPER_PROMPT_SECTION_LIMIT
+        else:
+            excerpt, was_truncated = self._truncate_text_with_flag(paper.full_text, _PAPER_PROMPT_CHAR_LIMIT)
+            truncated = truncated or was_truncated
+            lines.extend(["\nManuscript excerpt:", excerpt])
+
+        brief = "\n".join(lines).strip()
+        brief, was_truncated = self._truncate_text_with_flag(brief, _PAPER_PROMPT_CHAR_LIMIT)
+        truncated = truncated or was_truncated or len(str(paper.full_text or "")) > len(brief)
+        if truncated:
+            brief = (
+                f"{brief}\n\n"
+                "[Prompt paper brief was truncated. The complete parsed manuscript remains available in "
+                "`parsed_paper.json`; do not assume omitted sections are absent from the original paper.]"
+            )
+        return brief
+
+    def _is_reference_like_heading(self, heading: str) -> bool:
+        normalized = str(heading or "").strip().lower()
+        return normalized in {"references", "reference", "bibliography", "appendix", "appendices", "参考文献", "附录"}
+
+    def _truncate_text(self, text: str, limit: int) -> str:
+        return self._truncate_text_with_flag(text, limit)[0]
+
+    def _truncate_text_with_flag(self, text: str, limit: int) -> tuple[str, bool]:
+        normalized = str(text or "").strip()
+        if len(normalized) <= limit:
+            return normalized, False
+        return normalized[: max(0, limit - 3)].rstrip() + "...", True
+
     def field_analyst(
         self,
         paper: ParsedPaper,
@@ -134,7 +193,7 @@ class ReviewNodes:
         """领域分析：识别论文领域，并为后续审稿人生成分工配置。"""
         result = self._complete_json(
             "field_analyst",
-            {"paper_content": paper.full_text, "journal_requirements": journal_requirements},
+            {"paper_content": self._paper_prompt_brief(paper), "journal_requirements": journal_requirements},
             output_language=output_language,
         )
         return {
@@ -156,7 +215,7 @@ class ReviewNodes:
         result = self._complete_json(
             "se_check",
             {
-                "paper_content": paper.full_text,
+                "paper_content": self._paper_prompt_brief(paper),
                 "journal_requirements": journal_requirements,
                 "venue_profile_text": venue_profile.profile_text if venue_profile else "未提供目标期刊画像。",
                 "submission_type": "Research Article",
@@ -191,7 +250,7 @@ class ReviewNodes:
         result = self._complete_json(
             "ae_check",
             {
-                "paper_content": paper.full_text,
+                "paper_content": self._paper_prompt_brief(paper),
                 "journal_requirements": journal_requirements,
                 "venue_profile_text": venue_profile.profile_text if venue_profile else "未提供目标期刊画像。",
                 "se_summary": se_result.get("se_summary", ""),
@@ -237,7 +296,7 @@ class ReviewNodes:
         result = self._complete_json(
             prompt_name,
             {
-                "paper_content": paper.full_text,
+                "paper_content": self._paper_prompt_brief(paper),
                 "journal_requirements": journal_requirements,
                 "venue_profile_text": venue_profile.profile_text if venue_profile else "未提供目标期刊画像。",
                 "ae_assessment": ae_result.get("ae_assessment", ""),
@@ -265,7 +324,7 @@ class ReviewNodes:
         result = self._complete_json(
             "devils_advocate",
             {
-                "paper_content": paper.full_text,
+                "paper_content": self._paper_prompt_brief(paper),
                 "journal_requirements": journal_requirements,
                 "venue_profile_text": venue_profile.profile_text if venue_profile else "未提供目标期刊画像。",
                 "ae_assessment": ae_result.get("ae_assessment", ""),
@@ -289,7 +348,7 @@ class ReviewNodes:
         result = self._complete_json(
             "single_reviewer",
             {
-                "paper_content": paper.full_text,
+                "paper_content": self._paper_prompt_brief(paper),
                 "journal_requirements": journal_requirements,
                 "venue_profile_text": venue_profile.profile_text if venue_profile else "未提供目标期刊画像。",
                 "field_info": field_info,
@@ -320,7 +379,7 @@ class ReviewNodes:
         result = self._complete_json(
             "ae_final",
             {
-                "paper_content": paper.full_text,
+                "paper_content": self._paper_prompt_brief(paper),
                 "journal_requirements": journal_requirements,
                 "venue_profile_text": venue_profile.profile_text if venue_profile else "未提供目标期刊画像。",
                 "ae_assessment": ae_result.get("ae_assessment", ""),
@@ -478,7 +537,7 @@ class ReviewNodes:
         """整理 AE 终审相关 prompt 共享上下文，避免两个新节点各自拼字段。"""
         report_by_key = {report.reviewer_key: report.raw_result for report in reviewer_reports}
         return {
-            "paper_content": paper.full_text,
+            "paper_content": self._paper_prompt_brief(paper),
             "journal_requirements": journal_requirements,
             "venue_profile_text": venue_profile.profile_text if venue_profile else "未提供目标期刊画像。",
             "ae_assessment": ae_result.get("ae_assessment", ""),
