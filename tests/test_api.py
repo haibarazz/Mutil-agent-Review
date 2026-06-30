@@ -957,6 +957,44 @@ class ApiTests(unittest.TestCase):
         self.assertNotIn("content_check.json", remaining_names)
         self.assertEqual(404, download_response.status_code)
 
+    def test_artifact_api_rejects_symlink_escape(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data_dir = Path(tmp) / "data"
+            with patch.dict(os.environ, {"DATA_DIR": str(data_dir), "LLM_PROVIDER": "mock"}):
+                client = TestClient(create_app())
+                created = client.post(
+                    "/api/jobs",
+                    json={
+                        "paper_path": self._write_paper(tmp, "symlink-artifact.md"),
+                        "review_mode": "QUICK_REVIEW",
+                        "output_language": "zh",
+                        "venue_domain": "CS",
+                        "venue_collection": "CCFA",
+                        "venue_code": "AAAI",
+                    },
+                ).json()
+                job_id = created["job_id"]
+                completed = client.get(f"/api/jobs/{job_id}").json()
+                artifact_dir = Path(completed["artifact_dir"])
+                outside_secret = Path(tmp) / "outside-secret.txt"
+                outside_secret.write_text("secret should not be downloadable", encoding="utf-8")
+                symlink = artifact_dir / "outside-secret.txt"
+                symlink.symlink_to(outside_secret)
+
+                artifacts_response = client.get(f"/api/jobs/{job_id}/artifacts")
+                download_response = client.get(f"/api/jobs/{job_id}/artifacts/outside-secret.txt")
+                delete_response = client.request("DELETE", f"/api/jobs/{job_id}/artifacts/outside-secret.txt")
+                secret_exists = outside_secret.exists()
+                secret_text = outside_secret.read_text(encoding="utf-8")
+
+        self.assertEqual(200, artifacts_response.status_code, artifacts_response.text)
+        artifact_names = {item["name"] for item in artifacts_response.json()["artifacts"]}
+        self.assertNotIn("outside-secret.txt", artifact_names)
+        self.assertEqual(404, download_response.status_code)
+        self.assertEqual(404, delete_response.status_code)
+        self.assertTrue(secret_exists)
+        self.assertEqual("secret should not be downloadable", secret_text)
+
     def test_library_deletes_selected_review_runs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             data_dir = Path(tmp) / "data"

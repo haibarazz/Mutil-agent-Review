@@ -319,7 +319,7 @@ class ReviewJobRunner:
         artifact_dir = _artifact_dir_for(self.get_job(job_id))
         artifacts: list[dict[str, Any]] = []
         for path in sorted(artifact_dir.iterdir(), key=lambda item: item.name):
-            if path.is_file():
+            if _is_safe_artifact_file(artifact_dir, path):
                 artifacts.append(
                     {
                         "name": path.name,
@@ -331,13 +331,7 @@ class ReviewJobRunner:
 
     def artifact_path(self, job_id: str, artifact_name: str) -> Path:
         artifact_dir = _artifact_dir_for(self.get_job(job_id))
-        # 前端只能按 artifact 文件名下载，避免把本地任意路径暴露成下载接口。
-        if artifact_name != Path(artifact_name).name or artifact_name in {"", ".", ".."}:
-            raise ReviewJobArtifactNotFoundError(artifact_name)
-        path = artifact_dir / artifact_name
-        if not path.exists() or not path.is_file():
-            raise ReviewJobArtifactNotFoundError(artifact_name)
-        return path
+        return _safe_artifact_path(artifact_dir, artifact_name)
 
     def delete_artifact(self, job_id: str, artifact_name: str) -> dict[str, Any]:
         path = self.artifact_path(job_id, artifact_name)
@@ -600,6 +594,27 @@ def _artifact_dir_for(job: ReviewJobSnapshot) -> Path:
     if not path.exists() or not path.is_dir():
         raise ReviewJobArtifactNotFoundError(str(path))
     return path
+
+
+def _safe_artifact_path(artifact_dir: Path, artifact_name: str) -> Path:
+    # artifact_name 来自 URL 或 JSON 请求体，只允许访问当前 artifact_dir 下的普通文件名。
+    if artifact_name != Path(artifact_name).name or artifact_name in {"", ".", ".."} or artifact_name.startswith("."):
+        raise ReviewJobArtifactNotFoundError(artifact_name)
+    path = artifact_dir / artifact_name
+    if not _is_safe_artifact_file(artifact_dir, path):
+        raise ReviewJobArtifactNotFoundError(artifact_name)
+    return path
+
+
+def _is_safe_artifact_file(artifact_dir: Path, path: Path) -> bool:
+    if path.name.startswith(".") or path.is_symlink() or not path.exists() or not path.is_file():
+        return False
+    try:
+        artifact_root = artifact_dir.resolve(strict=True)
+        resolved = path.resolve(strict=True)
+    except OSError:
+        return False
+    return resolved.parent == artifact_root
 
 
 def _primary_report_path(artifact_dir: Path) -> Path:
