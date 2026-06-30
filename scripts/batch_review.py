@@ -447,15 +447,29 @@ def run_batch(
                 progress(_progress_message(completed, len(items), row, item))
 
     write_final_decisions_csv(batch_dir / "final_decisions.csv", sorted(final_rows, key=lambda row: int(row["index"])))
+    succeeded_count = int(status_counts.get("succeeded", 0))
+    failed_count = int(status_counts.get("failed", 0))
+    planned_count = int(status_counts.get("planned", 0))
+    completed_count = succeeded_count + failed_count
     summary = {
         "schema": SCHEMA,
         "batch_id": batch_dir.name,
-        "status": "dry_run" if config.dry_run else "completed",
+        "status": _batch_status(
+            dry_run=config.dry_run,
+            total_selected=len(items),
+            completed_count=completed_count,
+            failed_count=failed_count,
+            planned_count=planned_count,
+        ),
         "started_at": started_at,
         "finished_at": utc_now(),
         "batch_dir": str(batch_dir),
         "manifest_path": str(config.manifest_path),
         "total_selected": len(items),
+        "completed_count": completed_count,
+        "succeeded_count": succeeded_count,
+        "failed_count": failed_count,
+        "planned_count": planned_count,
         "concurrency": config.concurrency,
         "status_counts": dict(status_counts),
         "decision_counts": dict(decision_counts),
@@ -463,6 +477,29 @@ def run_batch(
     write_json(batch_dir / "summary.json", summary)
     progress(json.dumps(summary, ensure_ascii=False, indent=2))
     return summary
+
+
+def _batch_status(
+    *,
+    dry_run: bool,
+    total_selected: int,
+    completed_count: int,
+    failed_count: int,
+    planned_count: int,
+) -> str:
+    if dry_run:
+        return "DRY_RUN"
+    if total_selected == 0:
+        return "EMPTY"
+    if failed_count > 0 and completed_count < total_selected:
+        return "STOPPED_AFTER_FAILURE"
+    if failed_count > 0:
+        return "COMPLETED_WITH_FAILURES"
+    if completed_count == total_selected:
+        return "SUCCEEDED"
+    if planned_count > 0:
+        return "DRY_RUN"
+    return "INCOMPLETE"
 
 
 def _progress_message(position: int, total: int, row: dict[str, Any], item: BatchItem) -> str:
