@@ -234,6 +234,14 @@ def _fields_from_diagnostics(diagnostics: dict[str, Any]) -> dict[str, Any]:
         if isinstance(last_error, dict):
             fields.update(_fields_from_llm_event(last_error))
 
+    llm_retry_timeline = diagnostics.get("llm_retry_timeline")
+    if isinstance(llm_retry_timeline, dict):
+        fields.update(_fields_from_retry_timeline(llm_retry_timeline))
+
+    model_output_errors = diagnostics.get("model_output_errors")
+    if isinstance(model_output_errors, dict):
+        fields.update(_fields_from_model_output_errors(model_output_errors))
+
     return fields
 
 
@@ -279,7 +287,44 @@ def _fields_from_llm_event(event: dict[str, Any]) -> dict[str, Any]:
         "last_retry_error_type": event.get("error_type"),
         "last_retry_error_message": _short_text(event.get("error_message")),
         "last_retry_next_action": event.get("next_action"),
+        "model_output_error_kind": event.get("model_output_error_kind"),
+        "model_output_error_ref": event.get("model_output_error_ref"),
+        "model_output_preview": _short_text(event.get("model_output_preview")),
     }
+
+
+def _fields_from_retry_timeline(timeline: dict[str, Any]) -> dict[str, Any]:
+    fields: dict[str, Any] = {
+        "retry_timeline_event_count": timeline.get("event_count"),
+        "retry_timeline_truncated_count": timeline.get("truncated_count"),
+    }
+    events = timeline.get("events")
+    if not isinstance(events, list):
+        return fields
+
+    fallback_models = [
+        str(event.get("to_model"))
+        for event in events
+        if isinstance(event, dict) and event.get("event") == "fallback" and event.get("to_model")
+    ]
+    if fallback_models:
+        # 批量行只放短摘要；完整顺序仍在 diagnostics.json / llm_calls.jsonl。
+        fields["fallback_models_tried"] = ",".join(fallback_models)
+
+    error_events = [event for event in events if isinstance(event, dict) and event.get("event") == "error"]
+    if error_events:
+        fields.update(_fields_from_llm_event(error_events[-1]))
+    return fields
+
+
+def _fields_from_model_output_errors(model_output_errors: dict[str, Any]) -> dict[str, Any]:
+    fields: dict[str, Any] = {
+        "model_output_error_count": model_output_errors.get("count"),
+    }
+    files = model_output_errors.get("files")
+    if isinstance(files, list) and files:
+        fields["model_output_error_files"] = ",".join(str(item) for item in files)
+    return fields
 
 
 def _read_diagnostics(run_dir: Path) -> dict[str, Any]:

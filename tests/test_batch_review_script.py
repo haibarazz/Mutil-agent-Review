@@ -117,7 +117,55 @@ class DiagnosticFailingWorkflow:
                     "error_type": "ModelOutputValidationError",
                     "error_message": "strengths.1: Input should be a valid string",
                     "next_action": "exhausted",
+                    "model_output_error_kind": "validation_error",
+                    "model_output_error_ref": "model_output_errors/validation_error_002.json",
                 },
+            },
+            "llm_retry_timeline": {
+                "event_count": 3,
+                "truncated_count": 0,
+                "events": [
+                    {
+                        "event": "error",
+                        "prompt": "reviewer2",
+                        "provider": "xunfeid",
+                        "model": "xopqwen36v35b",
+                        "attempt": 1,
+                        "max_attempts": 2,
+                        "error_type": "ModelOutputValidationError",
+                        "error_message": "strengths.0: Input should be a valid string",
+                        "next_action": "retry_same_model",
+                        "model_output_error_kind": "validation_error",
+                        "model_output_error_ref": "model_output_errors/validation_error_001.json",
+                    },
+                    {
+                        "event": "fallback",
+                        "prompt": "reviewer2",
+                        "from_model": "xopqwen36v35b",
+                        "to_model": "sf/deepseek-v4-pro",
+                        "reason": "ModelOutputValidationError",
+                    },
+                    {
+                        "event": "error",
+                        "prompt": "reviewer2",
+                        "provider": "siliconflow",
+                        "model": "sf/deepseek-v4-pro",
+                        "attempt": 1,
+                        "max_attempts": 1,
+                        "error_type": "ModelOutputValidationError",
+                        "error_message": "decision_letter: Field required",
+                        "next_action": "exhausted",
+                        "model_output_error_kind": "validation_error",
+                        "model_output_error_ref": "model_output_errors/validation_error_002.json",
+                    },
+                ],
+            },
+            "model_output_errors": {
+                "count": 2,
+                "files": [
+                    "model_output_errors/validation_error_001.json",
+                    "model_output_errors/validation_error_002.json",
+                ],
             },
         }
         (run_dir / "diagnostics.json").write_text(json.dumps(diagnostics, ensure_ascii=False), encoding="utf-8")
@@ -283,11 +331,16 @@ class BatchReviewScriptTests(unittest.TestCase):
         self.assertEqual("ModelOutputValidationError", failure["error_type"])
         self.assertEqual("reviewer2", failure["failed_node"])
         self.assertEqual("reviewer2", failure["failed_prompt"])
-        self.assertEqual("xopqwen36v35b", failure["failed_model"])
-        self.assertEqual("xunfeid", failure["failed_provider"])
+        self.assertEqual("sf/deepseek-v4-pro", failure["failed_model"])
+        self.assertEqual("siliconflow", failure["failed_provider"])
         self.assertEqual(2, failure["attempts_exhausted"])
         self.assertEqual(2, failure["llm_error_count"])
         self.assertEqual(0, failure["llm_fallback_count"])
+        self.assertEqual(3, failure["retry_timeline_event_count"])
+        self.assertEqual("exhausted", failure["last_retry_next_action"])
+        self.assertEqual("model_output_errors/validation_error_002.json", failure["model_output_error_ref"])
+        self.assertEqual(2, failure["model_output_error_count"])
+        self.assertEqual("sf/deepseek-v4-pro", failure["fallback_models_tried"])
         self.assertTrue(failure["artifact_dir"].endswith("diagnostic-fail-run"))
 
 

@@ -479,6 +479,8 @@ class WorkflowTests(unittest.TestCase):
                         "attempt": 1,
                         "error_type": "ModelOutputValidationError",
                         "error_message": "strengths.0: Input should be a valid string",
+                        "retryable": "true",
+                        "next_action": "retry_same_model",
                         **invalid_output_fields,
                     },
                 )
@@ -536,6 +538,13 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(usage_summary["total_tokens"], diagnostics["usage"]["total_tokens"])
         self.assertEqual(1, diagnostics["model_output_errors"]["count"])
         self.assertEqual(["model_output_errors/validation_error_001.json"], diagnostics["model_output_errors"]["files"])
+        self.assertEqual(1, diagnostics["llm_retry_timeline"]["event_count"])
+        self.assertEqual("error", diagnostics["llm_retry_timeline"]["events"][0]["event"])
+        self.assertEqual("retry_same_model", diagnostics["llm_retry_timeline"]["events"][0]["next_action"])
+        self.assertEqual(
+            "model_output_errors/validation_error_001.json",
+            diagnostics["llm_retry_timeline"]["events"][0]["model_output_error_ref"],
+        )
         self.assertEqual(3, len(llm_lines))
         first_event = json.loads(llm_lines[0])
         self.assertEqual("start", first_event["event"])
@@ -567,6 +576,16 @@ class WorkflowTests(unittest.TestCase):
                         "elapsed_ms": 99,
                         "error_type": "ProviderTransientError",
                         "retryable": "true",
+                        "next_action": "fallback_model",
+                    },
+                )
+                record_llm_event(
+                    "fallback",
+                    {
+                        "prompt": "reviewer2",
+                        "from_model": "fake_model",
+                        "to_model": "backup_model",
+                        "reason": "ProviderTransientError",
                     },
                 )
                 raise ConfigurationError(
@@ -601,11 +620,15 @@ class WorkflowTests(unittest.TestCase):
             llm_lines = (run_dir / "llm_calls.jsonl").read_text(encoding="utf-8").splitlines()
 
         self.assertEqual("failed", diagnostics["status"])
-        self.assertEqual({"event_count": 1, "call_count": 0, "error_count": 1, "fallback_count": 0}, diagnostics["llm_calls"])
+        self.assertEqual({"event_count": 2, "call_count": 0, "error_count": 1, "fallback_count": 1}, diagnostics["llm_calls"])
+        self.assertEqual(2, diagnostics["llm_retry_timeline"]["event_count"])
+        self.assertEqual(["error", "fallback"], [event["event"] for event in diagnostics["llm_retry_timeline"]["events"]])
+        self.assertEqual("fallback_model", diagnostics["llm_retry_timeline"]["events"][0]["next_action"])
+        self.assertEqual("backup_model", diagnostics["llm_retry_timeline"]["events"][1]["to_model"])
         self.assertEqual("review_usage_summary_v1", usage_summary["schema"])
         self.assertEqual(1, usage_summary["error_calls"])
         self.assertEqual(1, usage_summary["retry_error_count"])
-        self.assertEqual(1, len(llm_lines))
+        self.assertEqual(2, len(llm_lines))
         error_event = json.loads(llm_lines[0])
         self.assertEqual("error", error_event["event"])
         self.assertEqual("reviewer2", error_event["prompt"])
