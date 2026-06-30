@@ -77,12 +77,14 @@ class WorkflowTests(unittest.TestCase):
         self.assertTrue((Path(run.artifact_dir) / "ae_finalize.json").exists())
         final_report = Path(run.artifact_dir) / "final_report.md"
         report_text = final_report.read_text(encoding="utf-8")
-        self.assertIn("Review Report", report_text)
+        self.assertIn("审稿报告", report_text)
+        self.assertNotIn("Decision Letter", report_text)
+        self.assertNotIn("Dear Author(s)", report_text)
         self.assertLess(report_text.index("### 审稿人 1：方法与实验"), report_text.index("### 反方辩护人"))
-        self.assertIn("##### Major Comments", report_text)
-        self.assertIn("##### Minor Comments", report_text)
-        self.assertIn("##### Questions for Authors", report_text)
-        self.assertIn("##### Scores", report_text)
+        self.assertIn("##### 主要意见", report_text)
+        self.assertIn("##### 次要意见", report_text)
+        self.assertIn("##### 给作者的问题", report_text)
+        self.assertIn("##### 评分", report_text)
         self.assertNotIn("```json", report_text)
         self.assertEqual([r.reviewer_key for r in run.reviewer_reports], [
             "reviewer1",
@@ -296,7 +298,9 @@ class WorkflowTests(unittest.TestCase):
         )
 
         report = result["final_report_md"]
-        self.assertIn("Desk Reject Report", report)
+        self.assertIn("桌拒报告", report)
+        self.assertNotIn("Decision Letter", report)
+        self.assertNotIn("Dear Author(s)", report)
         self.assertIn("venue_fit", report)
         self.assertIn("Venue fit is weak.", report)
         self.assertIn("final_report.md", result["rendered_artifacts"])
@@ -329,6 +333,30 @@ class WorkflowTests(unittest.TestCase):
         report = result["final_report_md"]
         self.assertIn("Desk Reject Report", report)
         self.assertIn("Decision Letter", report)
+
+    def test_final_artifact_render_localizes_chinese_decision_letter_prefix(self) -> None:
+        result = final_artifact_render_node(
+            {
+                "parsed_paper": ParsedPaper(
+                    source_path="paper.md",
+                    title="Chinese Letter Candidate",
+                    abstract="",
+                    full_text="",
+                    sections=[],
+                    pages=[],
+                ),
+                "output_language": OutputLanguage.ZH.value,
+                "final_decision": "DESK_REJECT",
+                "decision_letter": "Dear Author(s),\n\nPlease revise the manuscript before resubmission.",
+                "reviewer_reports": [],
+                "stage_outputs": {},
+            }
+        )
+
+        report = result["final_report_md"]
+        self.assertIn("## 决定信", report)
+        self.assertIn("尊敬的作者：", report)
+        self.assertNotIn("Dear Author(s)", report)
 
     def test_rejects_missing_venue_catalog_selection_before_graph(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
