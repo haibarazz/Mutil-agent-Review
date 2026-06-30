@@ -228,7 +228,9 @@ class BatchReviewScriptTests(unittest.TestCase):
             batch_dir = root / "batch_runs" / "dry-run"
             self.assertEqual(0, calls)
             self.assertEqual({"planned": 1}, summary["status_counts"])
-            self.assertEqual("dry_run", read_json(batch_dir / "summary.json")["status"])
+            self.assertEqual("DRY_RUN", read_json(batch_dir / "summary.json")["status"])
+            self.assertEqual(0, summary["completed_count"])
+            self.assertEqual(1, summary["planned_count"])
             self.assertEqual("planned", read_jsonl(batch_dir / "manifest.jsonl")[0]["status"])
 
     def test_batch_run_records_successes_failures_and_decision_summary(self) -> None:
@@ -265,6 +267,10 @@ class BatchReviewScriptTests(unittest.TestCase):
             self.assertEqual(["succeeded", "failed"], [row["status"] for row in rows])
             self.assertEqual(1, len(failures))
             self.assertEqual("RuntimeError", failures[0]["error_type"])
+            self.assertEqual("COMPLETED_WITH_FAILURES", summary["status"])
+            self.assertEqual(2, summary["completed_count"])
+            self.assertEqual(1, summary["succeeded_count"])
+            self.assertEqual(1, summary["failed_count"])
             self.assertEqual({"succeeded": 1, "failed": 1}, summary["status_counts"])
             self.assertEqual({"MAJOR_REVISION": 1}, summary["decision_counts"])
             self.assertIn("ok", (batch_dir / "final_decisions.csv").read_text(encoding="utf-8"))
@@ -300,6 +306,10 @@ class BatchReviewScriptTests(unittest.TestCase):
             self.assertGreaterEqual(tracker.max_active, 2)
             self.assertEqual(4, tracker.calls)
             self.assertEqual(3, summary["concurrency"])
+            self.assertEqual("SUCCEEDED", summary["status"])
+            self.assertEqual(4, summary["completed_count"])
+            self.assertEqual(4, summary["succeeded_count"])
+            self.assertEqual(0, summary["failed_count"])
             self.assertEqual({"succeeded": 4}, summary["status_counts"])
             self.assertEqual({"MINOR_REVISION": 4}, summary["decision_counts"])
             self.assertEqual(4, len(manifest_rows))
